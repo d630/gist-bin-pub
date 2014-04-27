@@ -1,0 +1,42 @@
+!xmessage.webradio-------------------------------------------------------------------------------
+!webradio*geometry:                     1680x50+0+0
+webradio*center:                        true
+webradio*nearMouse:                     false
+webradio*printValue:                    false
+webradio*timeout:                       2
+!webradio*maxHeight
+!webradio*maxWidth
+webradio*background:                    #2C2C2C
+webradio*foreground:                    #DCDCCC
+webradio*Font:                          -*-terminus-medium-*-*-*-12-*-*-*-*-*-*-*
+!webradio*borderWidth:                  1
+!webradio*borderColor:                  black
+
+webradio*defaultButton:                 quit
+webradio*buttons:                       quit:0
+
+webradio*.Scrollbar:                    Never
+!webradio*Scrollbar.borderWidth:        0
+!webradio*Scrollbar.width:              0
+
+webradio*message.scrollVertical:        Never
+webradio*message.scrollHorizontal:      Never
+!webradio*message.background:           #2C2C2C
+!webradio*message.foreground:           #DCDCCC
+!webradio*message.borderColor:          black
+webradio*message.borderWidth:           0
+!webradio*message.font:                 -*-terminus-medium-*-*-*-12-*-*-*-*-*-*-*
+
+webradio*Command.shapeStyle:            rectangle
+webradio*Command.borderWidth:           0
+!webradio*Command.borderColor:          black
+!webradio*Command.internalWidth:        1
+!webradio*Command.internalHeight:       3
+webradio*Command.highlightThickness:    1
+!webradio*Command.background:           #2C2C2C
+!webradio*Command.foreground:           #2C2C2C
+
+!webradio.form.okay.shapeStyle:         rectangle
+!webradio.form.okay.background:         #2C2C2C
+!webradio.form.okay.foreground:         #2C2C2C
+!webradio.form.message.Scroll:          Never

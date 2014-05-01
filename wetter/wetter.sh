@@ -13,5 +13,5 @@ elif [[ ${1#-} == w ]]
 then
     curl -s "${wetter[w]}" | scrape -be 'table' | w3m -dump -T text/html
 else
-    { echo "Argument ?" >&2 ; exit 1 ; }
+    { echo "Argument?" >&2 ; exit 1 ; }
 fi

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-find /home/user/code/gist-pub/ -mindepth 2 -maxdepth 2 -type d -name ".git" -exec rename -f 's/.git/ign/' {} +
+find "${HOME}/code/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name ".git" -exec rename -f 's/.git/gistup_ign/' {} +
 
-cd -- /home/user/code/gist-pub &&
+cd -- "${HOME}/code/gist-pub" &&
 {
     git add -A .
     git commit -m "auto"
     git push origin master
 }
 
-find /home/user/code/gist-pub/ -mindepth 2 -maxdepth 2 -type d -name "ign" -exec rename -f 's/ign/.git/' {} +
+find "${HOME}/code/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name "gistup_ign" -exec rename -f 's/gistup_ign/.git/' {} +

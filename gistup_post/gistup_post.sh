@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-find "${HOME}/code/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name ".git" -exec rename -f 's/.git/gistup_ign/' {} +
+find "${HOME}/code/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name ".git" -exec rename -f 's/\.git/gistup_ign/' {} +
 
 cd -- "${HOME}/code/gist-pub" &&
 {
@@ -9,4 +9,4 @@ cd -- "${HOME}/code/gist-pub" &&
     git push origin master
 }
 
-find "${HOME}/code/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name "gistup_ign" -exec rename -f 's/gistup_ign/.git/' {} +
+find "${HOME}/code/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name "gistup_ign" -exec rename -f 's/gistup_ign/\.git/' {} +

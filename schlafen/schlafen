@@ -4,10 +4,10 @@
 
 clipbored -k
 pkill clipbored
-pkill -f clipbored_schleife.sh
+pkill -f clipbored-schleife.sh
 pkill -f mail-schleife.sh
 pkill -f backup-firefox-history-schleife.sh
-truecrypt-unmount.sh && echo "truecrypt_unmount. done" 1>&2
+truecrypt-unmount.sh && echo "unmount. done" 1>&2
 sudo rtcwake -m mem -t $(date -d year +%s)
 # ...
 (exec clipbored-schleife.sh &)

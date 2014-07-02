@@ -72,7 +72,7 @@ cd /etc &&
 
 # exif
 { printf '%*s\n%s\n' "80" '' "Publikationen_Metadaten" | tr ' ' - ; } 1>&2
-exiftool_publikationen_metadaten_erstellen.sh
+exiftool-publikationen-metadaten-erstellen.sh
 
 # taskwarrior
 { printf '%*s\n%s\n' "80" '' "Taskwarrior" | tr ' ' - ; } 1>&2

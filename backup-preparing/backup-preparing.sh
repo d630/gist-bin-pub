@@ -32,7 +32,7 @@ sudo apt-get autoremove
 sudo dpkg --configure -a
 sudo apt-get install -f
 mr -j5 update
-cd -- "${HOME}/code/source/org-mode" && make uncompiled
+cd -- "${HOME}/code/vcs/org-mode" && make uncompiled
 sudo rm -r -- "${HOME}/Dokumente/Backups/paketlisten" &&
 {
     mkdir "${HOME}/Dokumente/Backups/paketlisten"

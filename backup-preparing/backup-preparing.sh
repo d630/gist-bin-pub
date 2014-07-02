@@ -92,7 +92,7 @@ rsync-repositorium-backup.sh
 # passivedns.log sichern
 { printf '%*s\n%s\n' "80" '' "passivedns" | tr ' ' - ; } 1>&2
 passivedns-archiv.sh
-sudo cp -- /var/log/passivedns-archive/*.gz "${HOME}/logs/passivedns"
+sudo cp -- /var/log/passivedns-archive/*.gz "${HOME}/.local/log/passivedns"
 
 # backup firefox urls
 { printf '%*s\n%s\n' "80" '' "FirefoxUrls" | tr ' ' - ; } 1>&2
@@ -119,7 +119,7 @@ cclean.sh
 
 # Mail-Report
 { printf '%*s\n%s\n' "80" '' "Mail Report" | tr ' ' - ; } 1>&2
-logfile=${HOME}/logs/backup-vorbereitung_log.txt
+logfile=${HOME}/.local/log/backup-preparing.log
 empfaenger=backup-preparing@backup-preparing
 betreff="BackupPreparing-log"
 echo "$(date +"%Y"-"%m"-"%d"_"%R")" >> "$logfile"

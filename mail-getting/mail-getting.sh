@@ -9,9 +9,9 @@
 # Time in seconds between long syncs
 longsyncdiff=900 # 15 Minutes
 
-_getmail_long() { offlineimap -c "${HOME}/.offlineimaprc" -l "${HOME}/logs/offlineimap_log" -u quiet ; }
+_getmail_long() { offlineimap -c "${HOME}/.offlineimaprc" -l "${HOME}/.local/log/offlineimap.log" -u quiet ; }
 
-_getmail_short() { offlineimap -o -c "${HOME}/.offlineimaprc" -l "${HOME}/logs/offlineimap_log" -f INBOX -u quiet ; }
+_getmail_short() { offlineimap -o -c "${HOME}/.offlineimaprc" -l "${HOME}/.local/log/offlineimap.log" -f INBOX -u quiet ; }
 
 # -- Start.
 
@@ -29,20 +29,20 @@ fi
 
 # Now we determine what to do based on the last time we did things
 curtime=$(date +%s)
-if [[ -e ${HOME}/logs/offlineimap_lastlongsynctime ]]
+if [[ -e ${HOME}/.local/log/offlineimap_lastlongsynctime ]]
 then
-    lastlongsync=$(< "${HOME}/logs/offlineimap_lastlongsynctime") >/dev/null # The unix time of the last long sync
+    lastlongsync=$(< "${HOME}/.local/log/offlineimap_lastlongsynctime") >/dev/null # The unix time of the last long sync
     timediff=$(( curtime - lastlongsync ))
     if (( timediff > longsyncdiff ))
     then
-        printf '%s\n' "$curtime" > "${HOME}/logs/offlineimap_lastlongsynctime"
+        printf '%s\n' "$curtime" > "${HOME}/.local/log/offlineimap_lastlongsynctime"
         _getmail_long
     else
         #_getmail_short
         _getmail_short && rm -- "${HOME}/.mutt/mailboxes.local.uni" && cp -- "${HOME}/.mutt/_mailboxes.local.uni" "${HOME}/.mutt/mailboxes.local.uni"
     fi
 else
-    printf '%s\n' "$curtime" > "${HOME}/logs/offlineimap_lastlongsynctime"
+    printf '%s\n' "$curtime" > "${HOME}/.local/log/offlineimap_lastlongsynctime"
     _getmail_long
 fi
 

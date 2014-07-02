@@ -4,8 +4,8 @@
 
 shopt -s nocaseglob
 
-[[ -e ./tmp ]] && { echo "There is already a tmp dir." >&2 ; exit 1 ; }
-[[ -e ./pdf_new ]] && { echo "There is already a pdf_new dir." >&2 ; exit 1 ; }
+[[ -e ./tmp ]] && { echo "There is already a tmp dir." 1>&2 ; exit 1 ; }
+[[ -e ./pdf_new ]] && { echo "There is already a pdf_new dir." 1>&2 ; exit 1 ; }
 
 mkdir -- ./tmp ./pdf_new
 cp -- ./*.pdf ./tmp

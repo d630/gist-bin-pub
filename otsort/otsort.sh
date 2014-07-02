@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
+
 # Outline topological sort
-#printf '%s (%s)\n' "$BASH_VERSION" "${BASH_VERSINFO[5]}" && exit 0
-#set -x
 
 # Input like:
 # 35
@@ -14,13 +13,28 @@
 # 55 50
 
 (( $# == 0 )) && { echo "Argument needed." >&2 ; exit 1 ; }
-{ [[ ! $BASH_VERSION ]] || (( ${BASH_VERSINFO[0]} < 4)) ; } && { echo "bash >= 4.0 required." >&2 ; exit 1 ; }
 (( $# > 1 )) && { echo "More than one argument is not allowed." >&2 ; exit 1 ; }
 [[ ! -f $1 ]] && { echo "Argument is not a file." >&2 ; exit 1 ; }
 
 declare -A deps children
-declare -a ch tsorted new_children
-declare parent child c i j k l skip m n ind greatest chars
+declare -a \
+           ch=() \
+           new_children=() \
+           tsorted=()
+declare \
+        c= \
+        chars= \
+        child= \
+        greatest= \
+        i= \
+        ind= \
+        j= \
+        k= \
+        l= \
+        m= \
+        n= \
+        parent= \
+        skip=
 
 while read -r parent child
 do

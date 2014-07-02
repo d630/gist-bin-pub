@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#set -x
 
 # Browse and query interactively a CSV with choose and less (example)
 

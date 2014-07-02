@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# standby emulation
+
+clipbored -k
+pkill clipbored
+pkill -f clipbored_schleife.sh
+pkill -f mail-schleife.sh
+pkill -f backup-firefox-history-schleife.sh
+truecrypt-unmount.sh && echo "truecrypt_unmount. done" 1>&2
+sudo rtcwake -m mem -t $(date -d year +%s)
+# ...
+(exec clipbored-schleife.sh &)
+(exec mail-schleife.sh 2>/dev/null 1>&2 &)
+(exec backup-firefox-history-schleife.sh &)

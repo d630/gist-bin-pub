@@ -14,7 +14,7 @@ do
     then
         elinks "$REPLY"
     else
-        ( exec firefox -new-tab "$REPLY" & )
+        (exec qupzilla "$REPLY" &)
     fi
 done < <(grep -oP '(((http|https|ftp|gopher)|mailto|file):(//)?[^ <>"\t]*|'\
 '(www|ftp)[0-9]?\.[-a-z0-9.]+)[^ .,;\t\n\r<">\):]?[^, <>"\t]*'\

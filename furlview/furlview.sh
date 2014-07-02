@@ -6,7 +6,7 @@
 # Simple replacement for urlview
 # Mentioned here: https://github.com/junegunn/fzf/issues/70
 
-# See furlview_elinks.sh
+# See furlview-elinks.sh
 
 # Usage:
 # from a tty:
@@ -66,8 +66,8 @@ then
         ((time++))
     done
 else
-    (($(pgrep -cf furlview_elinks.sh) == 0)) &&
-    (exec xterm -name "furlview-elinks" -e "furlview_elinks.sh ${furls[0]};exit;bash" 2>/dev/null &)
+    (($(pgrep -cf furlview-elinks.sh) == 0)) &&
+    (exec xterm -name "furlview-elinks" -e "furlview-elinks.sh ${furls[0]};exit;bash" 2>/dev/null &)
     for url in "${furls[@]}"
     do
         (exec elinks -session-ring 1 -remote "openURL("$url", new-tab)" 2>/dev/null &)

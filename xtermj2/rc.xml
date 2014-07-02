@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+   <keyboard>
+    <keybind key="W-V">
+      <action name="Execute">
+        <execute>xtermj2.sh</execute>
+      </action>
+    </keybind>
+   </keyboard>
+   <application name="xtermj2">
+       <decor>no</decor>
+       <position force="yes">
+         <x>0</x>
+         <y>75%</y>
+       </position>
+       <size>
+        <width>100%</width>
+        <height>25%</height>
+       </size>
+       <desktop>all</desktop>
+       <focus>yes</focus>
+       <iconic>no</iconic>
+       <layer>above</layer>
+       <skip_pager>yes</skip_pager>
+       <skip_taskbar>yes</skip_taskbar>
+       <shade>no</shade>
+       <maximized>false</maximized>
+       <fullscreen>no</fullscreen>
+   </application>
+</openbox_config>

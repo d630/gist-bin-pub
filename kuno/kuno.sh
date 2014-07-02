@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
-# Add interactively a note via Terminal to use it later in org-mode and ask for taskwarrior.
 
-file=~/outline/quicknotes.org
+# Interactively add a note via Terminal to use it later in org-mode and ask for taskwarrior.
 
-read -re -p "Title: " name
+declare \
+        file= \
+        kuno= \
+        selection= \
+        tags= \
+        time= \
+        title=
+
+file=${HOME}/Dokumente/Notizen/outline/quicknotes.org
+
+read -re -p "Title: " title
 read -re -p "Kurznotiz: " kuno
 read -re -p "Tags: " tags
 
 time=$(date +"%Y-%m-%d_%a_%H:%M")
 
 cat >> "$file" << TEMPLATE
-* Kurznotiz: ${titel}                                        ${tags}
+* Kurznotiz: ${title}                                            ${tags}
 :LOGBOOK:
 CLOCK: [${time}]--[${time}] =>  0:00
 :END:
@@ -42,6 +51,6 @@ case $selection in
             exit 1
             ;;
     y)
-            taskwarrior_add.sh
+            taskwarrior-add.sh
             ;;
 esac

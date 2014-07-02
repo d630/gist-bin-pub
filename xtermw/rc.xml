@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+    <application name="xtermw">
+       <decor>no</decor>
+       <position force="yes">
+         <x>0</x>
+         <y>0</y>
+       </position>
+       <size>
+        <width>100%</width>
+        <height>100%</height>
+       </size>
+       <desktop>all</desktop>
+       <focus>no</focus>
+       <iconic>no</iconic>
+       <layer>below</layer>
+       <shade>no</shade>
+       <skip_pager>yes</skip_pager>
+       <skip_taskbar>yes</skip_taskbar>
+       <maximized>false</maximized>
+       <fullscreen>no</fullscreen>
+    </application>
+</openbox_config>

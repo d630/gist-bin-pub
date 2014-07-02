@@ -17,4 +17,4 @@ do
             hg commit -m "mlr $(date)"
         fi
     }
-done < /home/user/.mlr/repos
+done < "${HOME}/.mlr/repos.txt"

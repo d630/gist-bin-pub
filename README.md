@@ -1,4 +1,4 @@
-Main repository for gists on https://gist.github.com/D630
+Main repository for bin-like gists on https://gist.github.com/D630
 
 Any dir has its own `.git` / is a own repository. Their contents are published with:
 * [gistup](https://github.com/mbostock/gistup)

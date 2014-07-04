@@ -2,4 +2,4 @@
 
 # MediathekView (german tv)
 
-${HOME}/code/java/MediathekView_4/MediathekView__Linux.sh -auto -noGui
+${HOME}/var/home/code/java/MediathekView_4/MediathekView__Linux.sh -auto -noGui

@@ -2,7 +2,7 @@
 
 # Daily ip logging
 
-ausgabe=${HOME}/.local/log/ip-log.log
+ausgabe=${X_XDG_LOG_HOME}/ip-log.log
 empfaenger=ip-log@ip-log
 betreff=ip-log
 

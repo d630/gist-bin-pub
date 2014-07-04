@@ -8,7 +8,7 @@ case $answer in
             echo "Ok. Then go." 1>&2
             ;;
     No|no|N|n|nein)
-            truecrypt_mount.sh || exit 1
+            truecrypt-mount.sh || exit 1
             ;;
     *)
             echo "Hää?" 1>&2

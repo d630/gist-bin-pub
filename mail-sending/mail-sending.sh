@@ -23,7 +23,7 @@ fi
 {
     until (($(_queue) == 0))
     do
-        msmtp-runqueue.sh > ${HOME}/.local/log/msmtp-queue.log 2>&1
+        msmtp-runqueue.sh > ${X_XDG_LOG_HOME}/msmtp-queue.log 2>&1
     done
     notify-send -u low -h int:value:42 "[Uni] All mails have been sent!"
     aplay /usr/local/share/sounds/mac-sound-pack-mail-sent.wav 1>/dev/null 2>&1

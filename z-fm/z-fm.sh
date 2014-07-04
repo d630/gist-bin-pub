@@ -6,11 +6,11 @@ declare path=
 
 if tty -s
 then
-    read -r _ path < <(sort -g "${HOME}/logs/z.txt" | menu.sh "fzf" "OPEN")
+    read -r _ path < <(sort -g "${X_XDG_LOG_HOME}/z.txt" | menu.sh "fzf" "OPEN")
     [[ $path ]] && exec ranger "$path"
 elif [[ $DISPLAY ]]
 then
-    read -r _ path < <(sort -rg "${HOME}/logs/z.txt" | menu.sh "dmenu2" "OPEN")
+    read -r _ path < <(sort -rg "${X_XDG_LOG_HOME}/z.txt" | menu.sh "dmenu2" "OPEN")
     [[ $path ]] && (exec spacefm -t "$path" &)
 else
     exit 1

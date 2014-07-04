@@ -2,4 +2,4 @@
 
 # Run passivedns
 
-sudo ${HOME}/code/vcs/passivedns/src/passivedns -i wlan0 -l /var/log/passivedns.log -D
+sudo ${X_XDG_CODE_DIR}/vcs/passivedns/src/passivedns -i wlan0 -l /var/log/passivedns.log -D

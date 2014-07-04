@@ -32,11 +32,11 @@ sudo apt-get autoremove
 sudo dpkg --configure -a
 sudo apt-get install -f
 mr -j5 update
-cd -- "${HOME}/code/vcs/org-mode" && make uncompiled
-sudo rm -r -- "${HOME}/Dokumente/Backups/paketlisten" &&
+cd -- "${X_XDG_CODE_DIR}/vcs/org-mode" && make uncompiled
+sudo rm -r -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
 {
-    mkdir "${HOME}/Dokumente/Backups/paketlisten"
-    cd "${HOME}/Dokumente/Backups/paketlisten"
+    mkdir "${X_XDG_BACKUPS_DIR}/paketlisten"
+    cd "${X_XDG_BACKUPS_DIR}/paketlisten"
     COLUMNS=200 dpkg-query -l > packages_list.list
     dpkg --get-selections | awk '!/deinstall|purge|hold/ {print $1}' > packages.list
     apt-mark showauto > package-states-auto
@@ -47,19 +47,19 @@ sudo rm -r -- "${HOME}/Dokumente/Backups/paketlisten" &&
 
 # Programme
 { printf '%*s\n%s\n' "80" '' "Programme" | tr ' ' - ; } 1>&2
-ls  $(printf '%s ' ${PATH//:/ }) /usr/bin/X11 | xargs whatis | sort | uniq > "${HOME}/Dokumente/Backups/Programme.txt"
+ls  $(printf '%s ' ${PATH//:/ }) /usr/bin/X11 | xargs whatis | sort | uniq > "${X_XDG_BACKUPS_DIR}/Programme.txt"
 
 # Anzeige einer ausführlichen Übersicht der aktivierten Quellen mit den Apt-Pinning-Informationen
 { printf '%*s\n%s\n' "80" '' "Apt" | tr ' ' - ; } 1>&2
-apt-cache policy > "${HOME}/Dokumente/Backups/apt-quellen.txt"
+apt-cache policy > "${X_XDG_BACKUPS_DIR}/apt-quellen.txt"
 
 # Liste der in den letzten 7 Tagen installierten Pakete
 { printf '%*s\n%s\n' "80" '' "Last 7 Days" | tr ' ' - ; } 1>&2
-find /var/lib/dpkg/info/ -daystart \( -name \*.list -a -mtime -7 \) | sed 's#.list$##;s#.*/##' | sort > "${HOME}/Dokumente/Backups/software_7_days.txt"
+find /var/lib/dpkg/info/ -daystart \( -name \*.list -a -mtime -7 \) | sed 's#.list$##;s#.*/##' | sort > "${X_XDG_BACKUPS_DIR}/software_7_days.txt"
 
 # init-Liste
 { printf '%*s\n%s\n' "80" '' "Inits" | tr ' ' - ; } 1>&2
-{ find /etc/init.d/ -perm /111 -type f -printf '%f\n'; for f in $(ls /etc/init/); do echo "${f%.conf}"; done } | sort -u > "${HOME}/Dokumente/Backups/dienste.txt"
+{ find /etc/init.d/ -perm /111 -type f -printf '%f\n'; for f in $(ls /etc/init/); do echo "${f%.conf}"; done } | sort -u > "${X_XDG_BACKUPS_DIR}/dienste.txt"
 
 # etckeeper
 { printf '%*s\n%s\n' "80" '' "etckeeper" | tr ' ' - ; } 1>&2
@@ -92,7 +92,7 @@ rsync-repositorium-backup.sh
 # passivedns.log sichern
 { printf '%*s\n%s\n' "80" '' "passivedns" | tr ' ' - ; } 1>&2
 passivedns-archiv.sh
-sudo cp -- /var/log/passivedns-archive/*.gz "${HOME}/.local/log/passivedns"
+sudo cp -- /var/log/passivedns-archive/*.gz "${X_XDG_LOG_HOME}/passivedns"
 
 # backup firefox urls
 { printf '%*s\n%s\n' "80" '' "FirefoxUrls" | tr ' ' - ; } 1>&2
@@ -119,7 +119,7 @@ cclean.sh
 
 # Mail-Report
 { printf '%*s\n%s\n' "80" '' "Mail Report" | tr ' ' - ; } 1>&2
-logfile=${HOME}/.local/log/backup-preparing.log
+logfile=${X_XDG_LOG_HOME}/backup-preparing.log
 empfaenger=backup-preparing@backup-preparing
 betreff="BackupPreparing-log"
 echo "$(date +"%Y"-"%m"-"%d"_"%R")" >> "$logfile"

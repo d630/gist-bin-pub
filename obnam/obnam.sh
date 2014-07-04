@@ -2,7 +2,7 @@
 
 # Weekly Backup with Obnam
 
-obnam=${HOME}/.local/log/obnam.log
+obnam=${X_XDG_LOG_HOME}/obnam.log
 empfaenger=obnam@obnam
 betreff=Obnam
 

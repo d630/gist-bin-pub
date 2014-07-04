@@ -2,8 +2,8 @@
 
 # Bleachbit
 
-tmp_bleach=${HOME}/logs/tmp_bleach.txt
-logfile=${HOME}/logs/bleachbit_log.txt
+tmp_bleach=${X_XDG_LOG_HOME}/tmp_bleach.txt
+logfile=${X_XDG_LOG_HOME}/bleachbit_log.txt
 empfaenger=bleachbit@bleachbit
 betreff=bleachbit-log
 

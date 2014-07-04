@@ -10,7 +10,7 @@ declare \
         time= \
         title=
 
-file=${HOME}/Dokumente/Notizen/outline/quicknotes.org
+file=${XDG_DOCUMENTS_DIR}/Notizen/outline/quicknotes.org
 
 read -re -p "Title: " title
 read -re -p "Kurznotiz: " kuno

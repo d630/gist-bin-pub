@@ -5,6 +5,7 @@
 rm -rf -- ${HOME}/.adobe/* \
           ${HOME}/.macromedia/* \
           ${HOME}/.icedteaplugin/* \
-          ${HOME}/.cache/*
-rm -f -- ${HOME}/.local/share/recently-used.xbel \
-         ${HOME}/.recently-used
+          ${XDG_CACHE_HOME}/*
+rm -f -- ${XDG_DATA_HOME}/recently-used.xbel \
+         ${HOME}/.recently-used \
+         ${HOME}/.recentf

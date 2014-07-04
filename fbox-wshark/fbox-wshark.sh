@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FritzBox and wshark (based on http://www.wehavemorefun.de/fritzbox/IP-Pakete_mitschneiden)
+# FritzBox and wireshark (based on http://www.wehavemorefun.de/fritzbox/IP-Pakete_mitschneiden)
 
 [[ $1 == -h || $1 == --help || ! $1 ]] && { printf '%s\n' "Usage: ${0} <PASSWORD> [<DUMPFILE>] [<IP>]" 1>&2 ; exit 1 ; }
 

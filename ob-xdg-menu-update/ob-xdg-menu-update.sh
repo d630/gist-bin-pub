@@ -2,5 +2,5 @@
 
 # Update root menu of openbox3
 
-xdg_menu.pl --format openbox3 --root-menu ${HOME}/code/source/arch-applications.menu > ${HOME}/.cache/openbox/arch-menu.xml
-cat ${HOME}/.cache/openbox/arch-menu.xml
+xdg_menu.pl --format openbox3 --root-menu ${HOME}/var/src/arch-applications.menu > ${XDG_CACHE_HOME}/openbox/arch-menu.xml
+cat ${XDG_CACHE_HOME}/openbox/arch-menu.xml

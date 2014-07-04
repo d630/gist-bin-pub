@@ -6,7 +6,7 @@ repos=outline
 
 for r in $repos
 do
-    cd -- "${HOME}/Dokumente/Notizen/${r}" &&
+    cd -- "${XDG_DOCUMENTS_DIR}/Notizen/${r}" &&
     {
         git ls-files --deleted -z | xargs -0 git rm 1>/dev/null 2>&1
         git add -A . 1>/dev/null 2>&1

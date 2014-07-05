@@ -2,13 +2,13 @@
 
 # Feed url to newsbeuter via dmenu
 
-declare cache=${HOME}/dotfiles/feedcatcher/.feedcatcher/cache/ \
+declare cache=${XDG_DATA_HOME}/feedcacher/cache/ \
         tagfile=${HOME}/.newsbeuter/tags \
         feedfile=${HOME}/.newsbeuter/urls \
         feed= \
         tags=
 
-feed=$(find "$cache" -type f | menu.sh "dmenu2" "FEED")
+feed=$(find -H "$cache" -type f | menu.sh "dmenu2" "FEED")
 tags=$(menu.sh "dmenu2" "TAGS" < "$tagfile")
 
 if [[ $tags ]]

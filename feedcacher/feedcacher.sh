@@ -2,17 +2,17 @@
 
 # Simple feed downloader based on urldiff (https://github.com/D630/urldiff)
 
-declare -r feedcatcherdir=${HOME}/.feedcatcher
-declare -r cachedir=${feedcatcherdir}/cache
-declare -r urllist=${feedcatcherdir}/urls.txt
-declare -r reportnew=${feedcatcherdir}/report.txt
-declare -r table=${feedcatcherdir}/table.txt
+declare -r feedcacherdir=${XDG_DATA_HOME}/feedcacher
+declare -r cachedir=${feedcacherdir}/cache
+declare -r urllist=${feedcacherdir}/urls.txt
+declare -r reportnew=${feedcacherdir}/report.txt
+declare -r table=${feedcacherdir}/table.txt
 
 export cachedir \
         reportnew \
         table
 
-__feedcatcher_do()
+__feedcacher_do()
 {
     url=$1
     if [[ $url == http*://*.* ]]
@@ -37,12 +37,12 @@ __feedcatcher_do()
 
 # --- Main
 
-export -f __feedcatcher_do
+export -f __feedcacher_do
 
 # Check connection status.
-if ! ping -c1 startpage.com 1>/dev/null 2>&1
+if ! ping -c1 google.com 1>/dev/null 2>&1
 then
-    if ! wget -O - startpage.com 1>/dev/null 2>&1
+    if ! wget -O - google.com 1>/dev/null 2>&1
     then
         # We are probably offline.
         { echo "ERROR We are probably offline." 1>&2 ; exit 1 ; }
@@ -56,7 +56,7 @@ fi
 
 tput bold setaf 7 ; printf '\n%s\n' "CHECK" ; tput sgr0
 exec 3>>"$reportnew"
-grep -v -e '^#http' "$urllist" | xargs -n 1 -P 16 -i bash -c '__feedcatcher_do "$@"' _ {} +
+grep -v -e '^#http' "$urllist" | xargs -n 1 -P 16 -i bash -c '__feedcacher_do "$@"' _ {} +
 exec 3<&-
 
 if [[ $(stat -c %s "$reportnew" 2>/dev/null) -ge 2 ]]

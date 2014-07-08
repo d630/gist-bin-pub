@@ -74,7 +74,7 @@ __bmucks_parse_config()
                     split|hsplit) __bmucks_hsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
                     vsplit)       __bmucks_vsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
                     layout)       __bmucks_layout "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]#* }" ;;
-                    sleep)        sleep ${panes[${windows[$i]} ${j}]#* }                                 ;;
+                    sleep)        sleep ${panes[${windows[$i]} ${j}]#* }                                   ;;
                     *)            __bmucks_send "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]}"      ;;
                 esac
             done

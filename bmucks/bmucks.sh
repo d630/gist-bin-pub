@@ -120,4 +120,4 @@ declare \
 
 trap "{ rm -f ${TMP}/${CONFIG_id} ; exit 255 ; }" EXIT
 
-__bmux_parse_config "${1:-${CONFIG_file}}" 2>/dev/null || { printf '%s\n' "${0}:Error:79: No conf file has been sourced." ; exit 79 ; }
+__bmux_parse_config "${1:-${CONFIG_file}}" 2>/dev/null || { printf '%s\n' "${0}:Error:79: No conf file has been sourced." 1>&2 ; exit 79 ; }

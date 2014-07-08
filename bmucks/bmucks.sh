@@ -88,20 +88,20 @@ __bmucks_choose_bmucks()
     case $bmucks in
         tmux)
                 __bmucks_new_session() { tmux -S "$1" new-session -d -s "$2" -n "$3" ; }
-                __bmucks_new_window() { tmux -S "$1" new-window -n "$2" ; }
-                __bmucks_hsplit() { tmux -S "$1" split-window -v ; }
-                __bmucks_vsplit() { tmux -S "$1" split-window -h ; }
-                __bmucks_layout() { tmux -S "$1" select-layout $2 ; }
-                __bmucks_send() { tmux -S "$1" send-keys "$2" "C-m" ;}
-                __bmucks_finalize() { tmux -S "$1" attach-session -t "$2" ; }
+                __bmucks_new_window()  { tmux -S "$1" new-window -n "$2" ; }
+                __bmucks_hsplit()      { tmux -S "$1" split-window -v ; }
+                __bmucks_vsplit()      { tmux -S "$1" split-window -h ; }
+                __bmucks_layout()      { tmux -S "$1" select-layout $2 ; }
+                __bmucks_send()        { tmux -S "$1" send-keys "$2" "C-m" ;}
+                __bmucks_finalize()    { tmux -S "$1" attach-session -t "$2" ; }
                 ;;
         screen)
-                __bmucks_new_session() { screen -d -m -S "$2" -t "$3" ${SHELL:-bash} ; }
-                __bmucks_new_window() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
-                __bmucks_hsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
-                __bmucks_vsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
-                __bmucks_send() { screen -S "${1##*/}" -p "$3" -X stuff "${2}\n" ; }
-                __bmucks_finalize() { screen -r "$2" ; }
+                __bmucks_new_session() { screen -d -m -S "$2" -t "$3" ; }
+                __bmucks_new_window()  { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
+                __bmucks_hsplit()      { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
+                __bmucks_vsplit()      { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
+                __bmucks_send()        { screen -S "${1##*/}" -p "$3" -X stuff "${2}\n" ; }
+                __bmucks_finalize()    { screen -r "$2" ; }
                 ;;
         dvtm)
                 :

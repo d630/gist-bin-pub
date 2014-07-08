@@ -37,7 +37,7 @@
 
 # -- FUNCTIONS.
 
-__bmux_parse_config()
+__bmucks_parse_config()
 {
     declare -a windows=()
     declare -A panes
@@ -51,18 +51,18 @@ __bmux_parse_config()
 
     source "$1" &&
     {
-        CONFIG_bmux=$bmucks
+        CONFIG_bmucks=$bmucks
         CONFIG_name=$name
 
-        __choose_bmucks
+        __bmucks_choose_bmucks
 
         for ((i=0 ; i < ${#windows[@]} ; ++i))
         do
             if ((i == 0))
             then
-                __bmux_new_session "${TMP}/${CONFIG_id}" "$CONFIG_id" "${windows[$i]}"
+                __bmucks_new_session "${TMP}/${CONFIG_id}" "$CONFIG_id" "${windows[$i]}"
             else
-                __bmux_new_window "${TMP}/${CONFIG_id}" "${windows[$i]}"
+                __bmucks_new_window "${TMP}/${CONFIG_id}" "${windows[$i]}"
             fi
             while [[ ${panes[${windows[$i]} ${panes_nr}]} ]]
             do
@@ -71,37 +71,37 @@ __bmux_parse_config()
             for ((j=0 ; j <= ${panes_nr} ; ++j))
             do
                 case ${panes[${windows[$i]} ${j}]%% *} in
-                    split|hsplit) __bmux_hsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
-                    vsplit)       __bmux_vsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
-                    layout)       __bmux_layout "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]#* }" ;;
+                    split|hsplit) __bmucks_hsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
+                    vsplit)       __bmucks_vsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
+                    layout)       __bmucks_layout "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]#* }" ;;
                     sleep)        sleep ${panes[${windows[$i]} ${j}]#* }                                 ;;
-                    *)            __bmux_send "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]}"      ;;
+                    *)            __bmucks_send "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]}"      ;;
                 esac
             done
         done
-        __bmux_finalize "${TMP}/${CONFIG_id}" "${CONFIG_id}"
+        __bmucks_finalize "${TMP}/${CONFIG_id}" "${CONFIG_id}"
     }
 }
 
-__choose_bmucks()
+__bmucks_choose_bmucks()
 {
     case $bmucks in
         tmux)
-                __bmux_new_session() { tmux -S "$1" new-session -d -s "$2" -n "$3" ; }
-                __bmux_new_window() { tmux -S "$1" new-window -n "$2" ; }
-                __bmux_hsplit() { tmux -S "$1" split-window -v ; }
-                __bmux_vsplit() { tmux -S "$1" split-window -h ; }
-                __bmux_layout() { tmux -S "$1" select-layout $2 ; }
-                __bmux_send() { tmux -S "$1" send-keys "$2" "C-m" ;}
-                __bmux_finalize() { tmux -S "$1" attach-session -t "$2" ; }
+                __bmucks_new_session() { tmux -S "$1" new-session -d -s "$2" -n "$3" ; }
+                __bmucks_new_window() { tmux -S "$1" new-window -n "$2" ; }
+                __bmucks_hsplit() { tmux -S "$1" split-window -v ; }
+                __bmucks_vsplit() { tmux -S "$1" split-window -h ; }
+                __bmucks_layout() { tmux -S "$1" select-layout $2 ; }
+                __bmucks_send() { tmux -S "$1" send-keys "$2" "C-m" ;}
+                __bmucks_finalize() { tmux -S "$1" attach-session -t "$2" ; }
                 ;;
         screen)
-                __bmux_new_session() { screen -d -m -S "${1##*/}" -t "$3" ${SHELL:-bash} ; }
-                __bmux_new_window() { screen -S "${1##*/}" -X screen -t "$3" ${SHELL:-bash} ; }
-                __bmux_hsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
-                __bmux_vsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
-                __bmux_send() { screen -S "${1##*/}" -p $WINDEX -X stuff "$2" ;}
-                __bmux_finalize() { screen -r "$2" ; }
+                __bmucks_new_session() { screen -d -m -S "${1##*/}" -t "$3" ${SHELL:-bash} ; }
+                __bmucks_new_window() { screen -S "${1##*/}" -X screen -t "$3" ${SHELL:-bash} ; }
+                __bmucks_hsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
+                __bmucks_vsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
+                __bmucks_send() { screen -S "${1##*/}" -p $WINDEX -X stuff "$2" ;}
+                __bmucks_finalize() { screen -r "$2" ; }
                 ;;
         dvtm)
                 :
@@ -112,7 +112,7 @@ __choose_bmucks()
 # -- MAIN.
 
 declare \
-        CONFIG_bmux=tmux \
+        CONFIG_bmucks=tmux \
         CONFIG_file=${XDG_CONFIG_HOME}/.bmucksrc \
         CONFIG_id=bmucks$$ \
         CONFIG_name=bmucks \
@@ -120,4 +120,4 @@ declare \
 
 trap "{ rm -f ${TMP}/${CONFIG_id} ; exit 255 ; }" EXIT
 
-__bmux_parse_config "${1:-${CONFIG_file}}" 2>/dev/null || { printf '%s\n' "${0}:Error:79: No conf file has been sourced." 1>&2 ; exit 79 ; }
+__bmucks_parse_config "${1:-${CONFIG_file}}" 2>/dev/null || { printf '%s\n' "${0}:Error:79: No conf file has been sourced." 1>&2 ; exit 79 ; }

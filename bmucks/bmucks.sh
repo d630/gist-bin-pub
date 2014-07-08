@@ -71,11 +71,11 @@ __bmucks_parse_config()
             for ((j=0 ; j <= ${panes_nr} ; ++j))
             do
                 case ${panes[${windows[$i]} ${j}]%% *} in
-                    split|hsplit) __bmucks_hsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
-                    vsplit)       __bmucks_vsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                   ;;
-                    layout)       __bmucks_layout "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]#* }" ;;
-                    sleep)        sleep ${panes[${windows[$i]} ${j}]#* }                                   ;;
-                    *)            __bmucks_send "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]}" "$j" ;;
+                    split|hsplit) __bmucks_hsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                               ;;
+                    vsplit)       __bmucks_vsplit "${TMP}/${CONFIG_id}" "${windows[$i]}"                               ;;
+                    layout)       __bmucks_layout "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]#* }"             ;;
+                    sleep)        sleep ${panes[${windows[$i]} ${j}]#* }                                               ;;
+                    *)            __bmucks_send "${TMP}/${CONFIG_id}" "${panes[${windows[$i]} ${j}]}" "${windows[$i]}" ;;
                 esac
             done
         done
@@ -100,7 +100,7 @@ __bmucks_choose_bmucks()
                 __bmucks_new_window() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
                 __bmucks_hsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
                 __bmucks_vsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
-                __bmucks_send() { screen -S "${1##*/}" -p "$3" -X stuff "$2" ;}
+                __bmucks_send() { screen -S "${1##*/}" -p "$3" -X stuff "${2}\n" ; }
                 __bmucks_finalize() { screen -r "$2" ; }
                 ;;
         dvtm)

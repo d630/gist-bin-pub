@@ -113,7 +113,7 @@ __choose_bmucks()
 
 declare \
         CONFIG_bmux=tmux \
-        CONFIG_file=${XDG_CONFIG_HOME}/.mucksrc \
+        CONFIG_file=${XDG_CONFIG_HOME}/.bmucksrc \
         CONFIG_id=bmucks$$ \
         CONFIG_name=bmucks \
         TMP=${TMPDIR:-/${TMP}}

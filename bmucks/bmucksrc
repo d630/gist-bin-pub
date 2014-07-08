@@ -1,0 +1,14 @@
+# Bmucks -- Conf File
+
+name=bmucks
+bmucks=tmux
+
+windows[0]=nano
+windows[1]=bash
+windows[2]=man
+
+panes[nano 0]="nano"
+panes[bash 0]=bash
+panes[man 0]="man tmux"
+panes[man 1]=vsplit
+panes[man 2]="man screen"

@@ -2,7 +2,7 @@
 
 # bmucks
 # Copyright 2014 D630
-#
+# https://gist.github.com/D630/737d38d895121bdfe197
 
 # Forked from https://bitbucket.org/zserge/mucks
 

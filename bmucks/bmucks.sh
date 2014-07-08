@@ -96,8 +96,8 @@ __bmucks_choose_bmucks()
                 __bmucks_finalize() { tmux -S "$1" attach-session -t "$2" ; }
                 ;;
         screen)
-                __bmucks_new_session() { screen -d -m -S "${1##*/}" -t "$3" ${SHELL:-bash} ; }
-                __bmucks_new_window() { screen -S "${1##*/}" -X screen -t "$3" ${SHELL:-bash} ; }
+                __bmucks_new_session() { screen -d -m -S "$2" -t "$3" ${SHELL:-bash} ; }
+                __bmucks_new_window() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
                 __bmucks_hsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
                 __bmucks_vsplit() { screen -S "${1##*/}" -X screen -t "$2" ${SHELL:-bash} ; }
                 __bmucks_send() { screen -S "${1##*/}" -p "$3" -X stuff "$2" ;}

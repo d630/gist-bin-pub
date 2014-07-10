@@ -39,7 +39,7 @@ elif [[ -d ./.git ]]
 then
     git add -A .
     git commit -m 'update'
-    git push origin master
+    git push -u origin master
 fi
 
 gistup-post.sh

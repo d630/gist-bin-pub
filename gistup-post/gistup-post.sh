@@ -7,8 +7,8 @@ find "${HOME}/stow/bin/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name ".git" -
 cd -- "${HOME}/stow/bin/gist-pub" &&
 {
     git add -A .
-    git commit -m "auto"
-    git push origin master
+    git commit -m 'auto'
+    git push -u origin master
 }
 
 find "${HOME}/stow/bin/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name "gistup_ign" -exec rename -f 's/gistup_ign/\.git/' {} +

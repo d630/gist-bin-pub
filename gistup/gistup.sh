@@ -38,6 +38,6 @@ declare \
 }
 
 git add -A .
-git commit -m 'update'
+git commit -a -m 'update'
 git push -u origin master
 gistup-post.sh

@@ -17,5 +17,6 @@ done < <(find "$BUP_DIR" -maxdepth 1 -type d -printf '%f\0' | sort -zn | sed -zn
 
 BUP_DIR=/media/truecrypt1/ubuntu/bup/${today}
 
+bup init
 bup index -ux /home --exclude=${HOME}/stow/local/cpan/.cpan
 bup save -n home /home

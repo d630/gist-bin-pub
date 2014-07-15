@@ -25,8 +25,8 @@ declare \
         desc=$1 \
         url=
 
-if [[ ! -d ./.git && $desc ]]
-then
+[[ ! -d ./.git && $desc ]] &&
+{
     gistup --no-open --public --remote origin -m "$desc"
     [[ -f ./.git/config ]] &&
     {
@@ -35,11 +35,9 @@ then
         printf '%s\n' "https://gist.github.com/D630/${url%*.git}" 1> "./${url%*.git}"
         find "$(pwd)" ! -path '*.git*' -name '*.*' -exec ln -f -s {} -t "${HOME}/bin" \;
     }
-elif [[ -d ./.git ]]
-then
-    git add -A .
-    git commit -m 'update'
-    git push -u origin master
-fi
+}
 
+git add -A .
+git commit -m 'update'
+git push -u origin master
 gistup-post.sh

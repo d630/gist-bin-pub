@@ -9,8 +9,8 @@ do
         if [[ -e ./.git ]]
         then
             git ls-files --deleted -z | xargs --null git rm >/dev/null 2>&1
-            git add . >/dev/null 2>&1
-            git commit -m "mlr $(date)"
+            git add -A . >/dev/null 2>&1
+            git commit -a -m "mlr $(date)"
         elif [[ -e ./.hg ]]
         then
             hg add >/dev/null 2>&1

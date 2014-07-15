@@ -26,7 +26,7 @@ bleachbit.sh
 obnam.sh
 
 { printf '%*s\n%s\n' "$(tput cols)" '' "BUP" | tr ' ' '-' ; } 1>&2
-bup.sh
+bup-weekly.sh
 
 { printf '%*s\n%s\n' "$(tput cols)" '' "DONE."| tr ' ' '-' ; } 1>&2
 exit 0

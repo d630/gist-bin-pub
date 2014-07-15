@@ -10,6 +10,6 @@ do
     {
         git ls-files --deleted -z | xargs -0 git rm 1>/dev/null 2>&1
         git add -A . 1>/dev/null 2>&1
-        git commit -m "inotify $(date)"
+        git commit -a -m "inotify $(date)"
     }
 done

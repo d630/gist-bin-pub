@@ -11,8 +11,8 @@ pkill -f mail-schleife.sh
 pkill -f backup-firefox-history-schleife.sh
 
 # Connection
-{ printf -v horiz '%*s\n%s' "80" '' "Connection" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-ssh-add "${HOME}/.ssh/id_rsa_backup"
+#{ printf -v horiz '%*s\n%s' "80" '' "Connection" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#ssh-add "${HOME}/.ssh/id_rsa_backup"
 
 # MySql
 #{ printf -v horiz '%*s\n%s' "80" '' "MySql" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -77,8 +77,8 @@ task-makedirs.sh
 
 # rsync
 { printf -v horiz '%*s\n%s' "80" '' "rsync" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-rsync-repositorium-backup-alt.sh
-rsync-repositorium-backup.sh
+#rsync-repositorium-backup-alt.sh
+#rsync-repositorium-backup.sh
 
 # pdnsd abfragen
 #{ printf -v horiz '%*s\n%s' "80" '' "pdnsd" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -100,7 +100,7 @@ find -H "${HOME}/.mozilla/firefox" -type f -name "places.sqlite" -delete
 { printf -v horiz '%*s\n%s' "80" '' "ProfileCleaner" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 profile-cleaner f
 profile-cleaner p "${HOME}/.newsbeuter"
-profile-cleaner t
+profile-cleaner p "${HOME}/.thunderbird"
 profile-cleaner p "${HOME}/.config/qupzilla/profiles"
 
 # Delete /var/log/pm-powersave.log

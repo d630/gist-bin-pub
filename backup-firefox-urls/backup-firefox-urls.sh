@@ -14,7 +14,7 @@ sqlite3 "$db_path" 'SELECT DISTINCT moz_places.url FROM moz_places WHERE (url LI
 {
     while read -r line
     do
-        taskum add uri:${line}
+        taskum add uri:"${line}"
     done < "$uris"
     rm -- "$uris"
 }

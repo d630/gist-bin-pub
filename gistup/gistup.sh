@@ -32,7 +32,7 @@ declare \
     {
         read -r _ _ url 0< <(grep -m 1 -e '^[[:space:]]url = git@gist.github.com:.*.git$' "./.git/config")
         url=${url#git@gist.github.com:*}
-        printf '%s\n' "https://gist.github.com/D630/${url%*.git}" 1> "./${url%*.git}"
+        printf '%s\n' "https://gist.github.com/D630/${url%*.git}" "$desc" 1> "./${url%*.git}"
         find "$(pwd)" ! -path '*.git*' -name '*.*' -exec ln -f -s {} -t "${HOME}/bin" \;
     }
 }

@@ -22,8 +22,10 @@
 # -- MAIN.
 
 declare \
-        store=${XDG_DATA_HOME:-${HOME/.local/share}}/kuno2 \
+        store=${XDG_DATA_HOME:-${HOME/.local/share}}/kuno2
+declare \
+        histfile=${store}/histfile \
         date=$(date --utc --date now +%s)
 
 mkdir -p -- "$store"
-rlfe -h "${store}/${date}" cat
+rlwrap -l "${store}/${date}" cat

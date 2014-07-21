@@ -39,10 +39,7 @@ case ${#xids[@]} in
     0)
             if command -v "${texec_command[0]}" 1>/dev/null
             then
-                (exec ${cexec_command[*]} 2>/dev/null &)
-                sleep 1
-                net_client_list=$(xprop -root _NET_CLIENT_LIST)
-                wmctrl -i -a "${net_client_list##* }"
+                exec ${texec_command[*]} 2>/dev/null
             else
                 { printf '%s\n' "App is unknown." 1>&2 ; exit 1 ; }
             fi

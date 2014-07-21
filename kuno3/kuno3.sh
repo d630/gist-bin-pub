@@ -28,4 +28,4 @@ declare \
         date=$(date --utc --date now +%s)
 
 mkdir -p -- "$store"
-rlwrap -l "${store}/${date}" cat
+rlfe -h "${store}/${date}" cat

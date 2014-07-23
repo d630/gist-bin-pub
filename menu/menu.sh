@@ -17,7 +17,7 @@ case $menu in
                       -sb "#DCDCCC" \
                       -sf "#2C2C2C" \
                       -uc "#2C2C2C" \
-                      -fn "-*-terminus-medium-*-*-*-14-*-*-*-*-*-iso10646-*" \
+                      -fn "-xos4-terminus-medium-r-normal-*-16-*-*-*-*-*-iso10646-*" \
                      -name "dmenu" \
                      -class "dmenu"
             }
@@ -33,7 +33,7 @@ case $menu in
                        -sb "#DCDCCC" \
                        -sf "#2C2C2C" \
                        -uc "#2C2C2C" \
-                       -fn "-*-terminus-medium-*-*-*-14-*-*-*-*-*-iso10646-*" \
+                       -fn "-xos4-terminus-medium-r-normal-*-16-*-*-*-*-*-iso10646-*" \
                        -name "dmenu2" \
                        -class "dmenu2"
             }
@@ -48,7 +48,7 @@ case $menu in
                        -sb "#DCDCCC" \
                        -sf "#2C2C2C" \
                        -uc "#2C2C2C" \
-                       -fn "-*-terminus-medium-*-*-*-14-*-*-*-*-*-iso10646-*" \
+                       -fn "-xos4-terminus-medium-r-normal-*-16-*-*-*-*-*-iso10646-*" \
                        -name "slmenu" \
                        -class "slmenu"
             }

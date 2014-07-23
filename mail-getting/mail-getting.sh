@@ -51,5 +51,5 @@ newmails=($(find "${X_MAILDIR}/uni/" ! -empty -type d -name new))
 ((${#newmails[@]} != 0)) &&
 {
     notify-send -u low -h int:value:42 "[Uni] new Mails: ${#newmails[@]}"
-    aplay /usr/local/share/sounds/mac-sound-pack-new-mail.wav 1>/dev/null 2>&1
+    aplay ${XDG_DATA_HOME}/sounds/mac-sound-pack-new-mail.wav 1>/dev/null 2>&1
 }

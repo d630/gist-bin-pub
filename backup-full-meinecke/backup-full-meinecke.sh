@@ -25,8 +25,8 @@ bleachbit.sh
 { printf '%*s\n%s\n' "$(tput cols)" '' "OBNAM" | tr ' ' '-' ; } 1>&2
 obnam.sh
 
-{ printf '%*s\n%s\n' "$(tput cols)" '' "BUP" | tr ' ' '-' ; } 1>&2
-bup-weekly.sh
+#{ printf '%*s\n%s\n' "$(tput cols)" '' "BUP" | tr ' ' '-' ; } 1>&2
+#bup-weekly.sh
 
 { printf '%*s\n%s\n' "$(tput cols)" '' "DONE."| tr ' ' '-' ; } 1>&2
 exit 0

@@ -2,7 +2,7 @@
 
 # Backup all uris in firefox sqlite (sqlite3 & taskum)
 
-db_path=${HOME}/.mozilla/firefox/*.default/places.sqlite
+db_path=$(echo ${HOME}/.mozilla/firefox/*.default)/places.sqlite
 log=${X_XDG_LOG_HOME}/urls.log
 uris=${X_XDG_LOG_HOME}/uris_new.log
 

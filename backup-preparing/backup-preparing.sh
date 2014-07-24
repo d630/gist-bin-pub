@@ -29,7 +29,7 @@ sudo apt-get autoremove
 sudo dpkg --configure -a
 sudo apt-get install -f
 mr -j5 update
-cd -- "${X_XDG_CODE_DIR}/vcs/org-mode" && make uncompiled
+#cd -- "${X_XDG_CODE_DIR}/vcs/org-mode" && make uncompiled
 sudo rm -r -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
 mkdir -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
 cd -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
@@ -76,7 +76,7 @@ exiftool-publikationen-metadaten-erstellen.sh
 task-makedirs.sh
 
 # rsync
-{ printf -v horiz '%*s\n%s' "80" '' "rsync" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#{ printf -v horiz '%*s\n%s' "80" '' "rsync" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 #rsync-repositorium-backup-alt.sh
 #rsync-repositorium-backup.sh
 
@@ -97,11 +97,11 @@ backup-firefox-urls.sh
 find -H "${HOME}/.mozilla/firefox" -type f -name "places.sqlite" -delete
 
 # profile cleaner
-{ printf -v horiz '%*s\n%s' "80" '' "ProfileCleaner" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-profile-cleaner f
-profile-cleaner p "${HOME}/.newsbeuter"
-profile-cleaner p "${HOME}/.thunderbird"
-profile-cleaner p "${HOME}/.config/qupzilla/profiles"
+#{ printf -v horiz '%*s\n%s' "80" '' "ProfileCleaner" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#profile-cleaner f
+#profile-cleaner p "${HOME}/.newsbeuter"
+#profile-cleaner p "${HOME}/.thunderbird"
+#profile-cleaner p "${HOME}/.config/qupzilla/profiles"
 
 # Delete /var/log/pm-powersave.log
 { printf -v horiz '%*s\n%s' "80" '' "DELETE:'/var/log/pm-powersave.log'" ; printf '%s\n' "${horiz// /-}" ; } 1>&2

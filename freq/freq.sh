@@ -2,4 +2,4 @@
 
 # frequency of your bash history
 
-cut -d " " -f1 "${HOME}/.bash_history" | sort | uniq -c | sort -nr | head -n 100
+cut -d " " -f1 "${HOME}/.bash_history" | sort | uniq -c | sort -nr

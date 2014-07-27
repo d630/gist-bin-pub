@@ -21,11 +21,11 @@
 
 # -- MAIN.
 
-declare -x BUP_DIR=/media/truecrypt1/ubuntu/bup
+declare -x BUP_DIR=/media/truecrypt1/linux/bup
 
 while IFS= read -r -d ''
 do
-    BUP_DIR=/media/truecrypt1/ubuntu/bup/${REPLY}
+    BUP_DIR=/media/truecrypt1/linux/bup/${REPLY}
 done < <(find "$BUP_DIR" -maxdepth 1 -type d -printf '%f\0' | sort -zn | sed -zn '$p')
 
 bup index -ux /home --exclude=${HOME}/stow/local/cpan/.cpan

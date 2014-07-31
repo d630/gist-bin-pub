@@ -19,7 +19,7 @@ __feedcacher_do()
     then
         filename=$(sed 's#_#-#g;s# #_#g;s#\/#_#g' <<< "$url" | colrm 121)
         onlinexml=${cachedir}/${filename}.xml
-        wget -nv -t 5 --no-http-keep-alive --no-cache --no-cookies --ignore-length --content-on-error -L -E -O - "$url" > "$onlinexml"
+        wget -t 1 --no-http-keep-alive --no-cache --no-cookies --ignore-length --content-on-error -L -E -O - "$url" > "$onlinexml"
         if [[ $(stat -c %s "$onlinexml" 2>/dev/null) -ge 2 ]]
         then
             printf '%s\n' "${url} ${onlinexml##*/}" >> "$table"
@@ -56,7 +56,7 @@ fi
 
 tput bold setaf 7 ; printf '\n%s\n' "CHECK" ; tput sgr0
 exec 3>>"$reportnew"
-grep -v -e '^#http' "$urllist" | xargs -n 1 -P 16 -i bash -c '__feedcacher_do "$@"' _ {} +
+grep -v -e '^#http' "$urllist" | xargs -n 1 -P 8 -i bash -c '__feedcacher_do "$@"' _ {} +
 exec 3<&-
 
 if [[ $(stat -c %s "$reportnew" 2>/dev/null) -ge 2 ]]

@@ -2,7 +2,12 @@
 
 # Grep and copy flash from inside your browser
 
-browser=${1:-qupzilla}
+declare \
+        browser=${1:-$BROWSER} \
+        random= \
+        REPLY=
+
+declare -a files=()
 
 while IFS= read -r -d ''
 do
@@ -10,7 +15,7 @@ do
     rsync -a -v --progress --no-l -L "$REPLY" "/tmp/${random// /}.flash"
 done < <(find "/proc/$(pgrep ${browser})/fd" -type l -lname "/tmp/Flash*" -print0)
 
-files=($(find "/tmp/" -maxdepth 1 -type f -name "*.flash"))
+mapfile -t files < <(find "/tmp/" -maxdepth 1 -type f -name "*.flash")
 
 if ((${#files[@]} == 0))
 then

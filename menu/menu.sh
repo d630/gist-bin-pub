@@ -38,6 +38,21 @@ case $menu in
                        -class "dmenu2"
             }
             ;;
+    dmenu2-save)
+            [[ ! $menu_prompt ]] && exit 1
+            __menu_cmd()
+            {
+                dmenu2 -b -f \
+                       -mask \
+                       -p "$menu_prompt" \
+                       -nb "#2C2C2C" \
+                       -nf "#DCDCCC" \
+                       -sb "#2C2C2C" \
+                       -sf "#8C5353" \
+                       -uc "#2C2C2C" \
+                       -fn "-xos4-terminus-medium-r-normal-*-16-*-*-*-*-*-iso10646-*"
+            }
+            ;;
     slmenu)
             __menu_cmd()
             {

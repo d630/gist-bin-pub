@@ -92,9 +92,21 @@ sudo cp -- /var/log/passivedns-archive/*.gz "${X_XDG_LOG_HOME}/passivedns"
 { printf -v horiz '%*s\n%s' "80" '' "firefox-urls" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 backup-firefox-urls.sh
 
+# Delete Firefox Profiles
+{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox Profiles" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+shopt -s extglob
+declare tmp_dir=$(mktemp -d --tmpdir)
+
+for i in ${HOME}/.mozilla/firefox/*.!(clean-template|ini)
+do
+    rsync -var --delete "${tmp_dir}/" "${i}/"
+    rsync -var ${HOME}/.mozilla/firefox/*.clean-template/ "${i}/"
+done
+shopt +s extglob
+
 # Delete Firexox places.sqlite
-{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox places.sqlite" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-find -H "${HOME}/.mozilla/firefox" -type f -name "places.sqlite" -delete
+#{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox places.sqlite" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#find -H "${HOME}/.mozilla/firefox" -type f -name "places.sqlite" -delete
 
 # profile cleaner
 #{ printf -v horiz '%*s\n%s' "80" '' "ProfileCleaner" ; printf '%s\n' "${horiz// /-}" ; } 1>&2

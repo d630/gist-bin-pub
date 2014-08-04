@@ -4,12 +4,9 @@
 
 declare cache=${XDG_DATA_HOME}/feedcacher/cache/ \
         tagfile=${HOME}/.newsbeuter/tags \
-        feedfile=${HOME}/.newsbeuter/urls \
-        feed= \
-        tags=
-
-feed=$(find -H "$cache" -type f | menu.sh "dmenu2" "FEED")
-tags=$(menu.sh "dmenu2" "TAGS" < "$tagfile")
+        feedfile=${HOME}/.newsbeuter/urls
+declare feed=$(find -H "$cache" -type f | menu.sh "dmenu2" "FEED") \
+        tags=$(menu.sh "dmenu2" "TAGS" < "$tagfile")
 
 if [[ $tags ]]
 then

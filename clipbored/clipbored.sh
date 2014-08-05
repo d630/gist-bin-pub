@@ -2,7 +2,7 @@
 
 # clipboard manager (dmenu) for clipbored (https://github.com/trapd00r/clipbored)
 
-xsels=${XDG_DATA_HOME}/clipbored/clips
-x_buffer=clipboard #primary, secondary, clipboard
+declare xsels=${XDG_DATA_HOME}/clipbored/clips
 
-tac "$xsels" | sed '/^$/d' | menu.sh "dmenu2" ">" | xclip -selection "$x_buffer" -i -l 0
+printf -v xsels '%s' "$(tac "$xsels" | sed '/^$/d' | menu.sh "dmenu2" ">")"
+printf "$xsels" | xsel -ib

@@ -4,7 +4,7 @@
 
 declare file=
 
-read -r file < <(menu.sh "dmenu2" ">" < <(sort -g "${HOME}/.special_files.txt"))
+read -r file < <(menu.sh "dmenu2" ">" < <(sort -g "${XDG_CONFIG_HOME}/special_files.txt"))
 
 if [[ -f $file ]]
 then

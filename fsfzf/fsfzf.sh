@@ -43,9 +43,12 @@ __fsfzf_browse()
             parent_name=$1 \
             root=/
 
+    [[ $parent_name == . ]] && parent_name=$PWD
+    [[ ${parent_name:0:1} != / ]] && parent_name=${HOME}/${parent_name}
     child_ls=$(__fsfzf_find_child_ls "$parent_name" | \
         __fsfzf_menu_cmd "[${parent_name}]")
     child_name=$parent_name
+
     case $child_ls
     in
         \[.\])
@@ -80,7 +83,7 @@ __fsfzf_browse()
                         "${child_ls%% *}")
                     if [[ -f ${parent_name}/${child_name} ]]
                     then
-                        : # xdg-open "$child"
+                        : #xdg-open "$child"
                     else
                         parent_name=${parent_name}/${child_name}
                         parent_name=${parent_name//\/\//\/}

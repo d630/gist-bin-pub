@@ -12,14 +12,14 @@ __fzf_hier()
 
     __menu_cmd() { sort -r | fzf -x -i +s --prompt="${1:->} " ; }
 
-    child=$(find "$parent" -mindepth 1 -maxdepth 1 -type d \
+    child=$(find -H "$parent" -mindepth 1 -maxdepth 1 \
                  -printf '%f\n' |
                  __menu_cmd "[${parent}]")
     parent=${parent}/${child}
 
     while [[ $child ]]
     do
-        child=$({ printf '%s\n%s\n' "[.]" '[..]' ; find "${parent}" \
+        child=$({ printf '%s\n%s\n' "[.]" '[..]' ; find -H "${parent}" \
                 -mindepth 1 -maxdepth 1 -printf '%f\n' ; } | \
                 __menu_cmd "[${parent}]")
         case $child in

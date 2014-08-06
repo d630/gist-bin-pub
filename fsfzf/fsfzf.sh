@@ -3,41 +3,92 @@
 # Use fzf (>= v0.8.6) to interactively browse parts of your file system
 # Mentioned here: https://github.com/junegunn/fzf/issues/70
 
-__fzf_hier()
+# -- DEBUGGING.
+
+#printf '%s (%s)\n' "$BASH_VERSION" "${BASH_VERSINFO[5]}" && exit 0
+#set -o xtrace #; exec 2>> ~/fsfzf.log
+#set -o verbose
+#set -o noexec
+#set -o errexit
+#set -o nounset
+#set -o pipefail
+#trap '(read -p "[$BASH_SOURCE:$LINENO] $BASH_COMMAND?")' DEBUG
+
+# -- SETTINGS.
+
+#declare vars_base=$(set -o posix ; set)
+
+# -- FUNCTIONS.
+
+__fsfzf_menu_cmd()
+{
+    sort -r | fzf -x -i +s --prompt="${1:->} "
+}
+
+__fsfzf_find_ls()
+{
+    find -H "$1" -mindepth 1 -maxdepth 1 -ls # -printf '%M %n %u %g %s %t %f %l\n'
+}
+
+__fsfzf_find_inum()
+{
+    find -H "$1" -mindepth 1 -maxdepth 1 -inum "$2" -printf '%f\n' 2>/dev/null
+}
+
+__fsfzf_find_child_ls()
+{
+    printf '%s\n%s\n' "[.]" '[..]'
+    __fsfzf_find_ls "$1"
+}
+
+__fsfzf_browse()
 {
     declare \
-            child= \
-            parent=$1 \
-            home_root=/home
+            child_ls= \
+            child_name \
+            parent_name=$1 \
+            root=/
 
-    __menu_cmd() { sort -r | fzf -x -i +s --prompt="${1:->} " ; }
+    child_ls=$(__fsfzf_find_child_ls "$parent_name" | __fsfzf_menu_cmd "[${parent_name}]")
+    child_name=$parent_name
+    case $child_ls
+    in
+        \[.\])
+                : ;;
+        \[..\])
+                parent_name=${parent_name%/*}
+                [[ ! $parent_name ]] && parent_name=$root
+                ;;
+        *)
+                child_name=$(__fsfzf_find_inum "$parent_name" "${child_ls%% *}")
+                parent_name=${parent_name}/${child_name}
+                parent_name=${parent_name//\/\//\/}
+    esac
 
-    child=$(find -H "$parent" -mindepth 1 -maxdepth 1 \
-                 -printf '%f\n' |
-                 __menu_cmd "[${parent}]")
-    parent=${parent}/${child}
-
-    while [[ $child ]]
+    while [[ $child_name ]]
     do
-        child=$({ printf '%s\n%s\n' "[.]" '[..]' ; find -H "${parent}" \
-                -mindepth 1 -maxdepth 1 -printf '%f\n' ; } | \
-                __menu_cmd "[${parent}]")
-        case $child in
-            \[..\])
-                        [[ ${parent%/*} != $home_root ]] &&
-                        parent=${parent%/*}
-                        ;;
+        child_ls=$(__fsfzf_find_child_ls "$parent_name" | __fsfzf_menu_cmd "[${parent_name}]")
+        case $child_ls
+        in
             \[.\])
-                        parent=$parent
-                        ;;
-            *)          if [[ -f ${parent}/${child} ]]
-                        then
-                            : # xdg-open "$child"
-                        else
-                            parent=${parent}/${child}
-                        fi
+                    : ;;
+            \[..\])
+                    parent_name=${parent_name%/*}
+                    [[ ! $parent_name ]] && parent_name=$root
+                    ;;
+            *)
+                    child_name=$(__fsfzf_find_inum "$parent_name" "${child_ls%% *}")
+                    if [[ -f ${parent_name}/${child_name} ]]
+                    then
+                        : # xdg-open "$child"
+                    else
+                        parent_name=${parent_name}/${child_name}
+                        parent_name=${parent_name//\/\//\/}
+                    fi
         esac
     done
 }
 
-__fzf_hier "$(pwd)"
+# -- MAIN.
+
+__fsfzf_browse "${1:-$(pwd)}"

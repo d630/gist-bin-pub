@@ -25,11 +25,6 @@ __fsfzf_menu_cmd()
     sort -r | fzf -x -i +s --prompt="${1:->} "
 }
 
-__fsfzf_find_ls()
-{
-    find -H "$1" -mindepth 1 -maxdepth 1 -ls # -printf '%M %n %u %g %s %t %f %l\n'
-}
-
 __fsfzf_find_inum()
 {
     find -H "$1" -mindepth 1 -maxdepth 1 -inum "$2" -printf '%f\n' 2>/dev/null
@@ -38,7 +33,7 @@ __fsfzf_find_inum()
 __fsfzf_find_child_ls()
 {
     printf '%s\n%s\n' "[.]" '[..]'
-    __fsfzf_find_ls "$1"
+    find -H "$1" -mindepth 1 -maxdepth 1 -ls # -printf '%M %n %u %g %s %t %f %l\n'
 }
 
 __fsfzf_browse()

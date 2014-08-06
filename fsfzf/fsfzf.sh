@@ -61,6 +61,8 @@ __fsfzf_browse()
                 parent_name=${parent_name//\/\//\/}
     esac
 
+    builtin cd -- "$parent_name"
+
     while [[ $child_name ]]
     do
         child_ls=$(__fsfzf_find_child_ls "$parent_name" | \
@@ -84,6 +86,7 @@ __fsfzf_browse()
                         parent_name=${parent_name//\/\//\/}
                     fi
         esac
+        builtin cd -- "$parent_name"
     done
 }
 

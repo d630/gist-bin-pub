@@ -20,10 +20,7 @@
 
 # -- FUNCTIONS.
 
-__fsfzf_menu_cmd()
-{
-    sort -r | fzf -x -i +s --prompt="${1:->} "
-}
+__fsfzf_menu_cmd() { sort -r | fzf -x -i +s --prompt="${1:->} " ; }
 
 __fsfzf_find_inum()
 {

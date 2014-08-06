@@ -27,13 +27,15 @@ __fsfzf_menu_cmd()
 
 __fsfzf_find_inum()
 {
-    find -H "$1" -mindepth 1 -maxdepth 1 -inum "$2" -printf '%f\n' 2>/dev/null
+    find -H "$1" -mindepth 1 -maxdepth 1 -inum "$2" \
+        -printf '%f\n' 2>/dev/null
 }
 
 __fsfzf_find_child_ls()
 {
     printf '%s\n%s\n' "[.]" '[..]'
-    find -H "$1" -mindepth 1 -maxdepth 1 -ls # -printf '%M %n %u %g %s %t %f %l\n'
+    # -printf '%M %n %u %g %s %t %f %l\n'
+    find -H "$1" -mindepth 1 -maxdepth 1 -ls
 }
 
 __fsfzf_browse()
@@ -44,7 +46,8 @@ __fsfzf_browse()
             parent_name=$1 \
             root=/
 
-    child_ls=$(__fsfzf_find_child_ls "$parent_name" | __fsfzf_menu_cmd "[${parent_name}]")
+    child_ls=$(__fsfzf_find_child_ls "$parent_name" | \
+        __fsfzf_menu_cmd "[${parent_name}]")
     child_name=$parent_name
     case $child_ls
     in
@@ -55,14 +58,16 @@ __fsfzf_browse()
                 [[ ! $parent_name ]] && parent_name=$root
                 ;;
         *)
-                child_name=$(__fsfzf_find_inum "$parent_name" "${child_ls%% *}")
+                child_name=$(__fsfzf_find_inum "$parent_name" \
+                    "${child_ls%% *}")
                 parent_name=${parent_name}/${child_name}
                 parent_name=${parent_name//\/\//\/}
     esac
 
     while [[ $child_name ]]
     do
-        child_ls=$(__fsfzf_find_child_ls "$parent_name" | __fsfzf_menu_cmd "[${parent_name}]")
+        child_ls=$(__fsfzf_find_child_ls "$parent_name" | \
+            __fsfzf_menu_cmd "[${parent_name}]")
         case $child_ls
         in
             \[.\])
@@ -72,7 +77,8 @@ __fsfzf_browse()
                     [[ ! $parent_name ]] && parent_name=$root
                     ;;
             *)
-                    child_name=$(__fsfzf_find_inum "$parent_name" "${child_ls%% *}")
+                    child_name=$(__fsfzf_find_inum "$parent_name" \
+                        "${child_ls%% *}")
                     if [[ -f ${parent_name}/${child_name} ]]
                     then
                         : # xdg-open "$child"

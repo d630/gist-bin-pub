@@ -45,6 +45,7 @@ __fsfzf_browse()
 
     [[ $parent_name == . ]] && parent_name=$PWD
     [[ ${parent_name:0:1} != / ]] && parent_name=${HOME}/${parent_name}
+    [[ ${parent_name:${#parent_name}-1} == / ]] && parent_name=${parent_name%/*}
     child_ls=$(__fsfzf_find_child_ls "$parent_name" | \
         __fsfzf_menu_cmd "[${parent_name}]")
     child_name=$parent_name
@@ -95,4 +96,4 @@ __fsfzf_browse()
 
 # -- MAIN.
 
-__fsfzf_browse "${1:-$(pwd)}"
+__fsfzf_browse "${1:-${PWD}}"

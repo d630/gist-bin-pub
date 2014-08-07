@@ -45,8 +45,9 @@ __fsfzf_browse()
 
     [[ $parent_name == . ]] && parent_name=$PWD
     [[ ${parent_name:0:1} != / ]] && parent_name=${HOME}/${parent_name}
-    [[ ${parent_name:${#parent_name}-1} == / ]] && parent_name=${parent_name%/*}
-    child_ls=$(__fsfzf_find_child_ls "$parent_name" | \
+    [[ ${parent_name:${#parent_name}-1} == / ]] &&
+        parent_name=${parent_name%/*}
+    read -r child_ls < <(__fsfzf_find_child_ls "$parent_name" | \
         __fsfzf_menu_cmd "[${parent_name}]")
     child_name=$parent_name
 
@@ -69,7 +70,7 @@ __fsfzf_browse()
 
     while [[ $child_name ]]
     do
-        child_ls=$(__fsfzf_find_child_ls "$parent_name" | \
+        read -r child_ls < <(__fsfzf_find_child_ls "$parent_name" | \
             __fsfzf_menu_cmd "[${parent_name}]")
         case $child_ls
         in
@@ -82,9 +83,20 @@ __fsfzf_browse()
             *)
                     child_name=$(__fsfzf_find_inum "$parent_name" \
                         "${child_ls%% *}")
-                    if [[ -f ${parent_name}/${child_name} ]]
+                    if [[ ! -d ${parent_name}/${child_name} ]]
                     then
-                        : #xdg-open "$child"
+                        case $(file --mime-type -bL \
+                            "${parent_name}/${child_name}")
+                        in
+                            image*)
+                                    w3m -o 'ext_image_viewer=off' \
+                                        -o 'imgdisplay=w3mimgdisplay' \
+                                        "${parent_name}/${child_name}"
+                                    ;;
+                            *)
+                                    elinks "${parent_name}/${child_name}"
+                                    ;;
+                        esac
                     else
                         parent_name=${parent_name}/${child_name}
                         parent_name=${parent_name//\/\//\/}

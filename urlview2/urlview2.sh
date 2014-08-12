@@ -6,8 +6,6 @@
 # http://www.uninformativ.de/?section=news&ndo=single&newsid=194
 # https://github.com/vain/bin-pub/blob/master/urlview2
 
-trap '' INT HUP
-
 while read -r
 do
     if [[ ! $DISPLAY ]]

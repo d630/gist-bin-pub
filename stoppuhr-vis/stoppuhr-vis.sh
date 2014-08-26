@@ -2,7 +2,9 @@
 
 # Stoppuhr visible
 
-while :
+declare -i i=
+while sleep .9
 do
-   sleep 1 && printf '%s\n' "$((++i))"
+    printf '%d\n' "$((++i))"
 done
+unset -v i

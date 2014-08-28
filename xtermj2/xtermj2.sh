@@ -5,10 +5,10 @@
 # Xterm has no daemon mode.
 # But this is a faster replacement.
 
-while read -r
+while read -r _ id
 do
-    [[ $(xprop -id "$REPLY" WM_CLASS) =~ xtermj2 ]] && xid=$REPLY && break
-done < <(while read -r _ id ; do printf '%s\n' "${id//:/}" ; done < <(xlsclients -l | grep ^Window))
+    [[ $(xprop -id "${id//:/}" WM_CLASS) =~ xtermj2 ]] && xid=${id//:/} && break
+done < <(xlsclients -l | fgrep -e 'Name:  xtermj2' -B 2 | fgrep -e 'Window')
 
 if [[ ! $xid ]]
 then

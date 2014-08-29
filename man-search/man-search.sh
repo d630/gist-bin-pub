@@ -2,4 +2,4 @@
 
 # man searching
 
-man "$1" | grep -iC2 --color=always "$2" | more
+man "$1" | grep -iC2 --color=always "$2" | less -R

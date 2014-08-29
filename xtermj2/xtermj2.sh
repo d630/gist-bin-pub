@@ -8,7 +8,7 @@
 while read -r _ id
 do
     [[ $(xprop -id "${id//:/}" WM_CLASS) =~ xtermj2 ]] && xid=${id//:/} && break
-done < <(xlsclients -l | fgrep -e 'Name:  xtermj2' -B 2 | fgrep -e 'Window')
+done < <(xlsclients -l | fgrep -x -e '  Command:  xterm -name xtermj2' -B 4 | grep -e '^Window')
 
 if [[ ! $xid ]]
 then

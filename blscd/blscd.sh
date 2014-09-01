@@ -327,6 +327,10 @@ do
         G)
                 __blscd_move 9999999999
                 ;;
+        o)
+                fsfzf.sh "$parent"
+                __blscd_resize
+                ;;
         f)
                 # Open a prompt for entering the filter.
                 tput cup "99998" 0

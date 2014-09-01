@@ -241,6 +241,7 @@ __blscd_on_exit()
     stty $stty_orig
     eval "$save_traps"
     tput clear
+    tput rmcup
 }
 
 # -- MAIN.
@@ -287,8 +288,9 @@ declare \
 tput smcup
 stty -echo
 
-trap 'tput rmcup' EXIT
+#trap 'tput rmcup' EXIT
 trap '__blscd_resize' SIGWINCH
+trap 'tput clear' SIGINT
 
 export LC_ALL=C.UTF-8
 
@@ -342,7 +344,7 @@ do
                 ;;
         q)
                 __blscd_on_exit
-                exit 0
+                break
                 ;;
     esac
 done

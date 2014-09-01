@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Kennzeichnung
+# Sortierung
+# Kommanods: copy, mv, search
+
 # blscd
 # Copyright 2014 D630, GNU GPLv3
 # https://github.com/D630/blscd
@@ -46,7 +50,8 @@ __blscd_draw()
         cols= \
         cols_length= \
         i= \
-        lines=
+        lines= \
+        max=
 
     declare \
         parent= \
@@ -56,7 +61,7 @@ __blscd_draw()
     total_files_col_2=${#files_col_2[@]}
     printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
     read -r cols lines <<<$(tput cols ; tput lines)
-    cols_length=$(((cols - 4) / 3))
+    cols_length=$(((cols - 6 - col_0_line_longest) / 3))
     col_2_line_longest=$(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 2))}" | cut -c 1-"$cols_length" | wc -L)
 
     if ((total_files_col_2 > (lines - offset + 1)))
@@ -81,6 +86,7 @@ __blscd_draw()
             files_col_1=(\~)
         fi
         col_1_line_longest=$(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 2))}" | wc -L)
+        mapfile -t files_col_0 < <(eval "printf '%0${col_0_line_longest}d\n' {1..${max_number}}")
     else
         if ((total_files_col_3 < lines))
         then
@@ -90,7 +96,7 @@ __blscd_draw()
         fi
         for ((i=$i ; i > 0 ; --i))
         do
-            tput cup "$i" "$((col_1_line_longest + col_2_line_longest +2))"
+            tput cup "$i" "$((col_0_line_longest + col_1_line_longest + col_2_line_longest +6))"
             tput el
         done
     fi
@@ -99,19 +105,24 @@ __blscd_draw()
     total_files_col_3=${#files_col_3[@]}
     ((total_files_col_3 == 0)) && \
         files_col_3=("$(file --mime-type -bL "$current_line")") && \
-        files_col_3=(${files_col_3[@]//\//-})
+        files_col_3=(${files_col_3[@]//\//-}) && \
+        total_files_col_3=1
 
     tput home
     tput el
-    printf -v header '%s' "$(ls -abdlQs --time-style=long-iso --si "${PWD}/${current_line}" | cut -c 1-"$((cols - 2))")"
-    printf '[%s]\n'  "${header//\/\//\/}"
+    tput setaf 2
+    tput bold
+    printf -v header '%s' "$(ls -abdlQs --time-style=long-iso --si "${PWD}/${current_line}")"
+    printf '[%s] [%s]\n' "$((cursor + 1)),$((col_0_line_longest + col_1_line_longest + 4))" "${header//\/\//\/}" | cut -c 1-"$cols"
+    tput sgr0
     paste -d '/' \
+        <(printf '%s\n' "${files_col_0[@]:$((index - 1)):$((lines - 2))}") \
         <(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 2))}") \
         <(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 2))}" | cut -c 1-"$cols_length") \
         <(printf '%s\n' "${files_col_3[@]:$((index - 1)):$((lines - 2))}") | \
         column -tn -s '/'
 
-    tput cup "$((cursor + 1))" "$((col_1_line_longest + 2))"
+    tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
 }
 
 __blscd_move()
@@ -254,19 +265,22 @@ declare \
     reprint=reprint
 
 declare -i \
+    col_0_line_longest=4 \
     col_1_line_longest= \
     col_2_line_longest=
 
 declare -a \
+    files_col_0=() \
     files_col_1=() \
     files_col_2=() \
     files_col_3=()
 
 # Initialize settings.
 declare \
+    file_opener='xterm -e "less -nR "$1";exit;bash"' \
     INT_step=6 \
-    search_pattern= \
-    file_opener='xterm -e "less -nR "$1";exit;bash"'
+    max_number=9999 \
+    search_pattern=
 
 # Save the terminal environment of the normal screen.
 declare \

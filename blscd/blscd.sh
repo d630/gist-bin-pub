@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Kennzeichnung
-# Sortierung
-# Kommanods: copy, mv, search
-
 # blscd
 # Copyright 2014 D630, GNU GPLv3
 # https://github.com/D630/blscd
@@ -318,6 +314,18 @@ do
         l)
                 __blscd_openfile "$current_line"
                 __blscd_resize
+                ;;
+        d)
+                __blscd_move 10
+                ;;
+        u)
+                __blscd_move -10
+                ;;
+        g)
+                __blscd_move -9999999999
+                ;;
+        G)
+                __blscd_move 9999999999
                 ;;
         f)
                 # Open a prompt for entering the filter.

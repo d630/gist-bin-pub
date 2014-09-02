@@ -49,6 +49,7 @@ __blscd_draw()
         lines=
 
     declare \
+        footer= \
         footer1= \
         footer2= \
         footer3= \
@@ -116,7 +117,9 @@ __blscd_draw()
 
     tput -S < <(printf '%s\n' home el bold)
     printf -v header "%d %0${col_0_line_longest}d %0${col_0_line_longest}d %0${col_0_line_longest}d %s" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3" "$(tput setaf 2)${USER}@${HOSTNAME}:$(tput setaf 4)${PWD}/$(tput setaf 7)${current_line}"
-    printf '%s\n' "${header//\/\//\/}" | cut -c 1-"$cols"
+    printf -v header '%s' "${header//\/\//\/}"
+    printf '%s\n' "${header:0:$((cols - 1))}"
+
     tput sgr0
 
     paste -d '/' \
@@ -140,7 +143,8 @@ __blscd_draw()
     }
     tput setaf 4
     tput el
-    printf '%s%s\n' "${footer1} $(tput sgr0)${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7} ${footer_link:+ -> \"${footer_link}\"}" | cut -c 1-"$cols"
+    printf -v footer '%s%s' "${footer1} $(tput sgr0)${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> \"${footer_link}\"}"
+    printf '%s\n' "${footer:0:$((cols - 1))}"
     tput sgr0
 
     tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"

@@ -56,7 +56,6 @@ __blscd_draw()
         footer5= \
         footer6= \
         footer7= \
-        footer_link= \
         header= \
         parent=
 
@@ -134,18 +133,18 @@ __blscd_draw()
     {
         if [[ ${footer_link:0:2} != \"/ ]]
         then
-            footer_link=" -> \"$(readlink -s -m "${PWD}/${current_line}"\")"
+            footer_link=$(readlink -s -m "${PWD}/${current_line}")
         else
-            footer_link=" -> ${footer_link}"
+            footer_link=${footer_link//\"/}
         fi
     }
     tput setaf 4
     tput el
-    printf '%s%s\n' "${footer1} $(tput sgr0)${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}" "$footer_link" | cut -c 1-"$cols"
+    printf '%s%s\n' "${footer1} $(tput sgr0)${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7} ${footer_link:+ -> \"${footer_link}\"}" | cut -c 1-"$cols"
     tput sgr0
 
     tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
-    tput sc
+
     tput cvvis
 }
 
@@ -286,7 +285,11 @@ declare -i \
 # Variables related to the TUI.
 declare \
     current_line= \
+    footer_link= \
     input= \
+    k1= \
+    k2= \
+    k3= \
     redraw=redraw \
     reprint=reprint
 
@@ -365,6 +368,10 @@ do
                 ;;
         ESCh)
                 cd -- ..
+                __blscd_resize
+                ;;
+        ESCl)
+                __blscd_openfile "$footer_link"
                 __blscd_resize
                 ;;
         o)

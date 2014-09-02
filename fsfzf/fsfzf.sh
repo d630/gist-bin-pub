@@ -20,7 +20,7 @@
 
 # -- FUNCTIONS.
 
-__fsfzf_menu_cmd() { sort -r | fzf -x -i +s --prompt="${1:->} " ; }
+__fsfzf_menu_cmd() { sort -b | fzf -x -i +s --prompt="${1:->} " ; }
 
 __fsfzf_find_inum()
 {
@@ -30,9 +30,9 @@ __fsfzf_find_inum()
 
 __fsfzf_find_child_ls()
 {
-    printf '%s\n%s\n' "[.]" '[..]'
-    # -printf '%M %n %u %g %s %t %f %l\n'
+    printf '%s\n%s\n' '[.]' '[..]'
     find -H "$1" -mindepth 1 -maxdepth 1 -ls
+    # -printf '%M %n %u %g %s %t %f %l\n'
 }
 
 __fsfzf_browse()
@@ -47,6 +47,7 @@ __fsfzf_browse()
     [[ ${parent_name:0:1} != / ]] && parent_name=${HOME}/${parent_name}
     [[ ${parent_name:${#parent_name}-1} == / ]] &&
         parent_name=${parent_name%/*}
+    [[ ! $parent_name ]] && parent_name=/
     read -r child_ls < <(__fsfzf_find_child_ls "$parent_name" | \
         __fsfzf_menu_cmd "[${parent_name}]")
     child_name=$parent_name
@@ -108,4 +109,5 @@ __fsfzf_browse()
 
 # -- MAIN.
 
+export LC_ALL=C.UTF-8
 __fsfzf_browse "${1:-${PWD}}"

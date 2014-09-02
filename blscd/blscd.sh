@@ -134,7 +134,7 @@ __blscd_draw()
     {
         if [[ ${footer_link:0:2} != \"/ ]]
         then
-            footer_link=" -> $(readlink -s -m "${PWD}/${current_line}")"
+            footer_link=" -> \"$(readlink -s -m "${PWD}/${current_line}"\")"
         else
             footer_link=" -> ${footer_link}"
         fi
@@ -145,7 +145,7 @@ __blscd_draw()
     tput sgr0
 
     tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
-
+    tput sc
     tput cvvis
 }
 
@@ -332,17 +332,22 @@ do
         reprint=
     }
     read -s -n 1 input
+    read -s -N1 -t 0.0001 k1
+    read -s -N1 -t 0.0001 k2
+    read -s -N1 -t 0.0001 k3
+    [[ $input == $'\e' ]] && input=ESC
+    input=${input}${k1}${k2}${k3}
     case $input in
-        j)
+        j|'ESC[B')
                 __blscd_move 1
                 ;;
-        k)
+        k|'ESC[A')
                 __blscd_move -1
                 ;;
-        h)
+        h|'ESC[D')
                 __blscd_movedir ..
                 ;;
-        l)
+        l|'ESC[C')
                 __blscd_openfile "$current_line"
                 __blscd_resize
                 ;;
@@ -358,8 +363,12 @@ do
         G)
                 __blscd_move 9999999999
                 ;;
+        ESCh)
+                cd -- ..
+                __blscd_resize
+                ;;
         o)
-                fsfzf.sh "$parent"
+                fsfzf.sh
                 __blscd_resize
                 ;;
         f)

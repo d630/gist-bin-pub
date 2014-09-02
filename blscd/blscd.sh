@@ -342,19 +342,18 @@ do
     read -s -N1 -t 0.0001 k1
     read -s -N1 -t 0.0001 k2
     read -s -N1 -t 0.0001 k3
-    [[ $input == $'\e' ]] && input=ESC
     input=${input}${k1}${k2}${k3}
     case $input in
-        j|'ESC[B')
+        j|$'\e[B')
             __blscd_move 1
             ;;
-        k|'ESC[A')
+        k|$'\e[A')
             __blscd_move -1
             ;;
-        h|'ESC[D')
+        h|$'\e[D')
             __blscd_movedir ..
             ;;
-        l|'ESC[C')
+        l|$'\e[C')
             __blscd_openfile "$current_line"
             __blscd_resize
             ;;
@@ -370,11 +369,11 @@ do
         G)
             __blscd_move 9999999999
             ;;
-        ESCh)
+        $'\eh')
             cd -- ..
             __blscd_resize
             ;;
-        ESCl)
+        $'\el')
             __blscd_openfile "$footer_link"
             __blscd_resize
             ;;
@@ -402,7 +401,7 @@ do
                         fi
                     done
                     __blscd_resize
-                    search_pattern=$(tr -d '\r' <<<"$search_pattern")
+                    search_pattern=${search_pattern//$'\r'/}
                     __blscd_move -9999999999
                     ;;
                 g)
@@ -416,8 +415,10 @@ do
             esac
             ;;
         r)
-            __blscd_resize
             search_pattern=
+            ;&
+        $'\x0c') # CTRL+L
+            __blscd_resize
             ;;
         q)
             __blscd_on_exit

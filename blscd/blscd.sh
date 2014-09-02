@@ -46,12 +46,21 @@ __blscd_draw()
         cols= \
         cols_length= \
         i= \
-        lines= \
-        max=
+        lines=
 
     declare \
-        parent= \
-        header=
+        footer1= \
+        footer2= \
+        footer3= \
+        footer4= \
+        footer5= \
+        footer6= \
+        footer7= \
+        footer_link= \
+        header= \
+        parent=
+
+    tput civis
 
     mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
     total_files_col_2=${#files_col_2[@]}
@@ -78,8 +87,10 @@ __blscd_draw()
         then
             parent=${PWD%/*}
             mapfile -t files_col_1 < <(find -L "${parent:-/}" -mindepth 1 -maxdepth 1 -printf '%f\n' | cut -c 1-"$cols_length" | sort -bg)
+            total_files_col_1=${#files_col_1[@]}
         else
             files_col_1=(\~)
+            total_files_col_1=0
         fi
         col_1_line_longest=$(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 2))}" | wc -L)
         mapfile -t files_col_0 < <(eval "printf '%0${col_0_line_longest}d\n' {1..${max_number}}")
@@ -97,28 +108,45 @@ __blscd_draw()
         done
     fi
 
-    mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | cut -c 1-"$cols_length" | sort -bg)
+    mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | cut -c 1-"$((cols - col_0_line_longest - col_1_line_longest - col_2_line_longest - 6))" | sort -bg)
     total_files_col_3=${#files_col_3[@]}
     ((total_files_col_3 == 0)) && \
         files_col_3=("$(file --mime-type -bL "$current_line")") && \
-        files_col_3=(${files_col_3[@]//\//-}) && \
+        files_col_3=("${files_col_3[@]//\//-}") && \
         total_files_col_3=1
 
-    tput home
-    tput el
-    tput setaf 2
-    tput bold
-    printf -v header '%s' "$(ls -abdlQs --time-style=long-iso --si "${PWD}/${current_line}")"
-    printf '[%s] [%s]\n' "$((cursor + 1)),$((col_0_line_longest + col_1_line_longest + 4))" "${header//\/\//\/}" | cut -c 1-"$cols"
+    tput -S < <(printf '%s\n' home el bold)
+    printf -v header "%d %0${col_0_line_longest}d %0${col_0_line_longest}d %0${col_0_line_longest}d %s" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3" "$(tput setaf 2)${USER}@${HOSTNAME}:$(tput setaf 4)${PWD}/$(tput setaf 7)${current_line}"
+    printf '%s\n' "${header//\/\//\/}" | cut -c 1-"$cols"
     tput sgr0
+
     paste -d '/' \
-        <(printf '%s\n' "${files_col_0[@]:$((index - 1)):$((lines - 2))}") \
-        <(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 2))}") \
-        <(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 2))}" | cut -c 1-"$cols_length") \
-        <(printf '%s\n' "${files_col_3[@]:$((index - 1)):$((lines - 2))}") | \
+        <(printf '%s\n' "${files_col_0[@]:$((index - 1)):$((lines - 3))}") \
+        <(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 3))}") \
+        <(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 3))}" | cut -c 1-"$cols_length") \
+        <(printf '%s\n' "${files_col_3[@]:0:$((lines - 3))}") | \
         column -tn -s '/'
 
+    tput -S < <(printf '%s\n' "setaf 2" bold)
+    read -r footer1 footer2 footer3 footer4 footer5 footer6 footer7 _ _ footer_link \
+        <<<$(ls -abdlQ --time-style=long-iso --si --block-size=k "${PWD}/${current_line}")
+    [[ $footer_link ]] &&
+    {
+        if [[ ${footer_link:0:2} != \"/ ]]
+        then
+            footer_link=" -> $(readlink -s -m "${PWD}/${current_line}")"
+        else
+            footer_link=" -> ${footer_link}"
+        fi
+    }
+    tput setaf 4
+    tput el
+    printf '%s%s\n' "${footer1} $(tput sgr0)${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}" "$footer_link" | cut -c 1-"$cols"
+    tput sgr0
+
     tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
+
+    tput cvvis
 }
 
 __blscd_move()
@@ -249,7 +277,8 @@ __blscd_on_exit()
 declare -i \
     cursor=0 \
     index=1 \
-    offset=3 \
+    offset=4 \
+    total_files_col_1=0 \
     total_files_col_2=0 \
     total_files_col_3=0 \
     total_visible_files_col_2=0

@@ -119,7 +119,6 @@ __blscd_draw()
     printf -v header "%d %0${col_0_line_longest}d %0${col_0_line_longest}d %0${col_0_line_longest}d %s" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3" "$(tput setaf 2)${USER}@${HOSTNAME}:$(tput setaf 4)${PWD}/$(tput setaf 7)${current_line}"
     printf -v header '%s' "${header//\/\//\/}"
     printf '%s\n' "${header:0:$((cols - 1))}"
-
     tput sgr0
 
     paste -d '/' \
@@ -143,7 +142,7 @@ __blscd_draw()
     }
     tput setaf 4
     tput el
-    printf -v footer '%s%s' "${footer1} $(tput sgr0)${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> \"${footer_link}\"}"
+    printf -v footer '%s' "${footer1} $(tput sgr0)${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> \"${footer_link}\"}"
     printf '%s\n' "${footer:0:$((cols - 1))}"
     tput sgr0
 
@@ -253,11 +252,11 @@ __blscd_openfile()
 {
     case $(file --mime-type -bL "$1") in
         inode/directory)
-                __blscd_movedir "$1"
-                ;;
+            __blscd_movedir "$1"
+            ;;
         *)
-                eval "$file_opener" 2>/dev/null
-                ;;
+            eval "$file_opener" 2>/dev/null
+            ;;
     esac
 }
 
@@ -300,7 +299,8 @@ declare \
 declare -i \
     col_0_line_longest=4 \
     col_1_line_longest= \
-    col_2_line_longest=
+    col_2_line_longest= \
+    query_chars=
 
 declare -a \
     files_col_0=() \
@@ -310,7 +310,7 @@ declare -a \
 
 # Initialize settings.
 declare \
-    file_opener='xterm -e "less -nR "$1";exit;bash"' \
+    file_opener='xterm -e "export LESSOPEN='"| /usr/bin/lesspipe %s"';less -R "$1""' \
     INT_step=6 \
     max_number=9999 \
     search_pattern=
@@ -346,54 +346,82 @@ do
     input=${input}${k1}${k2}${k3}
     case $input in
         j|'ESC[B')
-                __blscd_move 1
-                ;;
+            __blscd_move 1
+            ;;
         k|'ESC[A')
-                __blscd_move -1
-                ;;
+            __blscd_move -1
+            ;;
         h|'ESC[D')
-                __blscd_movedir ..
-                ;;
+            __blscd_movedir ..
+            ;;
         l|'ESC[C')
-                __blscd_openfile "$current_line"
-                __blscd_resize
-                ;;
+            __blscd_openfile "$current_line"
+            __blscd_resize
+            ;;
         d)
-                __blscd_move 10
-                ;;
+            __blscd_move 10
+            ;;
         u)
-                __blscd_move -10
-                ;;
+            __blscd_move -10
+            ;;
         g)
-                __blscd_move -9999999999
-                ;;
+            __blscd_move -9999999999
+            ;;
         G)
-                __blscd_move 9999999999
-                ;;
+            __blscd_move 9999999999
+            ;;
         ESCh)
-                cd -- ..
-                __blscd_resize
-                ;;
+            cd -- ..
+            __blscd_resize
+            ;;
         ESCl)
-                __blscd_openfile "$footer_link"
-                __blscd_resize
-                ;;
+            __blscd_openfile "$footer_link"
+            __blscd_resize
+            ;;
         o)
-                fsfzf.sh
-                __blscd_resize
-                ;;
+            fsfzf.sh
+            __blscd_resize
+            ;;
         f)
-                # Open a prompt for entering the filter.
-                tput cup "99998" 0
-                stty $stty_orig
-                read -re -p / search_pattern
-                stty -echo
-                __blscd_resize
-                __blscd_move -9999999999
-                ;;
+            read -n 1 input
+            case $input in
+                q)
+                    while :
+                    do
+                        tput cup "99998" 0
+                        stty $stty_orig
+                        query_chars=$((${#search_pattern} + 1))
+                        read -e -N "$query_chars" -p "/" -i "$search_pattern" search_pattern
+                        stty -echo
+                        if [[ $search_pattern =~ $'\r' ]]
+                        then
+                            break
+                        else
+                            __blscd_resize
+                            __blscd_draw
+                        fi
+                    done
+                    __blscd_resize
+                    search_pattern=$(tr -d '\r' <<<"$search_pattern")
+                    __blscd_move -9999999999
+                    ;;
+                g)
+                    tput cup "99998" 0
+                    stty $stty_orig
+                    read -e -p "/" -i "$search_pattern" search_pattern
+                    stty -echo
+                    __blscd_resize
+                    __blscd_move -9999999999
+                    ;;
+            esac
+            ;;
+        r)
+            __blscd_resize
+            search_pattern=
+            ;;
         q)
-                __blscd_on_exit
-                break
-                ;;
+            __blscd_on_exit
+            break
+            ;;
     esac
 done

@@ -60,8 +60,6 @@ __blscd_draw()
         header= \
         parent=
 
-    tput civis
-
     mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
     total_files_col_2=${#files_col_2[@]}
     printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
@@ -177,8 +175,6 @@ __blscd_draw()
 
     # Set new position of the cursor.
     tput cup "$((cursor + 1))" "$((col_1_line_longest + 2))"
-
-    #tput cvvis
 }
 
 __blscd_move()
@@ -360,6 +356,7 @@ export LC_ALL=C.UTF-8
 
 while :
 do
+    tput civis
     [[ $redraw == redraw ]] &&
     {
         __blscd_draw
@@ -402,14 +399,17 @@ do
             __blscd_resize
             ;;
         $'\el')
+            tput cvvis
             __blscd_openfile "$footer_link"
             __blscd_resize
             ;;
         o)
+            tput cvvis
             fsfzf.sh
             __blscd_resize
             ;;
         f)
+            tput cvvis
             read -n 1 input
             case $input in
                 q)

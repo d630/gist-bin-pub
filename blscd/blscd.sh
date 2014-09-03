@@ -115,12 +115,14 @@ __blscd_draw()
         files_col_3=("${files_col_3[@]//\//-}") && \
         total_files_col_3=1
 
+    # Print the header.
     tput -S < <(printf '%s\n' home el bold "setaf 4")
     printf -v header '%s' "${USER}@${HOSTNAME}:$(tput setaf 2)${PWD}/$(tput setaf 7)${current_line}"
     printf -v header '%s' "${header//\/\//\/}"
     printf '%s\n' "${header:0:$((cols - 1))}"
     tput sgr0
 
+    # Print columns with file listing.
     paste -d '/' \
         <(printf '%s\n' "${files_col_0[@]:$((index - 1)):$((lines - 3))}") \
         <(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 3))}") \
@@ -128,6 +130,7 @@ __blscd_draw()
         <(printf '%s\n' "${files_col_3[@]:0:$((lines - 3))}") | \
         column -tn -s '/'
 
+    # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")
     read -r footer1 footer2 footer3 footer4 footer5 footer6 footer7 _ _ footer_link \
         <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${current_line}")
@@ -140,6 +143,8 @@ __blscd_draw()
         printf '%s\n' "${footer:0:$((cols - 1))}"
     fi
     tput sgr0
+
+    # Reprint current line in column 2.
     tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
     tput -S < <(printf '%s\n' el bold)
     if [[ -d $current_line ]]
@@ -148,9 +153,27 @@ __blscd_draw()
     elif [[ -f $current_line ]]
     then
         tput -S < <(printf '%s\n' "setaf 0" "setab 7")
+    else
+        tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
     fi
-    printf '%s' "${files_col_2[$cursor]}$(tput sgr0)$(printf '%*s%s' "$((col_2_line_longest - ${#files_col_2[$cursor]}))" '')  ${files_col_3[$cursor]}"
+    printf '%s' "${files_col_2[$index + $cursor - 1]}$(printf '%*s%s' "$((col_2_line_longest - ${#files_col_2[$index + $cursor - 1]}))" '')$(tput sgr0)  ${files_col_3[$index + $cursor - 1]}"
 
+    # Reprint first line in column 3.
+    tput cup 1 "$((col_0_line_longest + col_1_line_longest + col_2_line_longest + 6))"
+    tput -S < <(printf '%s\n' el bold)
+    if [[ -d ${current_line}/${files_col_3[0]} ]]
+    then
+        tput -S < <(printf '%s\n' "setaf 0" "setab 2")
+    elif [[ -f ${current_line}/${files_col_3[0]} ]]
+    then
+        tput -S < <(printf '%s\n' "setaf 0" "setab 7")
+    else
+        tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
+    fi
+    printf '%s' "${files_col_3[0]}$(printf '%*s%s' "$((cols_length - ${#files_col_3[0]}))" '')" # !
+    tput sgr0
+
+    # Set new position of the cursor.
     tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
 
     #tput cvvis

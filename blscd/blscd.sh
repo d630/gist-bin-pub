@@ -65,7 +65,6 @@ __blscd_draw()
     printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
     read -r cols lines <<<$(tput cols ; tput lines)
     cols_length=$(((cols - 4) / 3)) # !
-    col_2_line_longest=$(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 2))}" | cut -c 1-"$cols_length" | wc -L)
 
     if ((total_files_col_2 > (lines - offset + 1)))
     then
@@ -81,16 +80,23 @@ __blscd_draw()
             tput cup "$((i - 1))" 0
             tput el
         done
-        if [[ $PWD != / ]]
+        if [[ $PWD == / ]]
         then
-            parent=${PWD%/*}
-            mapfile -t files_col_1 < <(find -L "${parent:-/}" -mindepth 1 -maxdepth 1 -printf '%f\n' | cut -c 1-"$cols_length" | sort -bg)
-            total_files_col_1=${#files_col_1[@]}
-        else
             files_col_1=(\~)
             total_files_col_1=0 # ?
+            parent=\~
+            parent_index=0
+        else
+            parent=${PWD%/*}
+            mapfile -t files_col_1 < <(find -L "${parent:-/}" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
+            total_files_col_1=${#files_col_1[@]}
+            #~ for i in "${!files_col_1[@]}"
+            #~ do
+                #~ [[ ${files_col_1[$i]} == $current_line ]] && \
+                    #~ parent=${files_col_1[$i]} && \
+                    #~ parent_index=$i
+            #~ done
         fi
-        col_1_line_longest=$(printf '%s\n' "${files_col_1[@]}" | wc -L)
     else
         if ((total_files_col_3 < lines))
         then
@@ -100,18 +106,17 @@ __blscd_draw()
         fi
         for ((i=$i ; i > 0 ; --i))
         do
-            tput cup "$i" "$((col_1_line_longest + col_2_line_longest +4))"
+            tput cup "$i" "$(((cols_length * 2) + 4))"
             tput el
         done
     fi
 
-    mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | cut -c 1-"$((cols - col_1_line_longest - col_2_line_longest - 4))" | sort -bg)
+    mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
     total_files_col_3=${#files_col_3[@]}
     ((total_files_col_3 == 0)) && \
         files_col_3=("$(file --mime-type -bL "$current_line")") && \
         files_col_3=("${files_col_3[@]//\//-}") && \
         total_files_col_3=1
-    col_3_line_longest=$(printf '%s\n' "${files_col_3[@]}" | wc -L)
 
     # Print the header.
     tput -S < <(printf '%s\n' home el bold "setaf 4")
@@ -122,9 +127,9 @@ __blscd_draw()
 
     # Print columns with file listing.
     paste -d '/' \
-        <(printf '%s\n' "${files_col_1[@]:0:$((lines - 3))}") \
-        <(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 3))}" | cut -c 1-"$cols_length") \
-        <(printf '%s\n' "${files_col_3[@]:0:$((lines - 3))}") | \
+        <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_1[@]:0:$((lines - 3))}") \
+        <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_2[@]:$((index - 1)):$((lines - 3))}") \
+        <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_3[@]:0:$((lines - 3))}") | \
         column -ent -s '/' -c "$cols"
 
     # Print the footer.
@@ -144,7 +149,7 @@ __blscd_draw()
     tput sgr0
 
     # Reprint current line in column 2.
-    tput cup "$((cursor + 1))" "$((col_1_line_longest + 2))"
+    tput cup "$((cursor + 1))" "$((cols_length + 2))"
     tput -S < <(printf '%s\n' el bold)
     if [[ -d $current_line ]]
     then
@@ -155,10 +160,10 @@ __blscd_draw()
     else
         tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
     fi
-    printf '%s' "${files_col_2[$index + $cursor - 1]}$(printf '%*s%s' "$((col_2_line_longest - ${#files_col_2[$index + $cursor - 1]}))" '')$(tput sgr0)  ${files_col_3[$index + $cursor - 1]}"
+    printf '%s' "${files_col_2[$index + $cursor - 1]}$(printf '%*s%s' "$((cols_length - ${#files_col_2[$index + $cursor - 1]}))" '')$(tput sgr0)  ${files_col_3[$index + $cursor - 1]}"
 
     # Reprint first line in column 3.
-    tput cup 1 "$((col_1_line_longest + col_2_line_longest + 4))"
+    tput cup 1 "$(((cols_length * 2) + 4))"
     tput -S < <(printf '%s\n' el bold)
     if [[ -d ${current_line}/${files_col_3[0]} ]]
     then
@@ -169,11 +174,11 @@ __blscd_draw()
     else
         tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
     fi
-    printf '%s' "${files_col_3[0]}$(printf '%*s%s' "$((col_3_line_longest - ${#files_col_3[0]}))" '')"
+    printf '%s' "${files_col_3[0]}$(printf '%*s%s' "$((cols_length - ${#files_col_3[0]}))" '')"
     tput sgr0
 
     # Set new position of the cursor.
-    tput cup "$((cursor + 1))" "$((col_1_line_longest + 2))"
+    tput cup "$((cursor + 1))" "$((cols_length + 2))"
 }
 
 __blscd_move()
@@ -322,11 +327,7 @@ declare \
     redraw=redraw \
     reprint=reprint
 
-declare -i \
-    col_1_line_longest= \
-    col_2_line_longest= \
-    col_3_line_longest= \
-    query_chars=
+declare -i query_chars=
 
 declare -a \
     files_col_1=() \

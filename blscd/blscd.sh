@@ -297,6 +297,7 @@ __blscd_on_exit()
     eval "$save_traps"
     tput clear
     tput rmcup
+    tput cvvis
 }
 
 # -- MAIN.

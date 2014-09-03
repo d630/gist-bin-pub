@@ -121,12 +121,11 @@ __blscd_draw()
     tput sgr0
 
     # Print columns with file listing.
-    view=$(paste -d '/' \
-        <(printf '%s\n' "${files_col_1[@]}") \
+    paste -d '/' \
+        <(printf '%s\n' "${files_col_1[@]:0:$((lines - 3))}") \
         <(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 3))}" | cut -c 1-"$cols_length") \
         <(printf '%s\n' "${files_col_3[@]:0:$((lines - 3))}") | \
-        column -ent -s '/' -c "$cols")
-    printf '%s\n' "$view"
+        column -ent -s '/' -c "$cols"
 
     # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")

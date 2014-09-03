@@ -133,14 +133,15 @@ __blscd_draw()
     tput -S < <(printf '%s\n' bold "setaf 4")
     read -r footer1 footer2 footer3 footer4 footer5 footer6 footer7 _ _ footer_link \
         <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${current_line}")
+    tput cup "$((lines - offset + 2))" 0
     tput el
     #printf -v footer "%s | %d,%0${col_0_line_longest}d,%0${col_0_line_longest}d,%0${col_0_line_longest}d" "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3"
     printf -v footer '%s' "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}"
     if ((${#footer} > (cols - 1)))
     then
-        printf '%s\n' "${footer:$((${#footer} - cols))}"
+        printf '%s' "${footer:$((${#footer} - $((cols - 1))))}"
     else
-        printf '%s\n' "${footer:0:$((cols - 1))}"
+        printf '%s' "${footer:0:$((cols - 1))}"
     fi
     tput sgr0
 

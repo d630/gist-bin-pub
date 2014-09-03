@@ -90,12 +90,12 @@ __blscd_draw()
             parent=${PWD%/*}
             mapfile -t files_col_1 < <(find -L "${parent:-/}" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
             total_files_col_1=${#files_col_1[@]}
-            #~ for i in "${!files_col_1[@]}"
-            #~ do
-                #~ [[ ${files_col_1[$i]} == $current_line ]] && \
-                    #~ parent=${files_col_1[$i]} && \
-                    #~ parent_index=$i
-            #~ done
+            for i in "${!files_col_1[@]}"
+            do
+                [[ ${files_col_1[$i]} == $current_line ]] && \
+                    parent=${files_col_1[$i]} && \
+                    parent_index=$i
+            done
         fi
     else
         if ((total_files_col_3 < lines))
@@ -120,9 +120,8 @@ __blscd_draw()
 
     # Print the header.
     tput -S < <(printf '%s\n' home el bold "setaf 4")
-    printf -v header '%s' "${USER}@${HOSTNAME}:$(tput setaf 2)${PWD}/$(tput setaf 7)${current_line}"
-    printf -v header '%s' "${header//\/\//\/}"
-    printf '%s\n' "${header:0:$((cols - 1))}"
+    printf -v header "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$current_line"
+    printf "%-${cols}.${cols}s\n" "${header//\/\//\/}"
     tput sgr0
 
     # Print columns with file listing.
@@ -139,12 +138,12 @@ __blscd_draw()
     tput cup "$((lines - offset + 2))" 0
     tput el
     #printf -v footer "%s | %d,%0${col_0_line_longest}d,%0${col_0_line_longest}d,%0${col_0_line_longest}d" "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3"
-    printf -v footer '%s' "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}"
-    if ((${#footer} > (cols - 1)))
+    printf -v footer "%s$(tput sgr0) %s %s %s %s %s %s" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "${footer7}${footer_link:+ -> ${footer_link}}"
+    if ((${#footer} >= cols))
     then
-        printf '%s' "${footer:$((${#footer} - $((cols - 1))))}"
+        printf '%s\n' "${footer:$((${#footer} - cols))}"
     else
-        printf '%s' "${footer:0:$((cols - 1))}"
+        printf '%s\n' "$footer"
     fi
     tput sgr0
 

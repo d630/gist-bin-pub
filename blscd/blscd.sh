@@ -92,7 +92,7 @@ __blscd_draw()
             files_col_1=(\~)
             total_files_col_1=0 # ?
         fi
-        col_1_line_longest=$(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 2))}" | wc -L)
+        col_1_line_longest=$(printf '%s\n' "${files_col_1[@]}" | wc -L)
     else
         if ((total_files_col_3 < lines))
         then
@@ -113,17 +113,18 @@ __blscd_draw()
         files_col_3=("$(file --mime-type -bL "$current_line")") && \
         files_col_3=("${files_col_3[@]//\//-}") && \
         total_files_col_3=1
+    col_3_line_longest=$(printf '%s\n' "${files_col_3[@]}" | wc -L)
 
     # Print the header.
     tput -S < <(printf '%s\n' home el bold "setaf 4")
     printf -v header '%s' "${USER}@${HOSTNAME}:$(tput setaf 2)${PWD}/$(tput setaf 7)${current_line}"
     printf -v header '%s' "${header//\/\//\/}"
-    printf '%s\n' "${header:0:$((cols - 1))}" # !
+    printf '%s\n' "${header:0:$((cols - 1))}"
     tput sgr0
 
     # Print columns with file listing.
     view=$(paste -d '/' \
-        <(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 3))}") \
+        <(printf '%s\n' "${files_col_1[@]}") \
         <(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 3))}" | cut -c 1-"$cols_length") \
         <(printf '%s\n' "${files_col_3[@]:0:$((lines - 3))}") | \
         column -ent -s '/' -c "$cols")
@@ -171,7 +172,7 @@ __blscd_draw()
     else
         tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
     fi
-    printf '%s' "${files_col_3[0]}$(printf '%*s%s' "$((cols_length - ${#files_col_3[0]}))" '')" # !
+    printf '%s' "${files_col_3[0]}$(printf '%*s%s' "$((col_3_line_longest - ${#files_col_3[0]}))" '')"
     tput sgr0
 
     # Set new position of the cursor.
@@ -328,6 +329,7 @@ declare \
 declare -i \
     col_1_line_longest= \
     col_2_line_longest= \
+    col_3_line_longest= \
     query_chars=
 
 declare -a \

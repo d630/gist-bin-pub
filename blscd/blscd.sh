@@ -66,7 +66,7 @@ __blscd_draw()
     total_files_col_2=${#files_col_2[@]}
     printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
     read -r cols lines <<<$(tput cols ; tput lines)
-    cols_length=$(((cols - 6 - col_0_line_longest) / 3))
+    cols_length=$(((cols - 4) / 3)) # !
     col_2_line_longest=$(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 2))}" | cut -c 1-"$cols_length" | wc -L)
 
     if ((total_files_col_2 > (lines - offset + 1)))
@@ -93,7 +93,6 @@ __blscd_draw()
             total_files_col_1=0 # ?
         fi
         col_1_line_longest=$(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 2))}" | wc -L)
-        mapfile -t files_col_0 < <(eval "printf '%0${col_0_line_longest}d\n' {1..${max_number}}")
     else
         if ((total_files_col_3 < lines))
         then
@@ -103,12 +102,12 @@ __blscd_draw()
         fi
         for ((i=$i ; i > 0 ; --i))
         do
-            tput cup "$i" "$((col_0_line_longest + col_1_line_longest + col_2_line_longest +6))"
+            tput cup "$i" "$((col_1_line_longest + col_2_line_longest +4))"
             tput el
         done
     fi
 
-    mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | cut -c 1-"$((cols - col_0_line_longest - col_1_line_longest - col_2_line_longest - 6))" | sort -bg)
+    mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | cut -c 1-"$((cols - col_1_line_longest - col_2_line_longest - 4))" | sort -bg)
     total_files_col_3=${#files_col_3[@]}
     ((total_files_col_3 == 0)) && \
         files_col_3=("$(file --mime-type -bL "$current_line")") && \
@@ -119,23 +118,24 @@ __blscd_draw()
     tput -S < <(printf '%s\n' home el bold "setaf 4")
     printf -v header '%s' "${USER}@${HOSTNAME}:$(tput setaf 2)${PWD}/$(tput setaf 7)${current_line}"
     printf -v header '%s' "${header//\/\//\/}"
-    printf '%s\n' "${header:0:$((cols - 1))}"
+    printf '%s\n' "${header:0:$((cols - 1))}" # !
     tput sgr0
 
     # Print columns with file listing.
-    paste -d '/' \
-        <(printf '%s\n' "${files_col_0[@]:$((index - 1)):$((lines - 3))}") \
+    view=$(paste -d '/' \
         <(printf '%s\n' "${files_col_1[@]:$((index - 1)):$((lines - 3))}") \
         <(printf '%s\n' "${files_col_2[@]:$((index - 1)):$((lines - 3))}" | cut -c 1-"$cols_length") \
         <(printf '%s\n' "${files_col_3[@]:0:$((lines - 3))}") | \
-        column -tn -s '/'
+        column -ent -s '/' -c "$cols")
+    printf '%s\n' "$view"
 
     # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")
     read -r footer1 footer2 footer3 footer4 footer5 footer6 footer7 _ _ footer_link \
         <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${current_line}")
     tput el
-    printf -v footer "%s | %d,%0${col_0_line_longest}d,%0${col_0_line_longest}d,%0${col_0_line_longest}d" "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3"
+    #printf -v footer "%s | %d,%0${col_0_line_longest}d,%0${col_0_line_longest}d,%0${col_0_line_longest}d" "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3"
+    printf -v footer '%s' "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}"
     if ((${#footer} > (cols - 1)))
     then
         printf '%s\n' "${footer:$((${#footer} - cols))}"
@@ -145,7 +145,7 @@ __blscd_draw()
     tput sgr0
 
     # Reprint current line in column 2.
-    tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
+    tput cup "$((cursor + 1))" "$((col_1_line_longest + 2))"
     tput -S < <(printf '%s\n' el bold)
     if [[ -d $current_line ]]
     then
@@ -159,7 +159,7 @@ __blscd_draw()
     printf '%s' "${files_col_2[$index + $cursor - 1]}$(printf '%*s%s' "$((col_2_line_longest - ${#files_col_2[$index + $cursor - 1]}))" '')$(tput sgr0)  ${files_col_3[$index + $cursor - 1]}"
 
     # Reprint first line in column 3.
-    tput cup 1 "$((col_0_line_longest + col_1_line_longest + col_2_line_longest + 6))"
+    tput cup 1 "$((col_1_line_longest + col_2_line_longest + 4))"
     tput -S < <(printf '%s\n' el bold)
     if [[ -d ${current_line}/${files_col_3[0]} ]]
     then
@@ -174,7 +174,7 @@ __blscd_draw()
     tput sgr0
 
     # Set new position of the cursor.
-    tput cup "$((cursor + 1))" "$((col_0_line_longest + col_1_line_longest + 4))"
+    tput cup "$((cursor + 1))" "$((col_1_line_longest + 2))"
 
     #tput cvvis
 }
@@ -325,13 +325,11 @@ declare \
     reprint=reprint
 
 declare -i \
-    col_0_line_longest=4 \
     col_1_line_longest= \
     col_2_line_longest= \
     query_chars=
 
 declare -a \
-    files_col_0=() \
     files_col_1=() \
     files_col_2=() \
     files_col_3=()
@@ -340,7 +338,6 @@ declare -a \
 declare \
     file_opener='xterm -e "export LESSOPEN='"| /usr/bin/lesspipe %s"';less -R "$1""' \
     INT_step=6 \
-    max_number=9999 \
     search_pattern=
 
 # Save the terminal environment of the normal screen.

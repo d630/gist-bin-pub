@@ -160,7 +160,7 @@ __blscd_draw()
     else
         tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
     fi
-    printf '%s' "${files_col_2[$index + $cursor - 1]}$(printf '%*s%s' "$((cols_length - ${#files_col_2[$index + $cursor - 1]}))" '')$(tput sgr0)  ${files_col_3[$index + $cursor - 1]}"
+    printf "%-${cols_length}.${cols_length}s$(tput sgr0)  %-${cols_length}.${cols_length}s" "${files_col_2[$index + $cursor - 1]}" "${files_col_3[$index + $cursor - 1]}"
 
     # Reprint first line in column 3.
     tput cup 1 "$(((cols_length * 2) + 4))"
@@ -174,7 +174,7 @@ __blscd_draw()
     else
         tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
     fi
-    printf '%s' "${files_col_3[0]}$(printf '%*s%s' "$((cols_length - ${#files_col_3[0]}))" '')"
+    printf "%-${cols_length}.${cols_length}s" "${files_col_3[0]}"
     tput sgr0
 
     # Set new position of the cursor.

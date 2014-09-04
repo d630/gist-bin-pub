@@ -138,7 +138,7 @@ __blscd_draw()
     # Print columns with file listing.
     for ((i=0 , j=index-1 ; i <= lines - 3 ; ++i , ++j))
     do
-        ((i == parent_index)) &&
+        ((i == parent_index_position)) &&
         {
             col_1_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
             col_1_color_reset=$(tput sgr0)

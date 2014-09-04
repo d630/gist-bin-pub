@@ -82,7 +82,7 @@ __blscd_draw()
             parent_index=0
         else
             parent=${PWD%/*}
-            mapfile -t files_col_1 < <(find -L "${parent:-/}" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
+            mapfile -t files_col_1 < <(find -L "${parent:-/}" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | sort -bg)
             total_files_col_1=${#files_col_1[@]}
             for i in "${!files_col_1[@]}"
             do
@@ -106,7 +106,7 @@ __blscd_draw()
         else
             i=$((lines - offset + 1))
         fi
-        for ((i=$i ; i > 0 ; --i))
+        for ((i=$i ; i > 1 ; --i))
         do
             tput cup "$i" "$(((cols_length * 2) + 2))"
             tput el
@@ -138,6 +138,12 @@ __blscd_draw()
     # Print columns with file listing.
     for ((i=0 , j=index-1 ; i <= lines - 3 ; ++i , ++j))
     do
+        col_1_color_1=
+        col_2_color_1=
+        col_3_color_1=
+        col_1_color_reset=
+        col_2_color_reset=
+        col_3_color_reset=
         ((i == parent_index_position)) &&
         {
             col_1_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
@@ -170,12 +176,6 @@ __blscd_draw()
             col_3_color_reset=$(tput sgr0)
         }
         printf "${col_1_color_1}%-${cols_length}.${cols_length}s${col_1_color_reset} ${col_2_color_1}%-${cols_length}.${cols_length}s${col_2_color_reset} ${col_3_color_1}%-${cols_length}.${cols_length}s${col_3_color_reset}\n" " ${files_col_1_a[$i]} " " ${files_col_2[$j]} " " ${files_col_3[$i]} "
-        col_1_color_1=
-        col_2_color_1=
-        col_3_color_1=
-        col_1_color_reset=
-        col_2_color_reset=
-        col_3_color_reset=
     done
 
     # Print the footer.
@@ -184,15 +184,13 @@ __blscd_draw()
         <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${current_line}")
     tput cup "$((lines - offset + 2))" 0
     tput el
-
-    #printf -v footer "%s | %d,%0${col_0_line_longest}d,%0${col_0_line_longest}d,%0${col_0_line_longest}d" "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3"
     printf -v footer "%s$(tput sgr0) %s %s %s %s %s %s" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "${footer7}${footer_link:+ -> ${footer_link}}"
     printf -v footer "%-$((cols - 10)).$((cols - 10))s  %s  %d%%" "$footer" "$((index + cursor))/${total_files_col_2}" "$(((100 * (index + cursor)) / total_files_col_2))"
     if ((${#footer} >= cols))
     then
-        printf '%s\n' "${footer:$((${#footer} - cols))}"
+        printf '%s\n' "${footer:$((${#footer} - cols))}" 2>/dev/null
     else
-        printf '%s\n' "$footer"
+        printf '%s\n' "$footer" 2>/dev/null
     fi
     tput sgr0
 
@@ -278,10 +276,10 @@ __blscd_listfiles()
     __blscd_find()
     {
         find -L "$PWD" -mindepth 1 -maxdepth 1 \
-                \( -xtype l -type d -printf '%f\n' \) \
-                -o \( -xtype l -type f -printf '%f\n' \) \
-                -o \( -xtype d -type d -printf '%f\n' \) \
-                -o \( -xtype f -type f -printf '%f\n' \) | \
+                \( -xtype l -type d -printf "%f\n" \) \
+                -o \( -xtype l -type f -printf "%f\n" \) \
+                -o \( -xtype d -type d -printf "%f\n" \) \
+                -o \( -xtype f -type f -printf "%f\n" \) | \
             sort -bg
     }
 
@@ -306,7 +304,12 @@ __blscd_openfile()
 {
     case $(file --mime-type -bL "$1") in
         inode/directory)
-            __blscd_movedir "$1"
+            if ! find "$1" -maxdepth 0 -empty 1>/dev/null 2>&1
+            then
+                __blscd_movedir "$1"
+            else
+                 __blscd_resize
+            fi
             ;;
         *)
             eval "$file_opener" 2>/dev/null
@@ -353,7 +356,7 @@ declare \
 
 declare -i \
     parent_index= \
-     parent_index_position= \
+    parent_index_position= \
     query_chars=
 
 declare -a \
@@ -408,7 +411,7 @@ do
             __blscd_movedir ..
             ;;
         l|$'\e[C'|"")
-            __blscd_openfile "${current_line#*->}"
+            __blscd_openfile "$current_line"
             __blscd_resize
             ;;
         d)

@@ -46,6 +46,7 @@ __blscd_draw()
         cols= \
         cols_length= \
         i= \
+        j= \
         lines= \
         parent_index_position=
 
@@ -68,11 +69,7 @@ __blscd_draw()
     then
         mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
         total_files_col_2=${#files_col_2[@]}
-        for ((i=$lines ; i > 0 ; --i))
-        do
-            tput cup "$((i - 1))" 0
-            tput el
-        done
+        tput clear
         if [[ $PWD == / ]]
         then
             files_col_1=(\~)
@@ -88,6 +85,12 @@ __blscd_draw()
                     parent_index=$i && \
                     break
             done
+            if (((parent_index + 1) > (lines - 3)))
+            then
+                files_col_1=("${files_col_1[@]:${parent_index}:$((lines - 3))}")
+            else
+                files_col_1=("${files_col_1[@]:0:$((lines - 3))}")
+            fi
         fi
     else
         if ((total_files_col_3 < (lines - offset + 1)))
@@ -126,19 +129,10 @@ __blscd_draw()
     tput sgr0
 
     # Print columns with file listing.
-    if (((parent_index + 1) > (lines - 3)))
-    then
-        __blscd_print_col1() { printf "%-${cols_length}.${cols_length}s\n" "${files_col_1[@]:${parent_index}:$((lines - 3))}" ; }
-        parent_index_position=0
-    else
-        __blscd_print_col1() { printf "%-${cols_length}.${cols_length}s\n" "${files_col_1[@]:0:$((lines - 3))}" ; }
-        parent_index_position=$parent_index
-    fi
-    paste -d '/' \
-        <(__blscd_print_col1) \
-        <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_2[@]:$((index - 1)):$((lines - 3))}") \
-        <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_3[@]:0:$((lines - 3))}") | \
-        column -ent -s '/' -c "$cols"
+    for ((i=0 , j=index-1 ; i <= lines - 3 ; ++i , ++j))
+    do
+        printf "%-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s\n" "${files_col_1[$i]}" "${files_col_2[$j]}" "${files_col_3[$i]}"
+    done
 
     # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")
@@ -401,7 +395,7 @@ do
             __blscd_movedir ..
             ;;
         l|$'\e[C'|"")
-            __blscd_openfile "$current_line"
+            __blscd_openfile "${current_line#*->}"
             __blscd_resize
             ;;
         d)

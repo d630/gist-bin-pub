@@ -272,7 +272,12 @@ __blscd_listfiles()
 {
     __blscd_find()
     {
-       find -L "$PWD" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg
+        find -L "$PWD" -mindepth 1 -maxdepth 1 \
+                \( -xtype l -type d -printf '%f\n' \) \
+                -o \( -xtype l -type f -printf '%f\n' \) \
+                -o \( -xtype d -type d -printf '%f\n' \) \
+                -o \( -xtype f -type f -printf '%f\n' \) | \
+            sort -bg
     }
 
     if [[ $1 ]]

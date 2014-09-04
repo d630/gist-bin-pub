@@ -75,6 +75,7 @@ __blscd_draw()
         tput clear
         mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
         total_files_col_2=${#files_col_2[@]}
+        ((total_files_col_2 == 0)) && total_files_col_2=1
         if [[ $PWD == / ]]
         then
             files_col_1=(\~)
@@ -188,9 +189,9 @@ __blscd_draw()
     printf -v footer "%-$((cols - 10)).$((cols - 10))s  %s  %d%%" "$footer" "$((index + cursor))/${total_files_col_2}" "$(((100 * (index + cursor)) / total_files_col_2))"
     if ((${#footer} >= cols))
     then
-        printf '%s\n' "${footer:$((${#footer} - cols))}" 2>/dev/null
+        printf '%s\n' "${footer:$((${#footer} - cols))}"
     else
-        printf '%s\n' "$footer" 2>/dev/null
+        printf '%s\n' "$footer"
     fi
     tput sgr0
 
@@ -304,12 +305,7 @@ __blscd_openfile()
 {
     case $(file --mime-type -bL "$1") in
         inode/directory)
-            if ! find "$1" -maxdepth 0 -empty 1>/dev/null 2>&1
-            then
-                __blscd_movedir "$1"
-            else
-                 __blscd_resize
-            fi
+                 __blscd_movedir "$1"
             ;;
         *)
             eval "$file_opener" 2>/dev/null

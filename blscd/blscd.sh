@@ -46,7 +46,8 @@ __blscd_draw()
         cols= \
         cols_length= \
         i= \
-        lines=
+        lines= \
+        parent_index_position=
 
     declare \
         footer= \
@@ -84,7 +85,6 @@ __blscd_draw()
         then
             files_col_1=(\~)
             total_files_col_1=0 # ?
-            parent=\~
             parent_index=0
         else
             parent=${PWD%/*}
@@ -92,9 +92,9 @@ __blscd_draw()
             total_files_col_1=${#files_col_1[@]}
             for i in "${!files_col_1[@]}"
             do
-                [[ ${files_col_1[$i]} == $current_line ]] && \
-                    parent=${files_col_1[$i]} && \
-                    parent_index=$i
+                [[ ${parent}/${files_col_1[$i]} == $PWD ]] && \
+                    parent_index=$i && \
+                    break
             done
         fi
     else
@@ -125,8 +125,16 @@ __blscd_draw()
     tput sgr0
 
     # Print columns with file listing.
+    if (((parent_index + 1) > (lines - 3)))
+    then
+        __blscd_print_col1() { printf "%-${cols_length}.${cols_length}s\n" "${files_col_1[@]:${parent_index}:$((lines - 3))}" ; }
+        parent_index_position=0
+    else
+        __blscd_print_col1() { printf "%-${cols_length}.${cols_length}s\n" "${files_col_1[@]:0:$((lines - 3))}" ; }
+        parent_index_position=$parent_index
+    fi
     paste -d '/' \
-        <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_1[@]:0:$((lines - 3))}") \
+        <(__blscd_print_col1) \
         <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_2[@]:$((index - 1)):$((lines - 3))}") \
         <(printf "%-${cols_length}.${cols_length}s\n" "${files_col_3[@]:0:$((lines - 3))}") | \
         column -ent -s '/' -c "$cols"
@@ -146,6 +154,12 @@ __blscd_draw()
         printf '%s\n' "$footer"
     fi
     tput sgr0
+
+    # Reprint parent in column 1.
+    tput cup "$((parent_index_position + 1))" "$cols_length"
+    tput -S < <(printf '%s\n' el1 bold "setaf 0" "setab 2")
+    tput cup "$((parent_index_position + 1))" 0
+    printf "%-${cols_length}.${cols_length}s$(tput sgr0)" "${files_col_1[$parent_index]}"
 
     # Reprint current line in column 2.
     tput cup "$((cursor + 1))" "$((cols_length + 2))"
@@ -326,7 +340,9 @@ declare \
     redraw=redraw \
     reprint=reprint
 
-declare -i query_chars=
+declare -i \
+    parent_index= \
+    query_chars=
 
 declare -a \
     files_col_1=() \
@@ -378,7 +394,7 @@ do
         h|$'\e[D')
             __blscd_movedir ..
             ;;
-        l|$'\e[C')
+        l|$'\e[C'|"")
             __blscd_openfile "$current_line"
             __blscd_resize
             ;;

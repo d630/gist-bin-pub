@@ -87,9 +87,11 @@ __blscd_draw()
             done
             if (((parent_index + 1) > (lines - 3)))
             then
-                files_col_1=("${files_col_1[@]:${parent_index}:$((lines - 3))}")
+                files_col_1_a=("${files_col_1[@]:${parent_index}:$((lines - 3))}")
+                 parent_index_position=0
             else
-                files_col_1=("${files_col_1[@]:0:$((lines - 3))}")
+                files_col_1_a=("${files_col_1[@]:0:$((lines - 3))}")
+                parent_index_position=$parent_index
             fi
         fi
     else
@@ -131,8 +133,10 @@ __blscd_draw()
     # Print columns with file listing.
     for ((i=0 , j=index-1 ; i <= lines - 3 ; ++i , ++j))
     do
-        printf "%-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s\n" "${files_col_1[$i]}" "${files_col_2[$j]}" "${files_col_3[$i]}"
+        printf "%-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s\n" "${files_col_1_a[$i]}" "${files_col_2[$j]}" "${files_col_3[$i]}"
     done
+
+    #if [[ parent_index ]
 
     # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")

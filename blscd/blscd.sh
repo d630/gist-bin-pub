@@ -68,7 +68,7 @@ __blscd_draw()
         parent=
 
     read -r cols lines <<<$(tput cols ; tput lines)
-    cols_length=$(((cols - 4) / 3))
+    cols_length=$(((cols - 2) / 3))
 
     if [[ $reprint == reprint ]]
     then
@@ -108,7 +108,7 @@ __blscd_draw()
         fi
         for ((i=$i ; i > 0 ; --i))
         do
-            tput cup "$i" "$(((cols_length * 2) + 4))"
+            tput cup "$i" "$(((cols_length * 2) + 2))"
             tput el
         done
     fi
@@ -169,7 +169,7 @@ __blscd_draw()
             fi
             col_3_color_reset=$(tput sgr0)
         }
-        printf "${col_1_color_1}%-${cols_length}.${cols_length}s${col_1_color_reset}  ${col_2_color_1}%-${cols_length}.${cols_length}s${col_2_color_reset}  ${col_3_color_1}%-${cols_length}.${cols_length}s${col_3_color_reset}\n" "${files_col_1_a[$i]}" "${files_col_2[$j]}" "${files_col_3[$i]}"
+        printf "${col_1_color_1}%-${cols_length}.${cols_length}s${col_1_color_reset} ${col_2_color_1}%-${cols_length}.${cols_length}s${col_2_color_reset} ${col_3_color_1}%-${cols_length}.${cols_length}s${col_3_color_reset}\n" " ${files_col_1_a[$i]} " " ${files_col_2[$j]} " " ${files_col_3[$i]} "
         col_1_color_1=
         col_2_color_1=
         col_3_color_1=
@@ -184,8 +184,10 @@ __blscd_draw()
         <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${current_line}")
     tput cup "$((lines - offset + 2))" 0
     tput el
+
     #printf -v footer "%s | %d,%0${col_0_line_longest}d,%0${col_0_line_longest}d,%0${col_0_line_longest}d" "${footer1}$(tput sgr0) ${footer2} ${footer3} ${footer4} ${footer5} ${footer6} ${footer7}${footer_link:+ -> ${footer_link}}" "$max_number" "$total_files_col_1" "$total_files_col_2" "$total_files_col_3"
     printf -v footer "%s$(tput sgr0) %s %s %s %s %s %s" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "${footer7}${footer_link:+ -> ${footer_link}}"
+    printf -v footer "%-$((cols - 10)).$((cols - 10))s  %s  %d%%" "$footer" "$((index + cursor))/${total_files_col_2}" "$(((100 * (index + cursor)) / total_files_col_2))"
     if ((${#footer} >= cols))
     then
         printf '%s\n' "${footer:$((${#footer} - cols))}"

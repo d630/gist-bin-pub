@@ -61,21 +61,13 @@ __blscd_draw()
         header= \
         parent=
 
-    mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
-    total_files_col_2=${#files_col_2[@]}
-    printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
     read -r cols lines <<<$(tput cols ; tput lines)
-    cols_length=$(((cols - 4) / 3)) # !
-
-    if ((total_files_col_2 > (lines - offset + 1)))
-    then
-        total_visible_files_col_2=$((lines - offset + 1))
-    else
-        total_visible_files_col_2=$total_files_col_2
-    fi
+    cols_length=$(((cols - 4) / 3))
 
     if [[ $reprint == reprint ]]
     then
+        mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
+        total_files_col_2=${#files_col_2[@]}
         for ((i=$lines ; i > 0 ; --i))
         do
             tput cup "$((i - 1))" 0
@@ -98,17 +90,26 @@ __blscd_draw()
             done
         fi
     else
-        if ((total_files_col_3 < lines))
+        if ((total_files_col_3 < (lines - offset + 1)))
         then
             i=$total_files_col_3
         else
-            i=$((lines - 1))
+            i=$((lines - offset + 1))
         fi
         for ((i=$i ; i > 0 ; --i))
         do
             tput cup "$i" "$(((cols_length * 2) + 4))"
             tput el
         done
+    fi
+
+    printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
+
+    if ((total_files_col_2 > (lines - offset + 1)))
+    then
+        total_visible_files_col_2=$((lines - offset + 1))
+    else
+        total_visible_files_col_2=$total_files_col_2
     fi
 
     mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
@@ -173,7 +174,7 @@ __blscd_draw()
     else
         tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
     fi
-    printf "%-${cols_length}.${cols_length}s$(tput sgr0)  %-${cols_length}.${cols_length}s" "${files_col_2[$index + $cursor - 1]}" "${files_col_3[$index + $cursor - 1]}"
+    printf "%-${cols_length}.${cols_length}s$(tput sgr0)  %-${cols_length}.${cols_length}s" "${files_col_2[$index + $cursor - 1]}" "${files_col_3[$cursor]}"
 
     # Reprint first line in column 3.
     tput cup 1 "$(((cols_length * 2) + 4))"

@@ -47,10 +47,15 @@ __blscd_draw()
         cols_length= \
         i= \
         j= \
-        lines= \
-        parent_index_position=
+        lines=
 
     declare \
+        col_1_color_1= \
+        col_1_color_reset= \
+        col_2_color_1= \
+        col_2_color_reset= \
+        col_3_color_1= \
+        col_3_color_reset= \
         footer= \
         footer1= \
         footer2= \
@@ -67,13 +72,13 @@ __blscd_draw()
 
     if [[ $reprint == reprint ]]
     then
+        tput clear
         mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
         total_files_col_2=${#files_col_2[@]}
-        tput clear
         if [[ $PWD == / ]]
         then
             files_col_1=(\~)
-            total_files_col_1=0 # ?
+            total_files_col_1=0
             parent_index=0
         else
             parent=${PWD%/*}
@@ -88,7 +93,7 @@ __blscd_draw()
             if (((parent_index + 1) > (lines - 3)))
             then
                 files_col_1_a=("${files_col_1[@]:${parent_index}:$((lines - 3))}")
-                 parent_index_position=0
+                parent_index_position=0
             else
                 files_col_1_a=("${files_col_1[@]:0:$((lines - 3))}")
                 parent_index_position=$parent_index
@@ -133,10 +138,45 @@ __blscd_draw()
     # Print columns with file listing.
     for ((i=0 , j=index-1 ; i <= lines - 3 ; ++i , ++j))
     do
-        printf "%-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s  %-${cols_length}.${cols_length}s\n" "${files_col_1_a[$i]}" "${files_col_2[$j]}" "${files_col_3[$i]}"
+        ((i == parent_index)) &&
+        {
+            col_1_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
+            col_1_color_reset=$(tput sgr0)
+        }
+        ((j == (index + cursor - 1))) &&
+        {
+            if [[ -d $current_line ]]
+            then
+                col_2_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
+            elif [[ -f $current_line ]]
+            then
+                col_2_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 7"))
+            else
+                col_2_color_1=$(tput -S < <(printf '%s\n' bold "setaf 7" "setab 1"))
+            fi
+            col_2_color_reset=$(tput sgr0)
+        }
+        ((i == 0)) &&
+        {
+            if [[ -d ${current_line}/${files_col_3[0]} ]]
+            then
+                col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
+            elif [[ -f ${current_line}/${files_col_3[0]} ]]
+            then
+                col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 7"))
+            else
+                col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 7" "setab 1"))
+            fi
+            col_3_color_reset=$(tput sgr0)
+        }
+        printf "${col_1_color_1}%-${cols_length}.${cols_length}s${col_1_color_reset}  ${col_2_color_1}%-${cols_length}.${cols_length}s${col_2_color_reset}  ${col_3_color_1}%-${cols_length}.${cols_length}s${col_3_color_reset}\n" "${files_col_1_a[$i]}" "${files_col_2[$j]}" "${files_col_3[$i]}"
+        col_1_color_1=
+        col_2_color_1=
+        col_3_color_1=
+        col_1_color_reset=
+        col_2_color_reset=
+        col_3_color_reset=
     done
-
-    #if [[ parent_index ]
 
     # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")
@@ -152,41 +192,6 @@ __blscd_draw()
     else
         printf '%s\n' "$footer"
     fi
-    tput sgr0
-
-    # Reprint parent in column 1.
-    tput cup "$((parent_index_position + 1))" "$cols_length"
-    tput -S < <(printf '%s\n' el1 bold "setaf 0" "setab 2")
-    tput cup "$((parent_index_position + 1))" 0
-    printf "%-${cols_length}.${cols_length}s$(tput sgr0)" "${files_col_1[$parent_index]}"
-
-    # Reprint current line in column 2.
-    tput cup "$((cursor + 1))" "$((cols_length + 2))"
-    tput -S < <(printf '%s\n' el bold)
-    if [[ -d $current_line ]]
-    then
-        tput -S < <(printf '%s\n' "setaf 0" "setab 2")
-    elif [[ -f $current_line ]]
-    then
-        tput -S < <(printf '%s\n' "setaf 0" "setab 7")
-    else
-        tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
-    fi
-    printf "%-${cols_length}.${cols_length}s$(tput sgr0)  %-${cols_length}.${cols_length}s" "${files_col_2[$index + $cursor - 1]}" "${files_col_3[$cursor]}"
-
-    # Reprint first line in column 3.
-    tput cup 1 "$(((cols_length * 2) + 4))"
-    tput -S < <(printf '%s\n' el bold)
-    if [[ -d ${current_line}/${files_col_3[0]} ]]
-    then
-        tput -S < <(printf '%s\n' "setaf 0" "setab 2")
-    elif [[ -f ${current_line}/${files_col_3[0]} ]]
-    then
-        tput -S < <(printf '%s\n' "setaf 0" "setab 7")
-    else
-        tput -S < <(printf '%s\n' "sgr0" "setaf 7" "setab 1")
-    fi
-    printf "%-${cols_length}.${cols_length}s" "${files_col_3[0]}"
     tput sgr0
 
     # Set new position of the cursor.
@@ -346,10 +351,12 @@ declare \
 
 declare -i \
     parent_index= \
+     parent_index_position= \
     query_chars=
 
 declare -a \
     files_col_1=() \
+    files_col_1_a=() \
     files_col_2=() \
     files_col_3=()
 

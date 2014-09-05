@@ -76,27 +76,30 @@ __blscd_draw()
         mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
         total_files_col_2=${#files_col_2[@]}
         ((total_files_col_2 == 0)) && total_files_col_2=1
+        parent=${PWD%/*}
+        parent=${parent:-/}
         if [[ $PWD == / ]]
         then
             files_col_1=(\~)
+            files_col_1_a=(\~)
             total_files_col_1=0
             parent_index=0
+            parent_index_position=0
         else
-            parent=${PWD%/*}
-            mapfile -t files_col_1 < <(find -L "${parent:-/}" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | sort -bg)
-            total_files_col_1=${#files_col_1[@]}
-            for i in "${!files_col_1[@]}"
+            files_col_1=()
+            i=-1
+            while IFS= read -r -d ''
             do
-                [[ ${parent}/${files_col_1[$i]} == $PWD ]] && \
-                    parent_index=$i && \
-                    break
-            done
-            if (((parent_index + 1) > (lines - 3)))
+                files_col_1[++i]=$REPLY
+                [[ $PWD == ${parent}*${REPLY} ]] && parent_index=$i
+            done < <(find -L "$parent" -mindepth 1 -maxdepth 1 -printf '%f\0' | sort -bgz)
+            total_files_col_1=${#files_col_1[@]}
+            if (((parent_index + 1) > (lines - offset + 1)))
             then
-                files_col_1_a=("${files_col_1[@]:${parent_index}:$((lines - 3))}")
+                files_col_1_a=("${files_col_1[@]:${parent_index}:$((lines - offset + 1))}")
                 parent_index_position=0
             else
-                files_col_1_a=("${files_col_1[@]:0:$((lines - 3))}")
+                files_col_1_a=("${files_col_1[@]:0:$((lines - offset + 1))}")
                 parent_index_position=$parent_index
             fi
         fi
@@ -137,7 +140,7 @@ __blscd_draw()
     tput sgr0
 
     # Print columns with file listing.
-    for ((i=0 , j=index-1 ; i <= lines - 3 ; ++i , ++j))
+    for ((i=0 , j=index-1 ; i <= lines - offset + 1 ; ++i , ++j))
     do
         col_1_color_1=
         col_2_color_1=

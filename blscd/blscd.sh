@@ -64,6 +64,10 @@ __blscd_draw()
         footer5= \
         footer6= \
         footer7= \
+        footer8= \
+        footer9= \
+        footer10= \
+        footer11= \
         header= \
         parent=
 
@@ -73,9 +77,6 @@ __blscd_draw()
     if [[ $reprint == reprint ]]
     then
         tput clear
-        mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
-        total_files_col_2=${#files_col_2[@]}
-        ((total_files_col_2 == 0)) && total_files_col_2=1
         parent=${PWD%/*}
         parent=${parent:-/}
         if [[ $PWD == / ]]
@@ -103,6 +104,9 @@ __blscd_draw()
                 parent_index_position=$parent_index
             fi
         fi
+        mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
+        total_files_col_2=${#files_col_2[@]}
+        ((total_files_col_2 == 0)) && total_files_col_2=1
     else
         if ((total_files_col_3 < (lines - offset + 1)))
         then
@@ -136,7 +140,7 @@ __blscd_draw()
     # Print the header.
     tput -S < <(printf '%s\n' home el bold "setaf 4")
     printf -v header "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$current_line"
-    printf "%-${cols}.${cols}s\n" "${header//\/\//\/}"
+    printf "%s\n" "${header//\/\//\/}"
     tput sgr0
 
     # Print columns with file listing.
@@ -184,18 +188,13 @@ __blscd_draw()
 
     # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")
-    read -r footer1 footer2 footer3 footer4 footer5 footer6 footer7 _ _ footer_link \
+    read -r footer1 footer2 footer3 footer4 footer5 footer6 footer7 _ _ footer8 \
         <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${current_line}")
+    read -r footer9 footer10 footer11 <<<"$((index + cursor)) ${total_files_col_2} $(((100 * (index + cursor)) / total_files_col_2))"
     tput cup "$((lines - offset + 2))" 0
     tput el
-    printf -v footer "%s$(tput sgr0) %s %s %s %s %s %s" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "${footer7}${footer_link:+ -> ${footer_link}}"
-    printf -v footer "%-$((cols - 10)).$((cols - 10))s  %s  %d%%" "$footer" "$((index + cursor))/${total_files_col_2}" "$(((100 * (index + cursor)) / total_files_col_2))"
-    if ((${#footer} >= cols))
-    then
-        printf '%s\n' "${footer:$((${#footer} - cols))}"
-    else
-        printf '%s\n' "$footer"
-    fi
+    printf -v footer "%s %s %s %s %s %s %s${footer8:+ -> %s}  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" $footer8 "$footer9" "$footer10" "$footer11"
+    printf "%s$(tput sgr0) %s %s %s %s %s${footer8:+ %s ->} %-$((cols - ${#footer} + ${#footer7} ${footer8:++ $((${#footer8} - ${#footer7}))}))s  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" $footer8 "$footer9" "$footer10" "$footer11"
     tput sgr0
 
     # Set new position of the cursor.
@@ -301,7 +300,7 @@ __blscd_movedir()
     index=1
     cursor=0
     search_pattern=
-    cd -- "$1"
+    builtin cd -- "$1"
 }
 
 __blscd_openfile()
@@ -326,9 +325,7 @@ __blscd_on_exit()
 {
     stty $stty_orig
     eval "$save_traps"
-    tput clear
-    tput rmcup
-    tput cvvis
+    tput -S < <(printf '%s\n' clear rmcup cnorm am)
 }
 
 # -- MAIN.
@@ -345,7 +342,6 @@ declare -i \
 # Variables related to the TUI.
 declare \
     current_line= \
-    footer_link= \
     input= \
     k1= \
     k2= \
@@ -366,7 +362,7 @@ declare -a \
 
 # Initialize settings.
 declare \
-    file_opener='xterm -e "export LESSOPEN='"| /usr/bin/lesspipe %s"';less -R "$1""' \
+    file_opener='export LESSOPEN='"| /usr/bin/lesspipe %s"';less -R "$1"' \
     INT_step=6 \
     search_pattern=
 
@@ -388,6 +384,7 @@ export LC_ALL=C.UTF-8
 while :
 do
     tput civis
+    tput rmam
     [[ $redraw == redraw ]] &&
     {
         __blscd_draw
@@ -411,6 +408,7 @@ do
             ;;
         l|$'\e[C'|"")
             __blscd_openfile "$current_line"
+            tput smcup
             __blscd_resize
             ;;
         d)
@@ -426,21 +424,25 @@ do
             __blscd_move 9999999999
             ;;
         $'\eh')
-            cd -- ..
+            builtin cd -- ..
             __blscd_resize
             ;;
         $'\el')
             tput cvvis
-            __blscd_openfile "$footer_link"
+            tput am
+            __blscd_openfile "$footer_link" #!
             __blscd_resize
             ;;
         o)
             tput cvvis
+            tput am
             fsfzf.sh
+            tput smcup
             __blscd_resize
             ;;
         f)
             tput cvvis
+            tput am
             read -n 1 input
             case $input in
                 q)

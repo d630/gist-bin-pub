@@ -70,12 +70,14 @@ __blscd_draw()
         footer11= \
         parent=
 
+    # Get dimension.
     read -r cols lines <<<$(tput cols ; tput lines)
     cols_length=$(((cols - 2) / 3))
 
     if [[ $reprint == reprint ]]
     then
         tput clear
+        # Build column 1.
         parent=${PWD%/*}
         parent=${parent:-/}
         if [[ $PWD == / ]]
@@ -103,10 +105,12 @@ __blscd_draw()
                 parent_index_position=$parent_index
             fi
         fi
+        # Build column 2.
         mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
         total_files_col_2=${#files_col_2[@]}
         ((total_files_col_2 == 0)) && total_files_col_2=1
     else
+        # Delete obsolete lines in column 3.
         if ((total_files_col_3 <= 15))
         then
             if ((total_files_col_3 < (lines - offset + 1)))
@@ -121,9 +125,9 @@ __blscd_draw()
                 tput el
             done
         else
-            tput cup 2 0
             ((total_files_col_3 < lines - offset + 1 && total_files_col_1 > 5)) &&
             {
+                tput cup 2 0
                 for ((i=${total_files_col_3} ; i < lines - offset + 1 ; ++i))
                 do
                     printf "%-${cols_length}.${cols_length}s\n" ""
@@ -134,6 +138,7 @@ __blscd_draw()
 
     printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
 
+    # Preparing for __blscd_move().
     if ((total_files_col_2 > (lines - offset + 1)))
     then
         total_visible_files_col_2=$((lines - offset + 1))
@@ -141,6 +146,7 @@ __blscd_draw()
         total_visible_files_col_2=$total_files_col_2
     fi
 
+    # Build column 3.
     mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
     total_files_col_3=${#files_col_3[@]}
     ((total_files_col_3 == 0)) && \
@@ -161,8 +167,8 @@ __blscd_draw()
     printf "%s\n" "${header//\/\//\/}"
     tput sgr0
 
+    # Print columns with file listing and highlight lines.
     tput cup 1 0
-    # Print columns with file listing.
     for ((i=0 , j=index-1 ; i <= lines - offset + 1 ; ++i , ++j))
     do
         col_1_color_1=
@@ -361,6 +367,7 @@ declare -i \
 # Variables related to the TUI.
 declare \
     current_line= \
+    header= \
     input= \
     k1= \
     k2= \

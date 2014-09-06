@@ -68,7 +68,6 @@ __blscd_draw()
         footer9= \
         footer10= \
         footer11= \
-        header= \
         parent=
 
     read -r cols lines <<<$(tput cols ; tput lines)
@@ -108,17 +107,29 @@ __blscd_draw()
         total_files_col_2=${#files_col_2[@]}
         ((total_files_col_2 == 0)) && total_files_col_2=1
     else
-        if ((total_files_col_3 < (lines - offset + 1)))
+        if ((total_files_col_3 <= 15))
         then
-            i=$total_files_col_3
+            if ((total_files_col_3 < (lines - offset + 1)))
+            then
+                i=$total_files_col_3
+            else
+                i=$((lines - offset + 1))
+            fi
+            for ((i=$i ; i > 1 ; --i))
+            do
+                tput cup "$i" "$(((cols_length * 2) + 2))"
+                tput el
+            done
         else
-            i=$((lines - offset + 1))
+            tput cup 2 0
+            ((total_files_col_3 < lines - offset + 1 && total_files_col_1 > 5)) &&
+            {
+                for ((i=${total_files_col_3} ; i < lines - offset + 1 ; ++i))
+                do
+                    printf "%-${cols_length}.${cols_length}s\n" ""
+                done
+            }
         fi
-        for ((i=$i ; i > 1 ; --i))
-        do
-            tput cup "$i" "$(((cols_length * 2) + 2))"
-            tput el
-        done
     fi
 
     printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
@@ -138,11 +149,19 @@ __blscd_draw()
         total_files_col_3=1
 
     # Print the header.
-    tput -S < <(printf '%s\n' home el bold "setaf 4")
-    printf -v header "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$current_line"
+    if [[ $reprint == reprint ]]
+    then
+        tput -S < <(printf '%s\n' bold "setaf 4")
+        printf -v header "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$current_line"
+    else
+        tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#PWD} + 3))"
+        tput -S < <(printf '%s\n' el bold "setaf 4")
+        printf -v header "$(tput setaf 7)%s" "$current_line"
+    fi
     printf "%s\n" "${header//\/\//\/}"
     tput sgr0
 
+    tput cup 1 0
     # Print columns with file listing.
     for ((i=0 , j=index-1 ; i <= lines - offset + 1 ; ++i , ++j))
     do

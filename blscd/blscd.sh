@@ -228,75 +228,82 @@ __blscd_draw()
 
 __blscd_move()
 {
-    local arg="$1"
-    local new_cursor
+    declare -i \
+        arg=$1 \
+        difference= \
+        max_cursor=$((total_visible_files_col_2 - 1))
+        max_index=$((total_files_col_2 - total_visible_files_col_2 + 1))
+        new_cursor= \
+        old_index=$index \
+        step=
 
-    redraw=redraw
-    max_index="$((total_files_col_2 - total_visible_files_col_2 + 1))"
-    max_cursor="$((total_visible_files_col_2 - 1))"
-
-    # Save the previous index value to determine if ui should be redrawn
-    old_index="$index"
+    redraw=redraw \
 
     # Add the argument to the current cursor
     cursor="$((cursor + arg))"
 
-    if [ "$cursor" -ge "$total_visible_files_col_2" ]; then
-        # Cursor moved past the bottom of the list
+    ((cursor >= total_visible_files_col_2)) &&
+    {
+        # Cursor moved past the bottom of the list.
 
-        if [ "$total_visible_files_col_2" -ge "$total_files_col_2" ]; then
+        if ((total_visible_files_col_2 >= total_files_col_2))
+        then
             # The list fits entirely on the screen.
             index=1
         else
             # The list doesn't fit on the screen.
-            if [ "$((index + cursor))" -gt "$total_files_col_2" ]; then
+            if ((index + cursor > total_files_col_2))
+            then
                 # Cursor out of bounds. Put it at the very bottom.
-                index="$max_index"
+                index=$max_index
             else
-                # Move the index down so the visible part of the list
-                # also shows the cursor
-                difference="$((total_visible_files_col_2 - 1 - cursor))"
-                index="$((index - difference))"
+                # Move the index down so the visible part of the list,
+                # also shows the cursor.
+                difference=$((total_visible_files_col_2 - 1 - cursor))
+                index=$((index - difference))
             fi
         fi
 
         # In any case, place the cursor on the last file.
-        cursor="$max_cursor"
-    fi
+        cursor=$max_cursor
+    }
 
-    if [ "$cursor" -lt 0 ]; then
+    ((cursor <= 0)) &&
+    {
         # Cursor is above the list, so scroll up.
-        index="$((index + cursor))"
+        index=$((index + cursor))
         cursor=0
-    fi
+    }
 
-    # The index should always be >0 and <$max_index
-    [ "$index" -gt "$max_index" ] && index="$max_index"
-    [ "$index" -lt 1 ] && index=1
+    # The index should always be >0 and <$max_index.
+    ((index > max_index)) && index=$max_index
+    ((index < 1)) && index=1
 
-    if [ "$index" != "$old_index" ]; then
-        # Redraw if the index (and thus the visible files) has changed
+    ((index != old_index)) &&
+    {
+        # Redraw if the index (and thus the visible files) has changed.
         reprint=reprint
 
-        # Jump a step when scrolling
-        if [ "$index" -gt "$old_index" ]; then
-            # Jump a step down
-            step="$((max_index - index))"
-            [ "$step" -gt "$INT_step" ] && step="$INT_step"
-            index="$((index + step))"
-            cursor="$((cursor - step))"
+        # Jump a step when scrolling.
+        if ((index > old_index))
+        then
+            # Jump a step down.
+            step=$((max_index - index))
+            ((step > INT_step)) && step=$INT_step
+            index=$((index + step))
+            cursor=$((cursor - step))
         else
-            # Jump a step up
-            step="$((index - 1))"
-            [ "$step" -gt "$INT_step" ] && step="$INT_step"
-            index="$((index - step))"
-            cursor="$((cursor + step))"
+            # Jump a step up.
+            step=$((index - 1))
+            ((step > INT_step)) && step=$INT_step
+            index=$((index - step))
+            cursor=$((cursor + step))
         fi
-    fi
+    }
 
-    # The index should always be >0 and <$max_index
-    [ "$index" -gt "$max_index" ] && index="$max_index"
-    [ "$index" -lt 1 ] && index=1
+    # The index should always be >0 and <$max_index.
+    ((index > max_index)) && index=$max_index
+    ((index < 1)) && index=1
 }
 
 __blscd_listfiles()

@@ -74,10 +74,10 @@ __blscd_draw_screen()
     read -r cols lines <<<$(tput cols ; tput lines)
     cols_length=$(((cols - 2) / 3))
 
-    if [[ $reprint == reprint ]]
+    if [[ $reprint == reprint && $action_last != __blscd_move_col_2_line ]]
     then
-        tput clear
         # Build column 1.
+        tput clear
         parent=${PWD%/*}
         parent=${parent:-/}
         if [[ $PWD == / ]]
@@ -96,10 +96,17 @@ __blscd_draw_screen()
                 [[ $PWD == ${parent}*${REPLY} ]] && parent_index=$i
             done < <(find -L "$parent" -mindepth 1 -maxdepth 1 -printf '%f\0' | sort -bgz)
             total_files_col_1=${#files_col_1[@]}
-            if (((parent_index + 1) > (lines - offset + 1)))
+            if ((parent_index > (lines - offset + 1)))
             then
+                if (((total_files_col_1 - parent_index) < INT_step))
+                then
+                    parent_index=$((parent_index - INT_step))
+                    parent_index_position=$INT_step
+                else
+                    parent_index_position=$parent_index
+                    parent_index_position=0
+                fi
                 files_col_1_a=("${files_col_1[@]:${parent_index}:$((lines - offset + 1))}")
-                parent_index_position=0
             else
                 files_col_1_a=("${files_col_1[@]:0:$((lines - offset + 1))}")
                 parent_index_position=$parent_index
@@ -157,6 +164,7 @@ __blscd_draw_screen()
     # Print the header.
     if [[ $reprint == reprint ]]
     then
+        tput cup 0 0
         tput -S < <(printf '%s\n' bold "setaf 4")
         printf -v header "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$current_line"
     else
@@ -218,8 +226,8 @@ __blscd_draw_screen()
     read -r footer9 footer10 footer11 <<<"$((index + cursor)) ${total_files_col_2} $(((100 * (index + cursor)) / total_files_col_2))"
     tput cup "$((lines - offset + 2))" 0
     tput el
-    printf -v footer "%s %s %s %s %s %s %s${footer8:+ -> %s}  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" $footer8 "$footer9" "$footer10" "$footer11"
-    printf "%s$(tput sgr0) %s %s %s %s %s${footer8:+ %s ->} %-$((cols - ${#footer} + ${#footer7} ${footer8:++ $((${#footer8} - ${#footer7}))}))s  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" $footer8 "$footer9" "$footer10" "$footer11"
+    printf -v footer "%s %s %s %s %s %s %s${footer8:+ -> %s}  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" ${footer8:+"${footer8}"} "$footer9" "$footer10" "$footer11"
+    printf "%s$(tput sgr0) %s %s %s %s %s${footer8:+ %s ->} %-$((cols - ${#footer} + ${#footer7} ${footer8:++ $((${#footer8} - ${#footer7}))}))s  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" ${footer8:+"${footer8}"} "$footer9" "$footer10" "$footer11"
     tput sgr0
 
     # Set new position of the cursor.
@@ -239,10 +247,10 @@ __blscd_move_col_2_line()
         old_index=$index \
         step=
 
-    redraw=redraw \
+    redraw=redraw
 
     # Add the argument to the current cursor
-    cursor="$((cursor + arg))"
+    cursor=$((cursor + arg))
 
     ((cursor >= total_visible_files_col_2)) &&
     {

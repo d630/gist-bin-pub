@@ -40,7 +40,7 @@
 
 # -- FUNCTIONS.
 
-__blscd_draw()
+__blscd_draw_screen()
 {
     declare -i \
         cols= \
@@ -106,7 +106,7 @@ __blscd_draw()
             fi
         fi
         # Build column 2.
-        mapfile -t files_col_2 < <(__blscd_listfiles $search_pattern)
+        mapfile -t files_col_2 < <(__blscd_list_file $search_pattern)
         total_files_col_2=${#files_col_2[@]}
         ((total_files_col_2 == 0)) && total_files_col_2=1
     else
@@ -138,7 +138,7 @@ __blscd_draw()
 
     printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
 
-    # Preparing for __blscd_move().
+    # Preparing for __blscd_move_col_2_line().
     if ((total_files_col_2 > (lines - offset + 1)))
     then
         total_visible_files_col_2=$((lines - offset + 1))
@@ -226,8 +226,10 @@ __blscd_draw()
     tput cup "$((cursor + 1))" "$((cols_length + 2))"
 }
 
-__blscd_move()
+__blscd_move_col_2_line()
 {
+    __blscd_get_action_last
+
     declare -i \
         arg=$1 \
         difference= \
@@ -306,7 +308,17 @@ __blscd_move()
     ((index < 1)) && index=1
 }
 
-__blscd_listfiles()
+__blscd_move_dir_up()
+{
+    __blscd_get_action_last
+    __blscd_set_resize
+    index=1
+    cursor=0
+    search_pattern=
+    builtin cd -- "$1"
+}
+
+__blscd_list_file()
 {
     __blscd_find()
     {
@@ -326,20 +338,11 @@ __blscd_listfiles()
     fi
 }
 
-__blscd_movedir()
-{
-    __blscd_resize
-    index=1
-    cursor=0
-    search_pattern=
-    builtin cd -- "$1"
-}
-
-__blscd_openfile()
+__blscd_open_file()
 {
     case $(file --mime-type -bL "$1") in
         inode/directory)
-                 __blscd_movedir "$1"
+                 __blscd_move_dir_up "$1"
             ;;
         *)
             eval "$file_opener" 2>/dev/null
@@ -347,7 +350,9 @@ __blscd_openfile()
     esac
 }
 
-__blscd_resize()
+__blscd_get_action_last() { action_last=${FUNCNAME[1]} ; }
+
+__blscd_set_resize()
 {
     redraw=redraw
     reprint=reprint
@@ -370,6 +375,8 @@ declare -i \
     total_files_col_2=0 \
     total_files_col_3=0 \
     total_visible_files_col_2=0
+
+declare action_last=
 
 # Variables related to the TUI.
 declare \
@@ -409,7 +416,7 @@ tput smcup
 stty -echo
 
 #trap 'tput rmcup' EXIT
-trap '__blscd_resize' SIGWINCH
+trap '__blscd_set_resize' SIGWINCH
 trap 'tput clear' SIGINT
 
 export LC_ALL=C.UTF-8
@@ -420,7 +427,7 @@ do
     tput rmam
     [[ $redraw == redraw ]] &&
     {
-        __blscd_draw
+        __blscd_draw_screen
         redraw=
         reprint=
     }
@@ -431,47 +438,47 @@ do
     input=${input}${k1}${k2}${k3}
     case $input in
         j|$'\e[B')
-            __blscd_move 1
+            __blscd_move_col_2_line 1
             ;;
         k|$'\e[A')
-            __blscd_move -1
+            __blscd_move_col_2_line -1
             ;;
         h|$'\e[D')
-            __blscd_movedir ..
+            __blscd_move_dir_up ..
             ;;
         l|$'\e[C'|"")
-            __blscd_openfile "$current_line"
+            __blscd_open_file "$current_line"
             tput smcup
-            __blscd_resize
+            __blscd_set_resize
             ;;
         d)
-            __blscd_move 10
+            __blscd_move_col_2_line 10
             ;;
         u)
-            __blscd_move -10
+            __blscd_move_col_2_line -10
             ;;
         g)
-            __blscd_move -9999999999
+            __blscd_move_col_2_line -9999999999
             ;;
         G)
-            __blscd_move 9999999999
+            __blscd_move_col_2_line 9999999999
             ;;
         $'\eh')
             builtin cd -- ..
-            __blscd_resize
+            __blscd_set_resize
             ;;
         $'\el')
             tput cvvis
             tput am
-            __blscd_openfile "$footer_link" #!
-            __blscd_resize
+            __blscd_open_file "$footer_link" #!
+            __blscd_set_resize
             ;;
         o)
             tput cvvis
             tput am
             fsfzf.sh
             tput smcup
-            __blscd_resize
+            __blscd_set_resize
             ;;
         f)
             tput cvvis
@@ -490,21 +497,21 @@ do
                         then
                             break
                         else
-                            __blscd_resize
-                            __blscd_draw
+                            __blscd_set_resize
+                            __blscd_draw_screen
                         fi
                     done
-                    __blscd_resize
+                    __blscd_set_resize
                     search_pattern=${search_pattern//$'\r'/}
-                    __blscd_move -9999999999
+                    __blscd_move_col_2_line -9999999999
                     ;;
                 g)
                     tput cup "99998" 0
                     stty $stty_orig
                     read -e -p "/" -i "$search_pattern" search_pattern
                     stty -echo
-                    __blscd_resize
-                    __blscd_move -9999999999
+                    __blscd_set_resize
+                    __blscd_move_col_2_line -9999999999
                     ;;
             esac
             ;;
@@ -512,7 +519,7 @@ do
             search_pattern=
             ;&
         $'\x0c') # CTRL+L
-            __blscd_resize
+            __blscd_set_resize
             ;;
         q)
             __blscd_on_exit

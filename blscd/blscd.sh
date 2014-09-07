@@ -43,206 +43,201 @@
 __blscd_draw_screen()
 {
     declare -i \
-        cols= \
-        cols_length= \
+        screen_dimension_cols= \
+        screen_cols_length= \
         i= \
         j= \
-        lines=
+        screen_dimension_lines= \
+        screen_lines_body=
 
     declare \
-        col_1_color_1= \
-        col_1_color_reset= \
-        col_2_color_1= \
-        col_2_color_reset= \
-        col_3_color_1= \
-        col_3_color_reset= \
-        footer= \
-        footer1= \
-        footer2= \
-        footer3= \
-        footer4= \
-        footer5= \
-        footer6= \
-        footer7= \
-        footer8= \
-        footer9= \
-        footer10= \
-        footer11= \
-        parent=
+        color_1_col_1= \
+        color_reset_col_1= \
+        color_1_col_2= \
+        color_reset_col_2= \
+        color_1_col_3= \
+        color_reset_col_3= \
+        dir_col_0= \
+        footer10_string= \
+        footer11_string= \
+        footer1_string= \
+        footer2_string= \
+        footer3_string= \
+        footer4_string= \
+        footer5_string= \
+        footer6_string= \
+        footer7_string= \
+        footer8_string= \
+        footer9_string= \
+        screen_lines_footer_string=
 
     # Get dimension.
-    read -r cols lines <<<$(tput cols ; tput lines)
-    cols_length=$(((cols - 2) / 3))
+    read -r screen_dimension_cols screen_dimension_lines <<<$(tput cols ; tput lines)
+    screen_cols_length=$(((screen_dimension_cols - 2) / 3))
+    screen_lines_body=$((screen_dimension_lines - screen_lines_offset + 1))
 
     if [[ $reprint == reprint && $action_last != __blscd_move_col_2_line ]]
     then
         # Build column 1.
         tput clear
-        parent=${PWD%/*}
-        parent=${parent:-/}
+        dir_col_0=${PWD%/*}
+        dir_col_0=${dir_col_0:-/}
         if [[ $PWD == / ]]
         then
-            files_col_1=(\~)
-            files_col_1_a=(\~)
-            total_files_col_1=0
-            parent_index=0
-            parent_index_position=0
+            files_col_1_array=(\~)
+            files_col_1_a_array=(\~)
+            files_col_1_total=0
+            dir_current_index=0
+            highlight_line_col_1_index=0
         else
-            files_col_1=()
+            files_col_1_array=()
             i=-1
             while IFS= read -r -d ''
             do
-                files_col_1[++i]=$REPLY
-                [[ $PWD == ${parent}*${REPLY} ]] && parent_index=$i
-            done < <(find -L "$parent" -mindepth 1 -maxdepth 1 -printf '%f\0' | sort -bgz)
-            total_files_col_1=${#files_col_1[@]}
-            if ((parent_index > (lines - offset + 1)))
+                files_col_1_array[++i]=$REPLY
+                [[ $PWD == ${dir_col_0}*${REPLY} ]] && dir_current_index=$i
+            done < <(find -L "$dir_col_0" -mindepth 1 -maxdepth 1 -printf '%f\0' | sort -bgz)
+            files_col_1_total=${#files_col_1_array[@]}
+            if ((dir_current_index >= screen_lines_body))
             then
-                if (((total_files_col_1 - parent_index) < INT_step))
-                then
-                    parent_index=$((parent_index - INT_step))
-                    parent_index_position=$INT_step
-                else
-                    parent_index_position=$parent_index
-                    parent_index_position=0
-                fi
-                files_col_1_a=("${files_col_1[@]:${parent_index}:$((lines - offset + 1))}")
+                highlight_line_col_1_index=$((INT_step - 1))
+                files_col_1_a_array=("${files_col_1_array[@]:$((dir_current_index - INT_step + 1)):${screen_lines_body}}")
             else
-                files_col_1_a=("${files_col_1[@]:0:$((lines - offset + 1))}")
-                parent_index_position=$parent_index
+                files_col_1_a_array=("${files_col_1_array[@]:0:${screen_lines_body}}")
+                highlight_line_col_1_index=$dir_current_index
             fi
         fi
         # Build column 2.
-        mapfile -t files_col_2 < <(__blscd_list_file $search_pattern)
-        total_files_col_2=${#files_col_2[@]}
-        ((total_files_col_2 == 0)) && total_files_col_2=1
+        mapfile -t files_col_2_array < <(__blscd_list_file $search_pattern)
+        files_col_2_total=${#files_col_2_array[@]}
+        ((files_col_2_total == 0)) && files_col_2_total=1
     else
         # Delete obsolete lines in column 3.
-        if ((total_files_col_3 <= 15))
+        if ((files_col_3_total <= 15))
         then
-            if ((total_files_col_3 < (lines - offset + 1)))
+            if ((files_col_3_total < screen_lines_body))
             then
-                i=$total_files_col_3
+                i=$files_col_3_total
             else
-                i=$((lines - offset + 1))
+                i=$screen_lines_body
             fi
             for ((i=$i ; i > 1 ; --i))
             do
-                tput cup "$i" "$(((cols_length * 2) + 2))"
+                tput cup "$i" "$(((screen_cols_length * 2) + 2))"
                 tput el
             done
         else
-            ((total_files_col_3 < lines - offset + 1 && total_files_col_1 > 5)) &&
+            ((files_col_3_total < screen_lines_body && files_col_1_total > 5)) &&
             {
                 tput cup 2 0
-                for ((i=${total_files_col_3} ; i < lines - offset + 1 ; ++i))
+                for ((i=${files_col_3_total} ; i < screen_lines_body ; ++i))
                 do
-                    printf "%-${cols_length}.${cols_length}s\n" ""
+                    printf "%-${screen_cols_length}.${screen_cols_length}s\n" ""
                 done
             }
         fi
     fi
 
-    printf -v current_line '%s' "${files_col_2[$index + $cursor - 1]}"
+    printf -v screen_lines_current_string '%s' "${files_col_2_array[$((index + cursor - 1))]}"
 
-    # Preparing for __blscd_move_col_2_line().
-    if ((total_files_col_2 > (lines - offset + 1)))
+    # Preparing for __blscd_move_col_2_line(): Determine the number of visible files.
+    if ((files_col_2_total > screen_lines_body))
     then
-        total_visible_files_col_2=$((lines - offset + 1))
+        total_visible_files_col_2=$screen_lines_body
     else
-        total_visible_files_col_2=$total_files_col_2
+        total_visible_files_col_2=$files_col_2_total
     fi
 
     # Build column 3.
-    mapfile -t files_col_3 < <(find -L "$current_line" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
-    total_files_col_3=${#files_col_3[@]}
-    ((total_files_col_3 == 0)) && \
-        files_col_3=("$(file --mime-type -bL "$current_line")") && \
-        files_col_3=("${files_col_3[@]//\//-}") && \
-        total_files_col_3=1
+    mapfile -t files_col_3_array < <(find -L "$screen_lines_current_string" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
+    files_col_3_total=${#files_col_3_array[@]}
+    ((files_col_3_total == 0)) && \
+        files_col_3_array=("$(file --mime-type -bL "$screen_lines_current_string")") && \
+        files_col_3_array=("${files_col_3_array[@]//\//-}") && \
+        files_col_3_total=1
 
-    # Print the header.
+    # Print the screen_lines_header_string.
     if [[ $reprint == reprint ]]
     then
         tput cup 0 0
         tput -S < <(printf '%s\n' bold "setaf 4")
-        printf -v header "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$current_line"
+        printf -v screen_lines_header_string "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$screen_lines_current_string"
     else
         tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#PWD} + 3))"
         tput -S < <(printf '%s\n' el bold "setaf 4")
-        printf -v header "$(tput setaf 7)%s" "$current_line"
+        printf -v screen_lines_header_string "$(tput setaf 7)%s" "$screen_lines_current_string"
     fi
-    printf "%s\n" "${header//\/\//\/}"
+    printf "%s\n" "${screen_lines_header_string//\/\//\/}"
     tput sgr0
 
     # Print columns with file listing and highlight lines.
     tput cup 1 0
-    for ((i=0 , j=index-1 ; i <= lines - offset + 1 ; ++i , ++j))
+    for ((i=0 , j=index-1 ; i <= screen_lines_body ; ++i , ++j))
     do
-        col_1_color_1=
-        col_2_color_1=
-        col_3_color_1=
-        col_1_color_reset=
-        col_2_color_reset=
-        col_3_color_reset=
-        ((i == parent_index_position)) &&
+        color_1_col_1=
+        color_1_col_2=
+        color_1_col_3=
+        color_reset_col_1=
+        color_reset_col_2=
+        color_reset_col_3=
+        ((i == highlight_line_col_1_index)) &&
         {
-            col_1_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
-            col_1_color_reset=$(tput sgr0)
+            color_1_col_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
+            color_reset_col_1=$(tput sgr0)
         }
         ((j == (index + cursor - 1))) &&
         {
-            if [[ -d $current_line ]]
+            if [[ -d $screen_lines_current_string ]]
             then
-                col_2_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
-            elif [[ -f $current_line ]]
+                color_1_col_2=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
+            elif [[ -f $screen_lines_current_string ]]
             then
-                col_2_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 7"))
+                color_1_col_2=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 7"))
             else
-                col_2_color_1=$(tput -S < <(printf '%s\n' bold "setaf 7" "setab 1"))
+                color_1_col_2=$(tput -S < <(printf '%s\n' bold "setaf 7" "setab 1"))
             fi
-            col_2_color_reset=$(tput sgr0)
+            color_reset_col_2=$(tput sgr0)
         }
         ((i == 0)) &&
         {
-            if [[ -d ${current_line}/${files_col_3[0]} ]]
+            if [[ -d ${screen_lines_current_string}/${files_col_3_array[0]} ]]
             then
-                col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
-            elif [[ -f ${current_line}/${files_col_3[0]} ]]
+                color_1_col_3=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
+            elif [[ -f ${screen_lines_current_string}/${files_col_3_array[0]} ]]
             then
-                col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 7"))
+                color_1_col_3=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 7"))
             else
-                col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 7" "setab 1"))
+                color_1_col_3=$(tput -S < <(printf '%s\n' bold "setaf 7" "setab 1"))
             fi
-            col_3_color_reset=$(tput sgr0)
+            color_reset_col_3=$(tput sgr0)
         }
-        printf "${col_1_color_1}%-${cols_length}.${cols_length}s${col_1_color_reset} ${col_2_color_1}%-${cols_length}.${cols_length}s${col_2_color_reset} ${col_3_color_1}%-${cols_length}.${cols_length}s${col_3_color_reset}\n" " ${files_col_1_a[$i]} " " ${files_col_2[$j]} " " ${files_col_3[$i]} "
+        printf "${color_1_col_1}%-${screen_cols_length}.${screen_cols_length}s${color_reset_col_1} ${color_1_col_2}%-${screen_cols_length}.${screen_cols_length}s${color_reset_col_2} ${color_1_col_3}%-${screen_cols_length}.${screen_cols_length}s${color_reset_col_3}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_array[$j]} " " ${files_col_3_array[$i]} "
     done
 
-    # Print the footer.
+    # Print the screen_lines_footer_string.
     tput -S < <(printf '%s\n' bold "setaf 4")
-    read -r footer1 footer2 footer3 footer4 footer5 footer6 footer7 _ _ footer8 \
-        <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${current_line}")
-    read -r footer9 footer10 footer11 <<<"$((index + cursor)) ${total_files_col_2} $(((100 * (index + cursor)) / total_files_col_2))"
-    tput cup "$((lines - offset + 2))" 0
+    read -r footer1_string footer2_string footer3_string footer4_string footer5_string footer6_string footer7_string _ _ footer8_string \
+        <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${screen_lines_current_string}")
+    read -r footer9_string footer10_string footer11_string <<<"$((index + cursor)) ${files_col_2_total} $(((100 * (index + cursor)) / files_col_2_total))"
+    tput cup "$((screen_lines_body + 1))" 0
     tput el
-    printf -v footer "%s %s %s %s %s %s %s${footer8:+ -> %s}  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" ${footer8:+"${footer8}"} "$footer9" "$footer10" "$footer11"
-    printf "%s$(tput sgr0) %s %s %s %s %s${footer8:+ %s ->} %-$((cols - ${#footer} + ${#footer7} ${footer8:++ $((${#footer8} - ${#footer7}))}))s  %s/%s  %d%%" "$footer1" "$footer2" "$footer3" "$footer4" "$footer5" "$footer6" "$footer7" ${footer8:+"${footer8}"} "$footer9" "$footer10" "$footer11"
+    printf -v screen_lines_footer_string "%s %s %s %s %s %s %s${footer8_string:+ -> %s}  %s/%s  %d%%" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string"
+    printf "%s$(tput sgr0) %s %s %s %s %s${footer8_string:+ %s ->} %-$((screen_dimension_cols - ${#screen_lines_footer_string} + ${#footer7_string} ${footer8_string:++ $((${#footer8_string} - ${#footer7_string}))}))s  %s/%s  %d%%" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string"
     tput sgr0
 
     # Set new position of the cursor.
-    tput cup "$((cursor + 1))" "$((cols_length + 2))"
+    tput cup "$((cursor + 1))" "$((screen_cols_length + 2))"
 }
 
 __blscd_move_col_2_line()
 {
-    __blscd_get_action_last
+    __blscd_set_action_last
 
     declare -i \
         arg=$1 \
         difference= \
         max_cursor=$((total_visible_files_col_2 - 1))
-        max_index=$((total_files_col_2 - total_visible_files_col_2 + 1))
+        max_index=$((files_col_2_total - total_visible_files_col_2 + 1))
         new_cursor= \
         old_index=$index \
         step=
@@ -252,17 +247,16 @@ __blscd_move_col_2_line()
     # Add the argument to the current cursor
     cursor=$((cursor + arg))
 
-    ((cursor >= total_visible_files_col_2)) &&
-    {
+    if ((cursor >= total_visible_files_col_2))
+    then
         # Cursor moved past the bottom of the list.
-
-        if ((total_visible_files_col_2 >= total_files_col_2))
+        if ((total_visible_files_col_2 >= files_col_2_total))
         then
             # The list fits entirely on the screen.
             index=1
         else
             # The list doesn't fit on the screen.
-            if ((index + cursor > total_files_col_2))
+            if ((index + cursor > files_col_2_total))
             then
                 # Cursor out of bounds. Put it at the very bottom.
                 index=$max_index
@@ -273,17 +267,14 @@ __blscd_move_col_2_line()
                 index=$((index - difference))
             fi
         fi
-
         # In any case, place the cursor on the last file.
         cursor=$max_cursor
-    }
-
-    ((cursor <= 0)) &&
-    {
+    elif ((cursor <= 0))
+    then
         # Cursor is above the list, so scroll up.
         index=$((index + cursor))
         cursor=0
-    }
+    fi
 
     # The index should always be >0 and <$max_index.
     ((index > max_index)) && index=$max_index
@@ -316,12 +307,19 @@ __blscd_move_col_2_line()
     ((index < 1)) && index=1
 }
 
-__blscd_move_dir_up()
+__blscd_move_dir()
 {
-    __blscd_get_action_last
+    __blscd_set_action_last
     __blscd_set_resize
-    index=1
-    cursor=0
+    #if [[ $1 == .. ]]
+    #then
+    #    index=$((dir_current_index))
+    #    cursor=$highlight_line_col_1_index
+    #else
+        index=1
+        cursor=0
+    #fi
+    dir_last=$PWD
     search_pattern=
     builtin cd -- "$1"
 }
@@ -350,15 +348,15 @@ __blscd_open_file()
 {
     case $(file --mime-type -bL "$1") in
         inode/directory)
-                 __blscd_move_dir_up "$1"
+                 __blscd_move_dir "$1"
             ;;
         *)
-            eval "$file_opener" 2>/dev/null
+            eval "$opener" 2>/dev/null
             ;;
     esac
 }
 
-__blscd_get_action_last() { action_last=${FUNCNAME[1]} ; }
+__blscd_set_action_last() { action_last=${FUNCNAME[1]} ; }
 
 __blscd_set_resize()
 {
@@ -368,8 +366,8 @@ __blscd_set_resize()
 
 __blscd_on_exit()
 {
-    stty $stty_orig
-    eval "$save_traps"
+    stty $saved_stty
+    eval "$saved_traps"
     tput -S < <(printf '%s\n' clear rmcup cnorm am)
 }
 
@@ -378,18 +376,18 @@ __blscd_on_exit()
 declare -i \
     cursor=0 \
     index=1 \
-    offset=4 \
-    total_files_col_1=0 \
-    total_files_col_2=0 \
-    total_files_col_3=0 \
+    screen_lines_offset=4 \
+    files_col_1_total=0 \
+    files_col_2_total=0 \
+    files_col_3_total=0 \
     total_visible_files_col_2=0
 
 declare action_last=
 
 # Variables related to the TUI.
 declare \
-    current_line= \
-    header= \
+    screen_lines_current_string= \
+    screen_lines_header_string= \
     input= \
     k1= \
     k2= \
@@ -398,26 +396,26 @@ declare \
     reprint=reprint
 
 declare -i \
-    parent_index= \
-    parent_index_position= \
+    dir_current_index= \
+    highlight_line_col_1_index= \
     query_chars=
 
 declare -a \
-    files_col_1=() \
-    files_col_1_a=() \
-    files_col_2=() \
-    files_col_3=()
+    files_col_1_array=() \
+    files_col_1_a_array=() \
+    files_col_2_array=() \
+    files_col_3_array=()
 
 # Initialize settings.
 declare \
-    file_opener='export LESSOPEN='"| /usr/bin/lesspipe %s"';less -R "$1"' \
+    opener='export LESSOPEN='"| /usr/bin/lesspipe %s"';less -R "$1"' \
     INT_step=6 \
     search_pattern=
 
 # Save the terminal environment of the normal screen.
 declare \
-    save_traps=$(trap) \
-    stty_orig=$(stty -g)
+    saved_traps=$(trap) \
+    saved_stty=$(stty -g)
 
 # Go to the alternate screen and change the terminal enviroment.
 tput smcup
@@ -452,10 +450,10 @@ do
             __blscd_move_col_2_line -1
             ;;
         h|$'\e[D')
-            __blscd_move_dir_up ..
+            __blscd_move_dir ..
             ;;
         l|$'\e[C'|"")
-            __blscd_open_file "$current_line"
+            __blscd_open_file "$screen_lines_current_string"
             tput smcup
             __blscd_set_resize
             ;;
@@ -497,7 +495,7 @@ do
                     while :
                     do
                         tput cup "99998" 0
-                        stty $stty_orig
+                        stty $saved_stty
                         query_chars=$((${#search_pattern} + 1))
                         read -e -N "$query_chars" -p "/" -i "$search_pattern" search_pattern
                         stty -echo
@@ -515,7 +513,7 @@ do
                     ;;
                 g)
                     tput cup "99998" 0
-                    stty $stty_orig
+                    stty $saved_stty
                     read -e -p "/" -i "$search_pattern" search_pattern
                     stty -echo
                     __blscd_set_resize

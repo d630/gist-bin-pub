@@ -157,7 +157,7 @@ __blscd_draw_screen()
         tput -S < <(printf '%s\n' el bold "setaf 4")
         printf -v screen_lines_header_string "$(tput setaf 7)%s" "$screen_lines_current_string"
     fi
-    printf "%s %s %s\n" "${screen_lines_header_string//\/\//\/}" "$index" "$cursor"
+    printf "%s %s %s\n" "${screen_lines_header_string//\/\//\/}"
     tput sgr0
 
     # Print columns with file listing and highlight lines.
@@ -290,7 +290,7 @@ __blscd_build_col()
                     mapfile -t files_col_1_a_array < <(printf '%s\n' "${files_col_1_array[@]:$((${arrays[index $dir_col_0_string]} - 1)):${screen_lines_body}}")
                     highlight_line_col_1_index=${arrays[cursor $dir_col_0_string]}
                 else
-                    IFS=: read -r files_col_1_array_cursor_index _ < <(printf '%s\n' "${files_col_1_array[@]}" | grep -n "${dir_col_1_string##*/}")
+                    IFS=: read -r files_col_1_array_cursor_index _ < <(printf '%s\n' "${files_col_1_array[@]}" | grep -x -n "${dir_col_1_string##*/}")
                     ((--files_col_1_array_cursor_index))
                     if ((files_col_1_array_cursor_index >= screen_lines_body))
                     then
@@ -311,9 +311,7 @@ __blscd_build_col()
                      index=${arrays[index $dir_col_1_string]}
                 elif [[ $dir_col_1_string == / && $dir_last ]]
                 then
-                     IFS=: read -r cursor _ < <(printf '%s\n' "${files_col_2_array[@]}" | grep -n "${dir_last##*/}")
-                     files_col_2_a_array=("${files_col_2_array[@]}")
-                     ((--cursor))
+                     mapfile -t files_col_2_a_array < <(printf '%s\n' "${files_col_2_array[@]:$((${arrays[index $dir_last]} - 1)):${screen_lines_body}}")
                 else
                     files_col_2_a_array=("${files_col_2_array[@]:$((index - 1)):${screen_lines_body}}")
                 fi

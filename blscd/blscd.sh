@@ -54,7 +54,6 @@ __blscd_draw_screen()
 
     declare \
         dir_col_0_string= \
-        dir_col_1_string= \
         footer10_string= \
         footer11_string= \
         footer12_string= \
@@ -83,9 +82,9 @@ __blscd_draw_screen()
     screen_lines_body=$((screen_dimension_lines - screen_lines_offset + 1))
 
     # Save directories.
-    dir_col_0_string=${PWD%/*}
-    dir_col_0_string=${dir_col_0_string:-/}
     dir_col_1_string=$PWD
+    dir_col_0_string=${dir_col_1_string%/*}
+    dir_col_0_string=${dir_col_0_string:-/}
 
     if [[ ($reprint == reprint && $action_last != __blscd_move_col_2_line) || $search_pattern ]]
     then
@@ -122,15 +121,15 @@ __blscd_draw_screen()
     fi
 
     # Save current line.
-    printf -v screen_lines_current_string '%s' "${files_col_2_a_array[$cursor]}"
+    screen_lines_current_string=${files_col_2_a_array[$cursor]}
 
     # Build column 3.
     __blscd_build_array 3
     __blscd_build_col 3a
 
     # Save current cursor postion, and index.
-    arrays[cursor $PWD]=$cursor
-    arrays[index $PWD]=$index
+    data[cursor $dir_col_1_string]=$cursor
+    data[index $dir_col_1_string]=$index
 
     # Preparing for __blscd_move_col_2_line(): Determine the number of visible files.
     if ((files_col_2_array_total > screen_lines_body))
@@ -143,15 +142,14 @@ __blscd_draw_screen()
     # Print the header.
     if [[ ($reprint == reprint && $action_last != __blscd_move_col_2_line) || $search_pattern ]]
     then
-        tput cup 0 0
-        tput -S < <(printf '%s\n' bold "setaf 4")
+        tput -S < <(printf '%s\n' "cup 0 0" bold "setaf 4")
         printf -v screen_lines_header_string "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$screen_lines_current_string"
     else
-        if [[ $PWD == / ]]
+        if [[ $dir_col_1_string == / ]]
         then
-            tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#PWD} + 2))"
+            tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#dir_col_1_string} + 2))"
         else
-            tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#PWD} + 3))"
+            tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#dir_col_1_string} + 3))"
         fi
         tput -S < <(printf '%s\n' el bold "setaf 4")
         printf -v screen_lines_header_string "$(tput setaf 7)%s" "$screen_lines_current_string"
@@ -206,7 +204,7 @@ __blscd_draw_screen()
     # Print the footer.
     tput -S < <(printf '%s\n' bold "setaf 4")
     read -r footer1_string footer2_string footer3_string footer4_string footer5_string footer6_string footer7_string _ _ footer8_string \
-        <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${screen_lines_current_string}")
+        <<<$(ls -abdlQh --time-style=long-iso "${dir_col_1_string}/${screen_lines_current_string}")
     read -r footer9_string footer10_string footer11_string <<<"$((index + cursor)) ${files_col_2_array_total} $(((100 * (index + cursor)) / files_col_2_array_total))"
     if ((files_col_2_array_total <= screen_lines_body))
     then
@@ -243,20 +241,20 @@ __blscd_build_array()
                     files_col_1_array=(\~)
                     files_col_1_array_cursor_index=0
                 else
-                    mapfile -t files_col_1_array < <(printf '%s\n' "${arrays[path $dir_col_0_string]//|/}")
+                    mapfile -t files_col_1_array < <(printf '%s\n' "${data[path $dir_col_0_string]//|/}")
                 fi
                 files_col_1_array_total=${#files_col_1_array[@]}
                 ;;
             2)
-                [[ ! ${arrays[path $dir_col_1_string]} ]] && __blscd_build_array_update
-                mapfile -t files_col_2_array < <(printf '%s\n' "${arrays[path $dir_col_1_string]//|/}")
+                [[ ! ${data[path $dir_col_1_string]} ]] && __blscd_build_array_update
+                mapfile -t files_col_2_array < <(printf '%s\n' "${data[path $dir_col_1_string]//|/}")
                 files_col_2_array_total=${#files_col_2_array[@]}
                 ((files_col_2_array_total == 0)) && files_col_2_array_total=1
                 ;;
             3)
-                if [[ ${arrays[path ${dir_col_1_string}/${screen_lines_current_string}]} ]]
+                if [[ ${data[path ${dir_col_1_string}/${screen_lines_current_string}]} ]]
                 then
-                    mapfile -t files_col_3_array < <(printf '%s\n' "${arrays[path ${dir_col_1_string}/${screen_lines_current_string}]//|/}")
+                    mapfile -t files_col_3_array < <(printf '%s\n' "${data[path ${dir_col_1_string}/${screen_lines_current_string}]//|/}")
                 else
                     mapfile -t files_col_3_array < <(find -L "$screen_lines_current_string" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
                 fi
@@ -280,14 +278,14 @@ __blscd_build_col()
     do
         case $i in
             1a)
-                if [[ $PWD == / ]]
+                if [[ $dir_col_1_string == / ]]
                 then
                     files_col_1_a_array=(\~)
                     highlight_line_col_1_index=0
-                elif [[ ${arrays[cursor $dir_col_0_string]} ]]
+                elif [[ ${data[cursor $dir_col_0_string]} ]]
                 then
-                    mapfile -t files_col_1_a_array < <(printf '%s\n' "${files_col_1_array[@]:$((${arrays[index $dir_col_0_string]} - 1)):${screen_lines_body}}")
-                    highlight_line_col_1_index=${arrays[cursor $dir_col_0_string]}
+                    mapfile -t files_col_1_a_array < <(printf '%s\n' "${files_col_1_array[@]:$((${data[index $dir_col_0_string]} - 1)):${screen_lines_body}}")
+                    highlight_line_col_1_index=${data[cursor $dir_col_0_string]}
                 else
                     IFS=: read -r files_col_1_array_cursor_index _ < <(printf '%s\n' "${files_col_1_array[@]}" | grep -x -n "${dir_col_1_string##*/}")
                     ((--files_col_1_array_cursor_index))
@@ -303,23 +301,23 @@ __blscd_build_col()
                 files_col_1_a_array_total=${#files_col_1_a_array[@]}
                 ;;
             2a)
-                if [[ ${arrays[cursor $dir_col_1_string]} && $action_last != __blscd_move_col_2_line ]]
+                if [[ ${data[cursor $dir_col_1_string]} && $action_last != __blscd_move_col_2_line ]]
                 then
-                     mapfile -t files_col_2_a_array < <(printf '%s\n' "${files_col_2_array[@]:$((${arrays[index $dir_col_1_string]} - 1)):${screen_lines_body}}")
-                     cursor=${arrays[cursor $dir_col_1_string]}
-                     index=${arrays[index $dir_col_1_string]}
+                     mapfile -t files_col_2_a_array < <(printf '%s\n' "${files_col_2_array[@]:$((${data[index $dir_col_1_string]} - 1)):${screen_lines_body}}")
+                     cursor=${data[cursor $dir_col_1_string]}
+                     index=${data[index $dir_col_1_string]}
                 elif [[ $dir_col_1_string == / && $dir_last ]]
                 then
-                     mapfile -t files_col_2_a_array < <(printf '%s\n' "${files_col_2_array[@]:$((${arrays[index $dir_last]} - 1)):${screen_lines_body}}")
+                     mapfile -t files_col_2_a_array < <(printf '%s\n' "${files_col_2_array[@]:$((${data[index $dir_last]} - 1)):${screen_lines_body}}")
                 else
                     files_col_2_a_array=("${files_col_2_array[@]:$((index - 1)):${screen_lines_body}}")
                 fi
                 ;;
             3a)
-                if [[ ${arrays[cursor ${dir_col_1_string}/${screen_lines_current_string}]} ]]
+                if [[ ${data[cursor ${dir_col_1_string}/${screen_lines_current_string}]} ]]
                 then
-                    mapfile -t files_col_3_a_array < <(printf '%s\n' "${files_col_3_array[@]:$((${arrays[index ${dir_col_1_string}/${screen_lines_current_string}]} - 1)):${screen_lines_body}}")
-                    highlight_line_col_3_index=${arrays[cursor ${dir_col_1_string}/${screen_lines_current_string}]}
+                    mapfile -t files_col_3_a_array < <(printf '%s\n' "${files_col_3_array[@]:$((${data[index ${dir_col_1_string}/${screen_lines_current_string}]} - 1)):${screen_lines_body}}")
+                    highlight_line_col_3_index=${data[cursor ${dir_col_1_string}/${screen_lines_current_string}]}
                 else
                     files_col_3_a_array=("${files_col_3_array[@]}")
                     highlight_line_col_3_index=0
@@ -336,8 +334,8 @@ __blscd_move_col_2_line()
     declare -i \
         arg=$1 \
         difference= \
-        max_cursor=$((screen_lines_body_col_2_visible - 1))
-        max_index=$((files_col_2_array_total - screen_lines_body_col_2_visible + 1))
+        max_cursor=$((screen_lines_body_col_2_visible - 1)) \
+        max_index=$((files_col_2_array_total - screen_lines_body_col_2_visible + 1)) \
         old_index=$index \
         step=
 
@@ -431,7 +429,7 @@ __blscd_move_dir()
          __blscd_move_dir_down
     fi
 
-    dir_last=$PWD
+    dir_last=$dir_col_1_string
     builtin cd -- "$1"
     search_pattern=
 }
@@ -440,7 +438,7 @@ __blscd_list_file()
 {
     __blscd_find()
     {
-        find -L "$PWD" -mindepth 1 -maxdepth 1 \
+        find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 \
                 \( -xtype l -type d -printf "%f\n" \) \
                 -o \( -xtype l -type f -printf "%f\n" \) \
                 -o \( -xtype d -type d -printf "%f\n" \) \
@@ -485,12 +483,12 @@ __blscd_on_exit()
 
 __blscd_build_array_initial()
 {
-    arrays[path /]=$(find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+    data[path /]=$(find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
 
     __blscd_build_array_initial_do()
     {
         declare dir=$1
-        arrays[path $dir]=$(find -L "$dir" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+        data[path $dir]=$(find -L "$dir" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
         if [[ ${dir%/*} ]]
         then
             __blscd_build_array_initial_do "${dir%/*}"
@@ -498,17 +496,17 @@ __blscd_build_array_initial()
             return 0
         fi
     }
-    __blscd_build_array_initial_do "$PWD"
+    __blscd_build_array_initial_do "$dir_col_1_string"
 }
 
 __blscd_build_array_update()
 {
-    arrays[path $dir_col_1_string]=$(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+    data[path $dir_col_1_string]=$(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
 }
 
 # -- MAIN.
 
-declare -A arrays
+declare -A data
 
 declare -i \
     cursor=0 \
@@ -528,19 +526,20 @@ declare \
 
 # Variables related to the TUI.
 declare \
+    dir_col_1_string=$PWD \
     input= \
     k1= \
     k2= \
     k3= \
     redraw=redraw \
     reprint=reprint \
-    screen_lines_body=
+    screen_lines_body= \
     screen_lines_current_string= \
-    screen_lines_header_string= \
+    screen_lines_header_string=
 
 declare -i \
-      files_col_1_a_array_current_index= \
-  files_col_1_array_cursor_index= \
+    files_col_1_a_array_current_index= \
+    files_col_1_array_cursor_index= \
     highlight_line_col_1_index= \
     highlight_line_col_3_index= \
     query_chars=
@@ -555,9 +554,10 @@ declare -a \
 
 # Initialize settings.
 declare \
-    INT_step=6 \
     opener='export LESSOPEN='"| /usr/bin/lesspipe %s"';less -R "$1"' \
     search_pattern=
+
+declare -i INT_step=6
 
 # Save the terminal environment of the normal screen.
 declare \
@@ -670,51 +670,15 @@ do
                     __blscd_help ;;
             esac
             ;;
-        $'\eh')
-            builtin cd -- ..
-            __blscd_set_resize
-            ;;
-        o)
+        /)
             tput cvvis
             tput am
-            fsfzf.sh
-            tput smcup
+            tput cup "99998" 0
+            stty $saved_stty
+            read -e -p "/" -i "$search_pattern" search_pattern
+            stty -echo
             __blscd_set_resize
-            ;;
-        f)
-            tput cvvis
-            tput am
-            read -n 1 input
-            case $input in
-                q)
-                    while :
-                    do
-                        tput cup "99998" 0
-                        stty $saved_stty
-                        query_chars=$((${#search_pattern} + 1))
-                        read -e -N "$query_chars" -p "/" -i "$search_pattern" search_pattern
-                        stty -echo
-                        if [[ $search_pattern =~ $'\r' ]]
-                        then
-                            break
-                        else
-                            __blscd_set_resize
-                            __blscd_draw_screen
-                        fi
-                    done
-                    __blscd_set_resize
-                    search_pattern=${search_pattern//$'\r'/}
-                    __blscd_move_col_2_line -9999999999
-                    ;;
-                g)
-                    tput cup "99998" 0
-                    stty $saved_stty
-                    read -e -p "/" -i "$search_pattern" search_pattern
-                    stty -echo
-                    __blscd_set_resize
-                    __blscd_move_col_2_line -9999999999
-                    ;;
-            esac
+            __blscd_move_col_2_line -9999999999
             ;;
         R)
             search_pattern=

@@ -185,10 +185,10 @@ __blscd_draw_screen()
         }
         ((i == highlight_line_col_3_index)) &&
         {
-            if [[ -d ${screen_lines_current_string}/${files_col_3_array[$i]} ]]
+            if [[ -d ${screen_lines_current_string}/${files_col_3_a_array[$i]} ]]
             then
                 screen_lines_body_col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 2"))
-            elif [[ -f ${screen_lines_current_string}/${files_col_3_array[$i]} ]]
+            elif [[ -f ${screen_lines_current_string}/${files_col_3_a_array[$i]} ]]
             then
                 screen_lines_body_col_3_color_1=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 7"))
             else

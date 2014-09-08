@@ -45,7 +45,9 @@ __blscd_draw_screen()
     declare -i \
         i= \
         j= \
-        screen_cols_length= \
+        screen_col_1_length= \
+        screen_col_2_length= \
+        screen_col_3_length= \
         screen_dimension_cols= \
         screen_dimension_lines= \
         screen_lines_body= \
@@ -76,7 +78,9 @@ __blscd_draw_screen()
 
     # Get dimension.
     read -r screen_dimension_cols screen_dimension_lines <<<$(tput cols ; tput lines)
-    screen_cols_length=$(((screen_dimension_cols - 2) / 3))
+    screen_col_1_length=$(((screen_dimension_cols - 2) / 5))
+    screen_col_2_length=$((screen_col_1_length * 2))
+    screen_col_3_length=$((screen_col_1_length * 2))
     screen_lines_body=$((screen_dimension_lines - screen_lines_offset + 1))
 
     # Save directories.
@@ -102,7 +106,7 @@ __blscd_draw_screen()
             fi
             for ((i=$i ; i > 1 ; --i))
             do
-                tput cup "$i" "$(((screen_cols_length * 2) + 2))"
+                tput cup "$i" "$((screen_col_1_length + screen_col_2_length + 2))"
                 tput el
             done
         else
@@ -111,7 +115,7 @@ __blscd_draw_screen()
                 tput cup 2 0
                 for ((i=${files_col_3_array_total} ; i < screen_lines_body ; ++i))
                 do
-                    printf "%-${screen_cols_length}.${screen_cols_length}s\n" ""
+                    printf "%-${screen_col_1_length}.${screen_col_1_length}s\n" ""
                 done
             }
         fi
@@ -197,7 +201,7 @@ __blscd_draw_screen()
             fi
             screen_lines_body_col_3_color_reset=$(tput sgr0)
         }
-        printf "${screen_lines_body_col_1_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_3_color_reset}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_a_array[$i]} " " ${files_col_3_a_array[$i]} "
+        printf "${screen_lines_body_col_1_color_1}%-${screen_col_1_length}.${screen_col_1_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_1}%-${screen_col_2_length}.${screen_col_2_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_col_3_length}.${screen_col_3_length}s${screen_lines_body_col_3_color_reset}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_a_array[$i]} " " ${files_col_3_a_array[$i]} "
     done
 
     # Print the footer.
@@ -224,7 +228,7 @@ __blscd_draw_screen()
     tput sgr0
 
     # Set new position of the cursor.
-    tput cup "$((cursor + 1))" "$((screen_cols_length + 2))"
+    tput cup "$((cursor + 1))" "$((screen_col_1_length + 1))"
 }
 
 __blscd_build_array()

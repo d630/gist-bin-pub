@@ -50,7 +50,6 @@ __blscd_draw_screen()
         screen_col_3_length= \
         screen_dimension_cols= \
         screen_dimension_lines= \
-        screen_lines_body= \
         highlight_line_col_3_index=
 
     declare \
@@ -535,8 +534,9 @@ declare \
     k3= \
     redraw=redraw \
     reprint=reprint \
+    screen_lines_body=
     screen_lines_current_string= \
-    screen_lines_header_string=
+    screen_lines_header_string= \
 
 declare -i \
       files_col_1_a_array_current_index= \
@@ -607,26 +607,71 @@ do
             tput smcup
             __blscd_set_resize
             ;;
+        $'\x06'|$'\e[6~') # Ctrl-F
+            __blscd_move_col_2_line "${screen_lines_body}"
+            ;;
+        $'\x02'|$'\e[5~') # Ctrl-B
+             __blscd_move_col_2_line "-${screen_lines_body}"
+            ;;
+        $'\e[H') # <HOME>
+            __blscd_move_col_2_line -9999999999
+            ;;
+        G|$'\e[F') # <END>
+            __blscd_move_col_2_line 9999999999
+            ;;
+        J)
+            __blscd_move_col_2_line "$((screen_lines_body / 2))"
+            ;;
+        K)
+            __blscd_move_col_2_line "-$((screen_lines_body / 2))"
+            ;;
         d)
+            __blscd_move_col_2_line 5
+            ;;
+        D)
             __blscd_move_col_2_line 10
             ;;
         u)
+            __blscd_move_col_2_line -5
+            ;;
+        U)
             __blscd_move_col_2_line -10
             ;;
         g)
-            __blscd_move_col_2_line -9999999999
-            ;;
-        G)
-            __blscd_move_col_2_line 9999999999
+            read -n 1 input
+            case $input in
+                g)
+                    __blscd_move_col_2_line -9999999999 ;;
+                h)
+                    __blscd_move_dir ~ ;;
+                e)
+                    __blscd_move_dir "/etc" ;;
+                u)
+                    __blscd_move_dir "/usr" ;;
+                d)
+                    __blscd_move_dir "/dev" ;;
+                l)
+                    __blscd_move_dir "/usr/lib" ;;
+                L)
+                    __blscd_move_dir "/var/log" ;;
+                o)
+                    __blscd_move_dir "/opt" ;;
+                v)
+                    __blscd_move_dir "/var" ;;
+                m)
+                    __blscd_move_dir "/media" ;;
+                M)
+                    __blscd_move_dir "/mnt" ;;
+                s)
+                    __blscd_move_dir "/srv" ;;
+                r|/)
+                    __blscd_move_dir / ;;
+                \?)
+                    __blscd_help ;;
+            esac
             ;;
         $'\eh')
             builtin cd -- ..
-            __blscd_set_resize
-            ;;
-        $'\el')
-            tput cvvis
-            tput am
-            __blscd_open_file "$footer_link" #!
             __blscd_set_resize
             ;;
         o)
@@ -671,7 +716,7 @@ do
                     ;;
             esac
             ;;
-        r)
+        R)
             search_pattern=
             ;&
         $'\x0c') # CTRL+L

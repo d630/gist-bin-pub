@@ -208,35 +208,38 @@ __blscd_build_array()
 {
     declare i=
 
+    dir_col_0_string=${PWD%/*}
+    dir_col_0_string=${dir_col_0_string:-/}
+    dir_col_1_string=$PWD
+
     for i
     do
         case $i in
             1)
-                dir_col_0_string=${PWD%/*}
-                dir_col_0_string=${dir_col_0_string:-/}
-                dir_col_1_string=$PWD
-                    if [[ $dir_col_1_string == / ]]
-                    then
-                        files_col_1_array=(\~)
-                        files_col_1_array_cursor_index=0
-                    else
-                        files_col_1_array=()
-                        i=-1
-                        while IFS= read -r -d ''
-                        do
-                            files_col_1_array[++i]=$REPLY
-                            [[ $dir_col_1_string == ${dir_col_0_string}/${REPLY} ]] && files_col_1_array_cursor_index=$i # !!
-                        done < <(find -L "$dir_col_0_string" -mindepth 1 -maxdepth 1 -printf '%f\0' | sort -bgz)
-                    fi
+                if [[ $dir_col_1_string == / ]]
+                then
+                    files_col_1_array=(\~)
+                    files_col_1_array_cursor_index=0
+                else
+                    mapfile -t files_col_1_array < <(printf '%s\n' "${arrays[$dir_col_0_string]//|/}")
+                    IFS=: read -r files_col_1_array_cursor_index _ < <(printf '%s\n' "${files_col_1_array[@]}" | grep -n "${dir_col_1_string##*/}")
+                    ((--files_col_1_array_cursor_index))
+                fi
                 files_col_1_array_total=${#files_col_1_array[@]}
                 ;;
             2)
-                mapfile -t files_col_2_array < <(__blscd_list_file $search_pattern)
+                [[ ! ${arrays[$dir_col_1_string]} ]] && __blscd_build_array_update
+                mapfile -t files_col_2_array < <(printf '%s\n' "${arrays[$dir_col_1_string]//|/}")
                 files_col_2_array_total=${#files_col_2_array[@]}
                 ((files_col_2_array_total == 0)) && files_col_2_array_total=1
                 ;;
             3)
-                mapfile -t files_col_3_array < <(find -L "$screen_lines_current_string" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
+                if [[ ${arrays[$screen_lines_current_string]} ]]
+                then
+                    mapfile -t files_col_3_array < <(printf '%s\n' "${arrays[$screen_lines_current_string]//|/}")
+                else
+                    mapfile -t files_col_3_array < <(find -L "$screen_lines_current_string" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
+                fi
                 files_col_3_array_total=${#files_col_3_array[@]}
                 ((files_col_3_array_total == 0)) &&
                 {
@@ -433,7 +436,32 @@ __blscd_on_exit()
     tput -S < <(printf '%s\n' clear rmcup cnorm am)
 }
 
+__blscd_build_array_initial()
+{
+    arrays[/]=$(find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+
+    __blscd_build_array_initial_do()
+    {
+        declare dir=$1
+        arrays[$dir]=$(find -L "$dir" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+        if [[ ${dir%/*} ]]
+        then
+            __blscd_build_array_initial_do "${dir%/*}"
+        else
+            return 0
+        fi
+    }
+    __blscd_build_array_initial_do "$PWD"
+}
+
+__blscd_build_array_update()
+{
+    arrays[$dir_col_1_string]=$(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+}
+
 # -- MAIN.
+
+declare -A arrays
 
 declare -i \
     cursor=0 \
@@ -495,6 +523,8 @@ trap '__blscd_set_resize' SIGWINCH
 trap 'tput clear' SIGINT
 
 export LC_ALL=C.UTF-8
+
+__blscd_build_array_initial
 
 while :
 do

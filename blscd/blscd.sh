@@ -56,6 +56,7 @@ __blscd_draw_screen()
         dir_col_1_string= \
         footer10_string= \
         footer11_string= \
+        footer12_string= \
         footer1_string= \
         footer2_string= \
         footer3_string= \
@@ -152,7 +153,7 @@ __blscd_draw_screen()
         tput -S < <(printf '%s\n' el bold "setaf 4")
         printf -v screen_lines_header_string "$(tput setaf 7)%s" "$screen_lines_current_string"
     fi
-    printf "%s\n" "${screen_lines_header_string//\/\//\/}"
+    printf "%s %s %s\n" "${screen_lines_header_string//\/\//\/}" "$index" "$cursor"
     tput sgr0
 
     # Print columns with file listing and highlight lines.
@@ -204,10 +205,22 @@ __blscd_draw_screen()
     read -r footer1_string footer2_string footer3_string footer4_string footer5_string footer6_string footer7_string _ _ footer8_string \
         <<<$(ls -abdlQh --time-style=long-iso "${PWD}/${screen_lines_current_string}")
     read -r footer9_string footer10_string footer11_string <<<"$((index + cursor)) ${files_col_2_array_total} $(((100 * (index + cursor)) / files_col_2_array_total))"
+    if ((files_col_2_array_total <= screen_lines_body))
+    then
+        footer12_string=All
+    elif ((files_col_2_array_total > screen_lines_body && cursor + index <= screen_lines_body_col_2_visible))
+    then
+        footer12_string=Top
+    elif ((files_col_2_array_total > screen_lines_body && cursor + index >= files_col_2_array_total - screen_lines_body + 1))
+    then
+        footer12_string=Bot
+    else
+        footer12_string=Mid
+    fi
     tput cup "$((screen_lines_body + 1))" 0
     tput el
-    printf -v screen_lines_footer_string "%s %s %s %s %s %s %s${footer8_string:+ -> %s}  %s/%s  %d%%" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string"
-    printf "%s$(tput sgr0) %s %s %s %s %s${footer8_string:+ %s ->} %-$((screen_dimension_cols - ${#screen_lines_footer_string} + ${#footer7_string} ${footer8_string:++ $((${#footer8_string} - ${#footer7_string}))}))s  %s/%s  %d%%" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string"
+    printf -v screen_lines_footer_string "%s %s %s %s %s %s %s${footer8_string:+ -> %s}  %s/%s  %d%% %s" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string" "$footer12_string"
+    printf "%s$(tput sgr0) %s %s %s %s %s${footer8_string:+ %s ->} %-$((screen_dimension_cols - ${#screen_lines_footer_string} + ${#footer7_string} ${footer8_string:++ $((${#footer8_string} - ${#footer7_string}))}))s  %s/%s  %d%% %s" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string" "$footer12_string"
     tput sgr0
 
     # Set new position of the cursor.

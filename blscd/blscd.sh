@@ -120,12 +120,13 @@ __blscd_draw_screen()
     # Save current line.
     printf -v screen_lines_current_string '%s' "${files_col_2_a_array[$cursor]}"
 
+    # Build column 3.
+    __blscd_build_array 3
+    __blscd_build_col 3a
+
     # Save current cursor postion, and index.
     arrays[cursor $PWD]=$cursor
     arrays[index $PWD]=$index
-
-    # Build column 3.
-    __blscd_build_array 3
 
     # Preparing for __blscd_move_col_2_line(): Determine the number of visible files.
     if ((files_col_2_array_total > screen_lines_body))
@@ -182,7 +183,7 @@ __blscd_draw_screen()
             fi
             screen_lines_body_col_2_color_reset=$(tput sgr0)
         }
-        ((i == 0)) &&
+        ((i == highlight_line_col_3_index)) &&
         {
             if [[ -d ${screen_lines_current_string}/${files_col_3_array[$i]} ]]
             then
@@ -195,7 +196,7 @@ __blscd_draw_screen()
             fi
             screen_lines_body_col_3_color_reset=$(tput sgr0)
         }
-        printf "${screen_lines_body_col_1_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_3_color_reset}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_a_array[$i]} " " ${files_col_3_array[$i]} "
+        printf "${screen_lines_body_col_1_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_cols_length}.${screen_cols_length}s${screen_lines_body_col_3_color_reset}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_a_array[$i]} " " ${files_col_3_a_array[$i]} "
     done
 
     # Print the footer.
@@ -237,9 +238,9 @@ __blscd_build_array()
                 ((files_col_2_array_total == 0)) && files_col_2_array_total=1
                 ;;
             3)
-                if [[ ${arrays[path $screen_lines_current_string]} ]]
+                if [[ ${arrays[path ${dir_col_1_string}/${screen_lines_current_string}]} ]]
                 then
-                    mapfile -t files_col_3_array < <(printf '%s\n' "${arrays[path $screen_lines_current_string]//|/}")
+                    mapfile -t files_col_3_array < <(printf '%s\n' "${arrays[path ${dir_col_1_string}/${screen_lines_current_string}]//|/}")
                 else
                     mapfile -t files_col_3_array < <(find -L "$screen_lines_current_string" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
                 fi
@@ -291,8 +292,23 @@ __blscd_build_col()
                      mapfile -t files_col_2_a_array < <(printf '%s\n' "${files_col_2_array[@]:$((${arrays[index $dir_col_1_string]} - 1)):${screen_lines_body}}")
                      cursor=${arrays[cursor $dir_col_1_string]}
                      index=${arrays[index $dir_col_1_string]}
+                elif [[ $dir_col_1_string == / && $dir_last ]]
+                then
+                     IFS=: read -r cursor _ < <(printf '%s\n' "${files_col_2_array[@]}" | grep -n "${dir_last##*/}")
+                     files_col_2_a_array=("${files_col_2_array[@]}")
+                     ((--cursor))
                 else
                     files_col_2_a_array=("${files_col_2_array[@]:$((index - 1)):${screen_lines_body}}")
+                fi
+                ;;
+            3a)
+                if [[ ${arrays[cursor ${dir_col_1_string}/${screen_lines_current_string}]} ]]
+                then
+                    mapfile -t files_col_3_a_array < <(printf '%s\n' "${files_col_3_array[@]:$((${arrays[index ${dir_col_1_string}/${screen_lines_current_string}]} - 1)):${screen_lines_body}}")
+                    highlight_line_col_3_index=${arrays[cursor ${dir_col_1_string}/${screen_lines_current_string}]}
+                else
+                    files_col_3_a_array=("${files_col_3_array[@]}")
+                    highlight_line_col_3_index=0
                 fi
                 ;;
         esac
@@ -401,6 +417,7 @@ __blscd_move_dir()
          __blscd_move_dir_down
     fi
 
+    dir_last=$PWD
     builtin cd -- "$1"
     search_pattern=
 }
@@ -507,16 +524,18 @@ declare \
     screen_lines_header_string=
 
 declare -i \
-    files_col_1_array_cursor_index= \
-    files_col_1_a_array_current_index= \
+      files_col_1_a_array_current_index= \
+  files_col_1_array_cursor_index= \
     highlight_line_col_1_index= \
+    highlight_line_col_3_index= \
     query_chars=
 
 declare -a \
     files_col_1_a_array=() \
     files_col_1_array=() \
+    files_col_2_a_array=() \
     files_col_2_array=() \
-    files_col_2_array_old=() \
+    files_col_3_a_array=() \
     files_col_3_array=()
 
 # Initialize settings.

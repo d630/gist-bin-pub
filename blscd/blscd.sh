@@ -219,7 +219,7 @@ __blscd_draw_screen()
     read -r footer9_string footer10_string footer11_string <<<"$((index + cursor)) ${files_col_2_array_total} $(((100 * (index + cursor)) / files_col_2_array_total))"
     if [[ $search_pattern || $marking == marking ]]
     then
-        footer12_string="$(__blscd_mark_count) Mrk"
+        footer12_string="${marking_number} Mrk"
     elif ((files_col_2_array_total <= screen_lines_body))
     then
         footer12_string=All
@@ -457,7 +457,7 @@ __blscd_list_file()
                 -o \( -xtype l -type f -printf '%h/%f\0' \) \
                 -o \( -xtype d -type d -printf '%h/%f\0' \) \
                 -o \( -xtype f -type f -printf '%h/%f\0' \) | \
-                sort -zbg
+            sort -zbg
     }
 
     if [[ $1 ]]
@@ -523,40 +523,13 @@ __blscd_build_array_initial()
     while read -r -d ''
     do
         data[mark ${REPLY}]=unmarked
-    done < <(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '%h/%f\0')
+    done < <(__blscd_list_file)
 }
 
 __blscd_build_array_update()
 {
     data[path $dir_col_1_string]=$(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
     #data[mark $dir_col_1_string]=unmarked
-}
-
-__blscd_build_array_mark_search()
-{
-    __blscd_build_array_mark_search_order_num_asc()
-    {
-        declare -a array=($@)
-        declare i= j= element=
-        for ((i=1 ; i < ${#array[@]} ; ++i))
-        do
-            for ((j=i ; j > 0 ; --j))
-            do
-                element=${array[j]}
-                ((${element%%,*} < ${array[j-1]%%,*})) && { array[j]=${array[j-1]} ; array[j-1]=$element ; }
-            done
-        done
-        printf '%s\n' "${array[@]}"
-    }
-
-    block=block
-
-    while IFS= read -r -d ''
-    do
-        [[ $REPLY =~ ^[0-9]*:.*$ ]] && data[mark ${REPLY#*:}]=marked && files_col_2_array_search_indexes+=(${REPLY%%:*})
-    done < <(__blscd_list_file "$search_pattern")
-
-    mapfile -t files_col_2_array_search_indexes < <(__blscd_build_array_mark_search_order_num_asc "${files_col_2_array_search_indexes[@]}")
 }
 
 __blscd_search()
@@ -567,60 +540,6 @@ __blscd_search()
     stty $saved_stty
     read -e -p "/" -i "$search_pattern" search_pattern
     stty -echo
-}
-
-__blscd_mark_screen_lines_current()
-{
-    if [[ ${data[mark ${dir_col_1_string}/${screen_lines_current_string}]} == marked ]]
-    then
-         data[mark ${dir_col_1_string}/${screen_lines_current_string}]=unmarked
-    elif [[ ${data[mark ${dir_col_1_string}/${screen_lines_current_string}]} == unmarked ]]
-    then
-        data[mark ${dir_col_1_string}/${screen_lines_current_string}]=marked
-    fi
-
-    if (($(__blscd_mark_count) == 0))
-    then
-        __blscd_search_marking_non
-    else
-        marking=marking
-        block=block
-    fi
-}
-
-__blscd_mark_screen_lines_all()
-{
-    declare i=
-
-    while read -r -d ''
-    do
-        if [[ ${data[mark ${REPLY}]} == marked ]]
-        then
-             data[mark ${REPLY}]=unmarked
-        elif [[ ${data[mark ${REPLY}]} == unmarked ]]
-        then
-            data[mark ${REPLY}]=marked
-        fi
-    done < <(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '%h/%f\0')
-
-    if (($(__blscd_mark_count) == 0))
-    then
-        __blscd_search_marking_non
-    else
-        marking=marking
-        block=block
-    fi
-}
-
-__blscd_mark_count()
-{
-    declare -i i=
-
-    while read -r -d ''
-    do
-        [[ ${data[mark ${REPLY}]} == marked ]] && ((++i))
-    done < <(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '%h/%f\0')
-    printf '%s\n' "$i"
 }
 
 __blscd_reload()
@@ -636,14 +555,14 @@ __blscd_search_marking_non()
     search_pattern=
     block=
     marking=
-    files_col_2_array_search_indexes=()
+    files_col_2_array_mark_indexes=()
 }
 
 __blscd_mark_go_down()
 {
     declare -i i=
 
-    for i in "${files_col_2_array_search_indexes[@]}"
+    for i in "${files_col_2_array_mark_indexes[@]}"
     do
         ((i > index + cursor)) &&
         {
@@ -657,13 +576,120 @@ __blscd_mark_go_up()
 {
     declare -i i=
 
-    for (( i=${#files_col_2_array_search_indexes[@]}-1 ; i >= 0 ; i--))
+    for (( i=${#files_col_2_array_mark_indexes[@]}-1 ; i >= 0 ; i--))
     do
-        ((${files_col_2_array_search_indexes[$i]} < index + cursor)) &&
+        ((${files_col_2_array_mark_indexes[$i]} < index + cursor)) &&
         {
-            __blscd_move_col_2_line "-$((cursor + index - ${files_col_2_array_search_indexes[$i]}))"
+            __blscd_move_col_2_line "-$((cursor + index - ${files_col_2_array_mark_indexes[$i]}))"
             break
         }
+    done
+}
+
+__blscd_mark_screen_lines_prepare()
+{
+    __blscd_mark_screen_lines_prepare_order_num_asc()
+    {
+        declare -a array=($@)
+        declare i= j= element=
+        for ((i=1 ; i < ${#array[@]} ; ++i))
+        do
+            for ((j=i ; j > 0 ; --j))
+            do
+                element=${array[j]}
+                ((${element%%,*} < ${array[j-1]%%,*})) && { array[j]=${array[j-1]} ; array[j-1]=$element ; }
+            done
+        done
+        printf '%s\n' "${array[@]}"
+    }
+
+    __blscd_mark_screen_lines_prepare_uniq()
+    {
+        declare -a array1=($@)
+        declare -A array2
+        declare i=
+
+        for i in "${array1[@]}"
+        do
+            array2[$i]=$i
+        done
+        printf '%s\n' "${array2[@]}"
+    }
+
+    mapfile -t files_col_2_array_mark_indexes \
+        < <(__blscd_mark_screen_lines_prepare_order_num_asc "$(__blscd_mark_screen_lines_prepare_uniq "$(__blscd_mark_screen_lines_prepare_order_num_asc "${files_col_2_array_mark_indexes[@]}")")")
+}
+
+__blscd_mark_screen_lines_current()
+{
+    if [[ ${data[mark ${dir_col_1_string}/${screen_lines_current_string}]} == marked ]]
+    then
+         data[mark ${dir_col_1_string}/${screen_lines_current_string}]=unmarked
+    elif [[ ${data[mark ${dir_col_1_string}/${screen_lines_current_string}]} == unmarked ]]
+    then
+        data[mark ${dir_col_1_string}/${screen_lines_current_string}]=marked
+    fi
+    #__blscd_mark_screen_lines_prepare
+    __blscd_set_marking_number
+}
+
+__blscd_mark_screen_lines_all()
+{
+    declare -i i=0
+
+    while read -r -d ''
+    do
+        if [[ ${data[mark ${REPLY}]} == marked ]]
+        then
+            data[mark ${REPLY}]=unmarked
+        elif [[ ${data[mark ${REPLY}]} == unmarked ]]
+        then
+            data[mark ${REPLY}]=marked
+        fi
+    done < <(__blscd_list_file)
+
+    #__blscd_mark_screen_lines_prepare
+    __blscd_set_marking_number
+}
+
+__blscd_build_array_mark_search()
+{
+    while IFS= read -r -d ''
+    do
+        [[ $REPLY =~ ^[0-9]*:.*$ ]] && data[mark ${REPLY#*:}]=marked && files_col_2_array_mark_indexes+=(${REPLY%%:*})
+    done < <(__blscd_list_file "$search_pattern")
+
+    __blscd_mark_screen_lines_prepare
+    __blscd_set_marking_number
+}
+
+__blscd_set_marking_number()
+{
+    marking_number=0
+
+    while read -r -d ''
+    do
+        [[ ${data[mark ${REPLY}]} == marked ]] && ((++marking_number))
+    done < <(__blscd_list_file)
+
+    if ((marking_number == 0))
+    then
+        __blscd_search_marking_non
+    else
+        marking=marking
+        block=block
+    fi
+}
+
+__blscd_mark_screen_lines_all_unmark()
+{
+    declare i=
+
+    for i in "${!data[@]}"
+    do
+        [[ $i =~ ^mark..*$ ]] && \
+            [[ ${data[$i]} == marked ]] && \
+            data[$i]=unmarked
     done
 }
 
@@ -679,6 +705,7 @@ declare -i \
     files_col_3_array_total= \
     index=1 \
     redraw_number=0 \
+    marking_number= \
     screen_lines_body_col_2_visible= \
     screen_lines_offset=4
 
@@ -714,7 +741,7 @@ declare -a \
     files_col_1_array=() \
     files_col_2_a_array=() \
     files_col_2_array=() \
-    files_col_2_array_search_indexes=() \
+    files_col_2_array_mark_indexes=() \
     files_col_3_a_array=() \
     files_col_3_array=()
 
@@ -840,7 +867,16 @@ do
             __blscd_move_col_2_line 1
             ;;
         v)
-            __blscd_mark_screen_lines_all
+            read -n 1 input
+            case $input in
+                n)
+                    __blscd_mark_screen_lines_all_unmark
+                    __blscd_search_marking_non
+                    ;;
+                v)
+                    __blscd_mark_screen_lines_all
+                    ;;
+            esac
             __blscd_set_resize 1
             ;;
         /)

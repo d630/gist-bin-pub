@@ -576,10 +576,10 @@ __blscd_build_array_initial()
     data[mark /]=unmarked
     __blscd_build_array_initial_do "$dir_col_1_string"
 
-    while IFS='|' read -r
+    while read -r -d ''
     do
-        data[mark ${dir_col_1_string}/${REPLY}]=unmarked
-    done < <(printf '%s\n' "${data[path ${dir_col_1_string}]}")
+        data[mark ${REPLY}]=unmarked
+    done < <(__blscd_list_file)
 }
 
 __blscd_build_array_update()
@@ -697,7 +697,7 @@ __blscd_mark_screen_lines_all()
 {
     declare -i i=0
 
-    while read -r -d ''
+    while IFS= read -r -d ''
     do
         if [[ ${data[mark ${REPLY}]} == marked ]]
         then

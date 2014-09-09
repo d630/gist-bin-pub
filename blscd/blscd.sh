@@ -69,6 +69,7 @@ __blscd_draw_screen()
         screen_lines_body_col_1_color_1= \
         screen_lines_body_col_1_color_reset= \
         screen_lines_body_col_2_color_1= \
+        screen_lines_body_col_2_color_mark= \
         screen_lines_body_col_2_color_reset= \
         screen_lines_body_col_3_color_1= \
         screen_lines_body_col_3_color_reset= \
@@ -86,7 +87,7 @@ __blscd_draw_screen()
     dir_col_0_string=${dir_col_1_string%/*}
     dir_col_0_string=${dir_col_0_string:-/}
 
-    if [[ ($reprint == reprint && $action_last != __blscd_move_col_2_line) || $search_pattern ]]
+    if [[ ($reprint == reprint && $action_last != __blscd_move_col_2_line) || ($search_pattern && ! $block == block) || ($marking == marking && ! $block == block) ]]
     then
         tput clear
         # Build column 1 and 2.
@@ -117,7 +118,7 @@ __blscd_draw_screen()
                 done
             }
         fi
-        __blscd_build_col 2a
+       __blscd_build_col 2a
     fi
 
     # Save current line.
@@ -140,9 +141,9 @@ __blscd_draw_screen()
     fi
 
     # Print the header.
-    if [[ ($reprint == reprint && $action_last != __blscd_move_col_2_line) || $search_pattern ]]
+    if [[ ($reprint == reprint && $action_last != __blscd_move_col_2_line) || $search_pattern || $marking == marking ]]
     then
-        tput -S < <(printf '%s\n' "cup 0 0" bold "setaf 4")
+        tput -S < <(printf '%s\n' "cup 0 0" "${block:+el}" bold "setaf 4")
         printf -v screen_lines_header_string "%s@%s:$(tput setaf 2)%s/$(tput setaf 7)%s" "$USER" "$HOSTNAME" "$PWD" "$screen_lines_current_string"
     else
         if [[ $dir_col_1_string == / ]]
@@ -154,7 +155,7 @@ __blscd_draw_screen()
         tput -S < <(printf '%s\n' el bold "setaf 4")
         printf -v screen_lines_header_string "$(tput setaf 7)%s" "$screen_lines_current_string"
     fi
-    printf "%s %s %s\n" "${screen_lines_header_string//\/\//\/}"
+    printf "%s\n" "${screen_lines_header_string//\/\//\/}"
     tput sgr0
 
     # Print columns with file listing and highlight lines.
@@ -162,10 +163,11 @@ __blscd_draw_screen()
     for ((i=0 ; i <= screen_lines_body ; ++i))
     do
         screen_lines_body_col_1_color_1=
-        screen_lines_body_col_2_color_1=
-        screen_lines_body_col_3_color_1=
         screen_lines_body_col_1_color_reset=
+        screen_lines_body_col_2_color_1=
         screen_lines_body_col_2_color_reset=
+        screen_lines_body_col_2_color_mark=
+        screen_lines_body_col_3_color_1=
         screen_lines_body_col_3_color_reset=
         ((i == highlight_line_col_1_index)) &&
         {
@@ -198,7 +200,16 @@ __blscd_draw_screen()
             fi
             screen_lines_body_col_3_color_reset=$(tput sgr0)
         }
-        printf "${screen_lines_body_col_1_color_1}%-${screen_col_1_length}.${screen_col_1_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_1}%-${screen_col_2_length}.${screen_col_2_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_col_3_length}.${screen_col_3_length}s${screen_lines_body_col_3_color_reset}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_a_array[$i]} " " ${files_col_3_a_array[$i]} "
+        [[ $search_pattern || $marking == marking ]] &&
+        {
+            [[ ${data[mark ${dir_col_1_string}/${files_col_2_a_array[$i]}]} == marked ]] &&
+            {
+                screen_lines_body_col_2_color_mark=$(tput -S < <(printf '%s\n' bold "setaf 0" "setab 3"))
+                screen_lines_body_col_2_color_reset=$(tput sgr0)
+            }
+        }
+        printf "${screen_lines_body_col_1_color_1}%-${screen_col_1_length}.${screen_col_1_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_mark}${screen_lines_body_col_2_color_1}%-${screen_col_2_length}.${screen_col_2_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_col_3_length}.${screen_col_3_length}s${screen_lines_body_col_3_color_reset}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_a_array[$i]} " " ${files_col_3_a_array[$i]} "
+
     done
 
     # Print the footer.
@@ -206,7 +217,10 @@ __blscd_draw_screen()
     read -r footer1_string footer2_string footer3_string footer4_string footer5_string footer6_string footer7_string _ _ footer8_string \
         <<<$(ls -abdlQh --time-style=long-iso "${dir_col_1_string}/${screen_lines_current_string}")
     read -r footer9_string footer10_string footer11_string <<<"$((index + cursor)) ${files_col_2_array_total} $(((100 * (index + cursor)) / files_col_2_array_total))"
-    if ((files_col_2_array_total <= screen_lines_body))
+    if [[ $search_pattern || $marking == marking ]]
+    then
+        footer12_string="$(__blscd_mark_count) Mrk"
+    elif ((files_col_2_array_total <= screen_lines_body))
     then
         footer12_string=All
     elif ((files_col_2_array_total > screen_lines_body && cursor + index <= screen_lines_body_col_2_visible))
@@ -301,6 +315,7 @@ __blscd_build_col()
                 files_col_1_a_array_total=${#files_col_1_a_array[@]}
                 ;;
             2a)
+                [[ $search_pattern && ! $block == block ]] && __blscd_build_array_mark_search
                 if [[ ${data[cursor $dir_col_1_string]} && $action_last != __blscd_move_col_2_line ]]
                 then
                      mapfile -t files_col_2_a_array < <(printf '%s\n' "${files_col_2_array[@]:$((${data[index $dir_col_1_string]} - 1)):${screen_lines_body}}")
@@ -406,7 +421,7 @@ __blscd_move_col_2_line()
 
 __blscd_move_dir()
 {
-    __blscd_set_resize
+    __blscd_set_resize 1
 
     __blscd_move_dir_up()
     {
@@ -431,7 +446,6 @@ __blscd_move_dir()
 
     dir_last=$dir_col_1_string
     builtin cd -- "$1"
-    search_pattern=
 }
 
 __blscd_list_file()
@@ -439,16 +453,16 @@ __blscd_list_file()
     __blscd_find()
     {
         find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 \
-                \( -xtype l -type d -printf "%f\n" \) \
-                -o \( -xtype l -type f -printf "%f\n" \) \
-                -o \( -xtype d -type d -printf "%f\n" \) \
-                -o \( -xtype f -type f -printf "%f\n" \) | \
-            sort -bg
+                \( -xtype l -type d -printf '%h/%f\0' \) \
+                -o \( -xtype l -type f -printf '%h/%f\0' \) \
+                -o \( -xtype d -type d -printf '%h/%f\0' \) \
+                -o \( -xtype f -type f -printf '%h/%f\0' \) | \
+                sort -zbg
     }
 
     if [[ $1 ]]
     then
-        __blscd_find | egrep -e "$1"
+        __blscd_find | egrep --null-data -n -C 9999999 -e "$1"
     else
         __blscd_find
     fi
@@ -470,8 +484,14 @@ __blscd_set_action_last() { action_last=${FUNCNAME[1]} ; }
 
 __blscd_set_resize()
 {
-    redraw=redraw
-    reprint=reprint
+    if (($1 == 1))
+    then
+        redraw=redraw
+        reprint=reprint
+    else
+        redraw=
+        reprint=
+    fi
 }
 
 __blscd_on_exit()
@@ -483,12 +503,11 @@ __blscd_on_exit()
 
 __blscd_build_array_initial()
 {
-    data[path /]=$(find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
-
     __blscd_build_array_initial_do()
     {
         declare dir=$1
         data[path $dir]=$(find -L "$dir" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+        data[mark $dir]=unmarked
         if [[ ${dir%/*} ]]
         then
             __blscd_build_array_initial_do "${dir%/*}"
@@ -496,12 +515,156 @@ __blscd_build_array_initial()
             return 0
         fi
     }
+
+    data[path /]=$(find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+    data[mark /]=unmarked
     __blscd_build_array_initial_do "$dir_col_1_string"
+
+    while read -r -d ''
+    do
+        data[mark ${REPLY}]=unmarked
+    done < <(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '%h/%f\0')
 }
 
 __blscd_build_array_update()
 {
     data[path $dir_col_1_string]=$(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+    #data[mark $dir_col_1_string]=unmarked
+}
+
+__blscd_build_array_mark_search()
+{
+    __blscd_build_array_mark_search_order_num_asc()
+    {
+        declare -a array=($@)
+        declare i= j= element=
+        for ((i=1 ; i < ${#array[@]} ; ++i))
+        do
+            for ((j=i ; j > 0 ; --j))
+            do
+                element=${array[j]}
+                ((${element%%,*} < ${array[j-1]%%,*})) && { array[j]=${array[j-1]} ; array[j-1]=$element ; }
+            done
+        done
+        printf '%s\n' "${array[@]}"
+    }
+
+    block=block
+
+    while IFS= read -r -d ''
+    do
+        [[ $REPLY =~ ^[0-9]*:.*$ ]] && data[mark ${REPLY#*:}]=marked && files_col_2_array_search_indexes+=(${REPLY%%:*})
+    done < <(__blscd_list_file "$search_pattern")
+
+    mapfile -t files_col_2_array_search_indexes < <(__blscd_build_array_mark_search_order_num_asc "${files_col_2_array_search_indexes[@]}")
+}
+
+__blscd_search()
+{
+    __blscd_set_action_last
+    block=
+    tput cup "99999" 0
+    stty $saved_stty
+    read -e -p "/" -i "$search_pattern" search_pattern
+    stty -echo
+}
+
+__blscd_mark_screen_lines_current()
+{
+    if [[ ${data[mark ${dir_col_1_string}/${screen_lines_current_string}]} == marked ]]
+    then
+         data[mark ${dir_col_1_string}/${screen_lines_current_string}]=unmarked
+    elif [[ ${data[mark ${dir_col_1_string}/${screen_lines_current_string}]} == unmarked ]]
+    then
+        data[mark ${dir_col_1_string}/${screen_lines_current_string}]=marked
+    fi
+
+    if (($(__blscd_mark_count) == 0))
+    then
+        __blscd_search_marking_non
+    else
+        marking=marking
+        block=block
+    fi
+}
+
+__blscd_mark_screen_lines_all()
+{
+    declare i=
+
+    while read -r -d ''
+    do
+        if [[ ${data[mark ${REPLY}]} == marked ]]
+        then
+             data[mark ${REPLY}]=unmarked
+        elif [[ ${data[mark ${REPLY}]} == unmarked ]]
+        then
+            data[mark ${REPLY}]=marked
+        fi
+    done < <(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '%h/%f\0')
+
+    if (($(__blscd_mark_count) == 0))
+    then
+        __blscd_search_marking_non
+    else
+        marking=marking
+        block=block
+    fi
+}
+
+__blscd_mark_count()
+{
+    declare -i i=
+
+    while read -r -d ''
+    do
+        [[ ${data[mark ${REPLY}]} == marked ]] && ((++i))
+    done < <(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '%h/%f\0')
+    printf '%s\n' "$i"
+}
+
+__blscd_reload()
+{
+    __blscd_search_marking_non
+    redraw_number=0
+    unset -v data
+    declare -gA data
+}
+
+__blscd_search_marking_non()
+{
+    search_pattern=
+    block=
+    marking=
+    files_col_2_array_search_indexes=()
+}
+
+__blscd_mark_go_down()
+{
+    declare -i i=
+
+    for i in "${files_col_2_array_search_indexes[@]}"
+    do
+        ((i > index + cursor)) &&
+        {
+            __blscd_move_col_2_line "$((i - index - cursor))"
+            break
+        }
+    done
+}
+
+__blscd_mark_go_up()
+{
+    declare -i i=
+
+    for (( i=${#files_col_2_array_search_indexes[@]}-1 ; i >= 0 ; i--))
+    do
+        ((${files_col_2_array_search_indexes[$i]} < index + cursor)) &&
+        {
+            __blscd_move_col_2_line "-$((cursor + index - ${files_col_2_array_search_indexes[$i]}))"
+            break
+        }
+    done
 }
 
 # -- MAIN.
@@ -515,7 +678,7 @@ declare -i \
     files_col_2_array_total= \
     files_col_3_array_total= \
     index=1 \
-    redraw_number= \
+    redraw_number=0 \
     screen_lines_body_col_2_visible= \
     screen_lines_offset=4
 
@@ -526,11 +689,13 @@ declare \
 
 # Variables related to the TUI.
 declare \
+    block= \
     dir_col_1_string=$PWD \
     input= \
     k1= \
     k2= \
     k3= \
+    marking= \
     redraw=redraw \
     reprint=reprint \
     screen_lines_body= \
@@ -549,6 +714,7 @@ declare -a \
     files_col_1_array=() \
     files_col_2_a_array=() \
     files_col_2_array=() \
+    files_col_2_array_search_indexes=() \
     files_col_3_a_array=() \
     files_col_3_array=()
 
@@ -569,22 +735,20 @@ tput smcup
 stty -echo
 
 #trap 'tput rmcup' EXIT
-trap '__blscd_set_resize' SIGWINCH
+trap '__blscd_set_resize 1' SIGWINCH
 trap 'tput clear' SIGINT
 
 export LC_ALL=C.UTF-8
-
-__blscd_build_array_initial
 
 while :
 do
     tput civis
     tput rmam
+    ((redraw_number == 0)) && __blscd_build_array_initial
     [[ $redraw == redraw ]] &&
     {
         __blscd_draw_screen
-        redraw=
-        reprint=
+        __blscd_set_resize 0
         ((++redraw_number))
     }
     read -s -n 1 input
@@ -602,10 +766,10 @@ do
         h|$'\e[D')
             __blscd_move_dir ..
             ;;
-        l|$'\e[C'|"")
+        l|$'\e[C')
             __blscd_open_file "$screen_lines_current_string"
             tput smcup
-            __blscd_set_resize
+            __blscd_set_resize 1
             ;;
         $'\x06'|$'\e[6~') # Ctrl-F
             __blscd_move_col_2_line "${screen_lines_body}"
@@ -670,23 +834,36 @@ do
                     __blscd_help ;;
             esac
             ;;
+        "")
+            __blscd_mark_screen_lines_current
+            __blscd_set_resize 1
+            __blscd_move_col_2_line 1
+            ;;
+        v)
+            __blscd_mark_screen_lines_all
+            __blscd_set_resize 1
+            ;;
         /)
             tput cvvis
             tput am
-            tput cup "99998" 0
-            stty $saved_stty
-            read -e -p "/" -i "$search_pattern" search_pattern
-            stty -echo
-            __blscd_set_resize
+            __blscd_search
+            __blscd_set_resize 1
             __blscd_move_col_2_line -9999999999
             ;;
+        n)
+            __blscd_mark_go_down
+            ;;
+        m)
+            __blscd_mark_go_up
+            ;;
         R)
-            search_pattern=
+            __blscd_reload
             ;&
         $'\x0c') # CTRL+L
-            __blscd_set_resize
+            __blscd_set_resize 1
             ;;
         q)
+            __blscd_reload
             __blscd_on_exit
             break
             ;;

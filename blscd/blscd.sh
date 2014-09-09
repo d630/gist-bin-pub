@@ -157,7 +157,6 @@ __blscd_draw_screen()
     fi
     printf "%s\n" "${screen_lines_header_string//\/\//\/}"
     tput sgr0
-
     # Print columns with file listing and highlight lines.
     tput cup 1 0
     for ((i=0 ; i <= screen_lines_body ; ++i))
@@ -209,7 +208,6 @@ __blscd_draw_screen()
             }
         }
         printf "${screen_lines_body_col_1_color_1}%-${screen_col_1_length}.${screen_col_1_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_mark}${screen_lines_body_col_2_color_1}%-${screen_col_2_length}.${screen_col_2_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_col_3_length}.${screen_col_3_length}s${screen_lines_body_col_3_color_reset}\n" " ${files_col_1_a_array[$i]} " " ${files_col_2_a_array[$i]} " " ${files_col_3_a_array[$i]} "
-
     done
 
     # Print the footer.
@@ -244,7 +242,10 @@ __blscd_draw_screen()
 
 __blscd_build_array()
 {
-    declare i=
+    declare \
+        f= \
+        i= \
+        s=
 
     for i
     do
@@ -255,20 +256,38 @@ __blscd_build_array()
                     files_col_1_array=(\~)
                     files_col_1_array_cursor_index=0
                 else
-                    mapfile -t files_col_1_array < <(printf '%s\n' "${data[path $dir_col_0_string]//|/}")
+                    files_col_1_array=()
+                    while IFS='|' read -r _ f s
+                    do
+                        files_col_1_array+=("$f")
+                        data[size ${dir_col_0_string}/${f}]=$s
+                    done < <(printf '%s\n' "${data[path ${dir_col_0_string}]}")
+                    #mapfile -t files_col_1_array < <(printf '%s\n' "${data[path $dir_col_0_string]//|/}")
                 fi
                 files_col_1_array_total=${#files_col_1_array[@]}
                 ;;
             2)
-                [[ ! ${data[path $dir_col_1_string]} ]] && __blscd_build_array_update
-                mapfile -t files_col_2_array < <(printf '%s\n' "${data[path $dir_col_1_string]//|/}")
+                files_col_2_array=()
+                [[ ! ${data[path ${dir_col_1_string}]} ]] && __blscd_build_array_update
+                while IFS='|' read -r _ f s
+                do
+                    files_col_2_array+=("$f")
+                    data[size ${dir_col_1_string}/${f}]=$s
+                done < <(printf '%s\n' "${data[path ${dir_col_1_string}]}")
+                #mapfile -t files_col_2_array < <(printf '%s\n' "${data[path $dir_col_1_string]//|/}")
                 files_col_2_array_total=${#files_col_2_array[@]}
                 ((files_col_2_array_total == 0)) && files_col_2_array_total=1
                 ;;
             3)
+                files_col_3_array=()
                 if [[ ${data[path ${dir_col_1_string}/${screen_lines_current_string}]} ]]
                 then
-                    mapfile -t files_col_3_array < <(printf '%s\n' "${data[path ${dir_col_1_string}/${screen_lines_current_string}]//|/}")
+                    while IFS='|' read -r _ f s
+                    do
+                        files_col_3_array+=("$f")
+                        data[size ${dir_col_1_string}/${screen_lines_current_string}/${f}]=$s
+                    done < <(printf '%s\n' "${data[path ${dir_col_1_string}/${screen_lines_current_string}]}")
+                    #mapfile -t files_col_3_array < <(printf '%s\n' "${data[path ${dir_col_1_string}/${screen_lines_current_string}]//|/}")
                 else
                     mapfile -t files_col_3_array < <(find -L "$screen_lines_current_string" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -bg)
                 fi
@@ -506,8 +525,8 @@ __blscd_build_array_initial()
     __blscd_build_array_initial_do()
     {
         declare dir=$1
-        data[path $dir]=$(find -L "$dir" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
-        data[mark $dir]=unmarked
+        data[path ${dir}]=$(find -L "$dir" -mindepth 1 -maxdepth 1 -printf '|%f|%s\n' | sort -t '|' -k 2bg)
+        data[mark ${dir}]=unmarked
         if [[ ${dir%/*} ]]
         then
             __blscd_build_array_initial_do "${dir%/*}"
@@ -516,20 +535,19 @@ __blscd_build_array_initial()
         fi
     }
 
-    data[path /]=$(find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
+    data[path /]=$(find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|%s\n' | sort -t '|' -k 2bg)
     data[mark /]=unmarked
     __blscd_build_array_initial_do "$dir_col_1_string"
 
-    while read -r -d ''
+    while IFS='|' read -r _ f _
     do
-        data[mark ${REPLY}]=unmarked
-    done < <(__blscd_list_file)
+        data[mark ${dir_col_1_string}/${f}]=unmarked
+    done < <(printf '%s\n' "${data[path ${dir_col_1_string}]}")
 }
 
 __blscd_build_array_update()
 {
-    data[path $dir_col_1_string]=$(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | sort -t '|' -k 2bg)
-    #data[mark $dir_col_1_string]=unmarked
+    data[path ${dir_col_1_string}]=$(find -L "$dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|%s\n' | sort -t '|' -k 2bg)
 }
 
 __blscd_search()
@@ -779,9 +797,9 @@ do
         ((++redraw_number))
     }
     read -s -n 1 input
-    read -s -N1 -t 0.0001 k1
-    read -s -N1 -t 0.0001 k2
-    read -s -N1 -t 0.0001 k3
+    read -s -N 1 -t 0.0001 k1
+    read -s -N 1 -t 0.0001 k2
+    read -s -N 1 -t 0.0001 k3
     input=${input}${k1}${k2}${k3}
     case $input in
         j|$'\e[B')

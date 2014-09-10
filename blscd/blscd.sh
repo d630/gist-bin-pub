@@ -465,8 +465,7 @@ __blscd_draw_screen()
     then
         builtin printf "$_blscd_tput_home"
         [[ $_blscd_block == _blscd_block ]] && builtin printf "$_blscd_tput_eel"
-        builtin printf "${_blscd_tput_blue_f}${_blscd_tput_bold}"
-        builtin printf -v _blscd_screen_lines_header_string "%s@%s:${_blscd_tput_green_f}%s/${_blscd_tput_white_f}%s" \
+        builtin printf -v _blscd_screen_lines_header_string "${_blscd_tput_blue_f}${_blscd_tput_bold}%s@%s:${_blscd_tput_green_f}%s/${_blscd_tput_white_f}%s" \
                 "$USER" "$HOSTNAME" "$PWD" "$_blscd_screen_lines_current_string"
     else
         if [[ $_blscd_dir_col_1_string == / ]]
@@ -477,8 +476,7 @@ __blscd_draw_screen()
             #command tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 3))"
             builtin printf "\033[0;$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 4))H"
         fi
-        builtin printf "${_blscd_tput_eel}${_blscd_tput_bold}${_blscd_tput_blue_f}"
-        builtin printf -v _blscd_screen_lines_header_string "${_blscd_tput_white_f}%s" "$_blscd_screen_lines_current_string"
+        builtin printf -v _blscd_screen_lines_header_string "${_blscd_tput_eel}${_blscd_tput_bold}${_blscd_tput_white_f}%s" "$_blscd_screen_lines_current_string"
     fi
     builtin printf '%s\n' "${_blscd_screen_lines_header_string//\/\//\/}"
     builtin printf "$_blscd_tput_reset"
@@ -846,6 +844,7 @@ __blscd_open_file()
                  __blscd_move_dir "$1"
             ;;
         *)
+            __blscd_set_action_last
             builtin eval "$_blscd_opener" 2>/dev/null
             ;;
     esac

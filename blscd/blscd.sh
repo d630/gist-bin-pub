@@ -248,6 +248,39 @@ __blscd_declare_set()
 
     builtin declare -gi _blscd_INT_step=6
 
+    # Tput configuration.
+    {
+        builtin declare -g \
+            "_blscd_tput_alt=$(command tput smcup || command tput ti)" \
+            "_blscd_tput_am_off=$(command tput rmam)" \
+            "_blscd_tput_am_on=$(command tput am)" \
+            "_blscd_tput_bold=$(command tput bold || command tput md)" \
+            "_blscd_tput_clear=$(command tput clear)" \
+            "_blscd_tput_cup_1_0=$(command tput cup 1 0)" \
+            "_blscd_tput_cup_2_0=$(command tput cup 2 0)" \
+            "_blscd_tput_cup_99999_0=$(command tput cup 99999 0)" \
+            "_blscd_tput_ealt=$(command tput rmcup || command tput te)" \
+            "_blscd_tput_eel=$(command tput el || command tput ce)" \
+            "_blscd_tput_hide=$(command tput civis || command tput vi)" \
+            "_blscd_tput_home=$(command tput home)" \
+            "_blscd_tput_reset=$(command tput sgr0 || command tput me)" \
+            "_blscd_tput_show=$(command tput cnorm || command tput ve)" \
+            "_blscd_tput_white_f=$(command tput setaf 7 || command tput AF 7)"
+    } 2>/dev/null
+
+    [[ $TERM != *-m ]] &&
+    {
+        builtin declare -g \
+            "_blscd_tput_black_f=$(command tput setaf 0)" \
+            "_blscd_tput_blue_f=$(command tput setaf 4|| command tput AF 4)" \
+            "_blscd_tput_green_b=$(command tput setab 2)" \
+            "_blscd_tput_green_f=$(command tput setaf 2 || command tput AF 2)" \
+            "_blscd_tput_red_b=$(command tput setab 1)" \
+            "_blscd_tput_white_b=$(command tput setab 7)" \
+            "_blscd_tput_yellow_b=$(command tput setab 3)"
+
+    } 2>/dev/null
+
     # Save the terminal environment of the normal screen.
     builtin declare -g \
         "_blscd_saved_stty=$(command stty -g)" \
@@ -290,13 +323,35 @@ __blscd_declare_unset()
         _blscd_redraw_number \
         _blscd_reprint \
         _blscd_saved_stty \
-        _blscd_saved_traps
+        _blscd_saved_traps \
         _blscd_screen_lines_body \
         _blscd_screen_lines_body_col_2_visible \
         _blscd_screen_lines_current_string \
         _blscd_screen_lines_header_string \
         _blscd_screen_lines_offset \
-        _blscd_search_pattern
+        _blscd_search_pattern \
+        _blscd_tput_alt \
+        _blscd_tput_am_off \
+        _blscd_tput_am_on \
+        _blscd_tput_black_f \
+        _blscd_tput_blue_f \
+        _blscd_tput_bold \
+        _blscd_tput_clear \
+        _blscd_tput_cup_1_0 \
+        _blscd_tput_cup_2_0 \
+        _blscd_tput_cup_99999_0 \
+        _blscd_tput_ealt \
+        _blscd_tput_eel \
+        _blscd_tput_green_b \
+        _blscd_tput_green_f \
+        _blscd_tput_hide \
+        _blscd_tput_home \
+        _blscd_tput_red_b \
+        _blscd_tput_reset \
+        _blscd_tput_show \
+        _blscd_tput_white_b \
+        _blscd_tput_white_f \
+        _blscd_tput_yellow_b
 }
 
 __blscd_draw_screen()
@@ -351,7 +406,7 @@ __blscd_draw_screen()
             ($_blscd_search_pattern && ! $_blscd_block == _blscd_block) || \
             ($_blscd_marking == _blscd_marking && ! $_blscd_block == _blscd_block) ]]
     then
-        command tput clear
+        builtin printf "$_blscd_tput_clear"
         # Build column 1 and 2.
         __blscd_build_array 1 2
         __blscd_build_col 1a 2a
@@ -367,13 +422,15 @@ __blscd_draw_screen()
             fi
             for ((i=$i ; i > 1 ; --i))
             do
-                command tput -S < <(builtin printf '%s\n' "cup ${i} $((screen_col_1_length + screen_col_2_length + 2))" el)
+                #command tput cup "$i" "$((screen_col_1_length + screen_col_2_length + 2))"
+                builtin printf "\033[$((i + 1));$((screen_col_1_length + screen_col_2_length + 3))H${_blscd_tput_eel}"
+                #builtin printf "$_blscd_tput_eel"
             done
         else
             ((_blscd_files_col_3_array_total < _blscd_screen_lines_body && \
                     _blscd_files_col_1_a_array_total > 5)) &&
             {
-                command tput cup 2 0
+                builtin printf "$_blscd_tput_cup_2_0"
                 for ((i=${_blscd_files_col_3_array_total} ; i < _blscd_screen_lines_body ; ++i))
                 do
                     builtin printf "%-${screen_col_1_length}.${screen_col_1_length}s\n" ""
@@ -406,24 +463,28 @@ __blscd_draw_screen()
     if [[ ($_blscd_reprint == _blscd_reprint && $_blscd_action_last != __blscd_move_col_2_line) || \
             $_blscd_search_pattern || $_blscd_marking == _blscd_marking ]]
     then
-        command tput -S < <(builtin printf '%s\n' "cup 0 0" "${_blscd_block:+el}" bold "setaf 4")
-        builtin printf -v _blscd_screen_lines_header_string "%s@%s:$(command tput setaf 2)%s/$(command tput setaf 7)%s" \
+        builtin printf "$_blscd_tput_home"
+        [[ $_blscd_block == _blscd_block ]] && builtin printf "$_blscd_tput_eel"
+        builtin printf "${_blscd_tput_blue_f}${_blscd_tput_bold}"
+        builtin printf -v _blscd_screen_lines_header_string "%s@%s:${_blscd_tput_green_f}%s/${_blscd_tput_white_f}%s" \
                 "$USER" "$HOSTNAME" "$PWD" "$_blscd_screen_lines_current_string"
     else
         if [[ $_blscd_dir_col_1_string == / ]]
         then
-            command tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 2))"
+            #command tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 2))"
+            builtin printf "\033[0;$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 3))H"
         else
-            command tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 3))"
+            #command tput cup 0 "$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 3))"
+            builtin printf "\033[0;$((${#USER} + ${#HOSTNAME} + ${#_blscd_dir_col_1_string} + 4))H"
         fi
-        command tput -S < <(builtin printf '%s\n' el bold "setaf 4")
-        builtin printf -v _blscd_screen_lines_header_string "$(command tput setaf 7)%s" "$_blscd_screen_lines_current_string"
+        builtin printf "${_blscd_tput_eel}${_blscd_tput_bold}${_blscd_tput_blue_f}"
+        builtin printf -v _blscd_screen_lines_header_string "${_blscd_tput_white_f}%s" "$_blscd_screen_lines_current_string"
     fi
     builtin printf '%s\n' "${_blscd_screen_lines_header_string//\/\//\/}"
-    command tput sgr0
+    builtin printf "$_blscd_tput_reset"
 
     # Print columns with file listing and highlight lines.
-    command tput cup 1 0
+    builtin printf "$_blscd_tput_cup_1_0"
     for ((i=0 ; i <= _blscd_screen_lines_body ; ++i))
     do
         screen_lines_body_col_1_color_1=
@@ -436,59 +497,51 @@ __blscd_draw_screen()
 
         ((i == _blscd_highlight_line_col_1_index)) &&
         {
-            screen_lines_body_col_1_color_1=$(command tput -S \
-                    < <(builtin printf '%s\n' bold "setaf 0" "setab 2"))
-            screen_lines_body_col_1_color_reset=$(command tput sgr0)
+            screen_lines_body_col_1_color_1=${_blscd_tput_bold}${_blscd_tput_black_f}${_blscd_tput_green_b}
+            screen_lines_body_col_1_color_reset=$_blscd_tput_reset
         }
 
         ((i == _blscd_cursor)) &&
         {
             if [[ -d $_blscd_screen_lines_current_string ]]
             then
-                screen_lines_body_col_2_color_1=$(command tput -S \
-                        < <(builtin printf '%s\n' bold "setaf 0" "setab 2"))
+                screen_lines_body_col_2_color_1=${_blscd_tput_bold}${_blscd_tput_black_f}${_blscd_tput_green_b}
             elif [[ -f $_blscd_screen_lines_current_string ]]
             then
-                screen_lines_body_col_2_color_1=$(command tput -S \
-                        < <(builtin printf '%s\n' bold "setaf 0" "setab 7"))
+                screen_lines_body_col_2_color_1=${_blscd_tput_bold}${_blscd_tput_black_f}${_blscd_tput_white_b}
             else
-                screen_lines_body_col_2_color_1=$(command tput -S \
-                        < <(builtin printf '%s\n' bold "setaf 7" "setab 1"))
+                screen_lines_body_col_2_color_1=${_blscd_tput_bold}${_blscd_tput_white_f}${_blscd_tput_red_b}
             fi
-            screen_lines_body_col_2_color_reset=$(command tput sgr0)
+            screen_lines_body_col_2_color_reset=$_blscd_tput_reset
         }
 
         ((i == _blscd_highlight_line_col_3_index)) &&
         {
             if [[ -d ${_blscd_screen_lines_current_string}/${_blscd_files_col_3_a_array[$i]} ]]
             then
-                screen_lines_body_col_3_color_1=$(command tput -S \
-                        < <(builtin printf '%s\n' bold "setaf 0" "setab 2"))
+                screen_lines_body_col_3_color_1=${_blscd_tput_bold}${_blscd_tput_black_f}${_blscd_tput_green_b}
             elif [[ -f ${_blscd_screen_lines_current_string}/${_blscd_files_col_3_a_array[$i]} ]]
             then
-                screen_lines_body_col_3_color_1=$(command tput -S \
-                        < <(builtin printf '%s\n' bold "setaf 0" "setab 7"))
+                screen_lines_body_col_3_color_1=${_blscd_tput_bold}${_blscd_tput_black_f}${_blscd_tput_white_b}
             else
-                screen_lines_body_col_3_color_1=$(command tput -S \
-                        < <(builtin printf '%s\n' bold "setaf 7" "setab 1"))
+                screen_lines_body_col_3_color_1=${_blscd_tput_bold}${_blscd_tput_white_f}${_blscd_tput_red_b}
             fi
-            screen_lines_body_col_3_color_reset=$(command tput sgr0)
+            screen_lines_body_col_3_color_reset=$_blscd_tput_reset
         }
 
         [[ $_blscd_search_pattern || $_blscd_marking == _blscd_marking ]] &&
         {
             [[ ${_blscd_data[mark ${_blscd_dir_col_1_string}/${_blscd_files_col_2_a_array[$i]}]} == marked ]] &&
             {
-                screen_lines_body_col_2_color_mark=$(command tput -S \
-                        < <(builtin printf '%s\n' bold "setaf 0" "setab 3"))
-                screen_lines_body_col_2_color_reset=$(command tput sgr0)
+                screen_lines_body_col_2_color_mark=${_blscd_tput_bold}${_blscd_tput_black_f}${_blscd_tput_yellow_b}
+                screen_lines_body_col_2_color_reset=$_blscd_tput_reset
             }
         }
         builtin printf "${screen_lines_body_col_1_color_1}%-${screen_col_1_length}.${screen_col_1_length}s${screen_lines_body_col_1_color_reset} ${screen_lines_body_col_2_color_mark}${screen_lines_body_col_2_color_1}%-${screen_col_2_length}.${screen_col_2_length}s${screen_lines_body_col_2_color_reset} ${screen_lines_body_col_3_color_1}%-${screen_col_3_length}.${screen_col_3_length}s${screen_lines_body_col_3_color_reset}\n" " ${_blscd_files_col_1_a_array[$i]} " " ${_blscd_files_col_2_a_array[$i]} " " ${_blscd_files_col_3_a_array[$i]} "
     done
 
     # Print the footer.
-    command tput -S < <(builtin printf '%s\n' bold "setaf 4")
+    builtin printf "${_blscd_tput_blue_f}${_blscd_tput_bold}"
 
     builtin read -r footer1_string footer2_string footer3_string footer4_string \
             footer5_string footer6_string footer7_string _ _ footer8_string \
@@ -519,17 +572,21 @@ __blscd_draw_screen()
         footer12_string=Mid
     fi
 
-    command tput -S < <(builtin printf '%s\n' "cup $((_blscd_screen_lines_body + 1)) 0" el)
+    #command tput cup "$((_blscd_screen_lines_body + 1))" 0
+    builtin printf "\033[$((_blscd_screen_lines_body + 2));0H${_blscd_tput_eel}"
+    #builtin printf "$_blscd_tput_eel"
 
     builtin printf -v screen_lines_footer_string "%s %s %s %s %s %s %s${footer8_string:+ -> %s}  %s/%s  %d%% %s" \
             "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" \
             "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" \
             "$footer10_string" "$footer11_string" "$footer12_string"
 
-    builtin printf "%s$(command tput sgr0) %s %s %s %s %s${footer8_string:+ %s ->} %-$((screen_dimension_cols - ${#screen_lines_footer_string} + ${#footer7_string} ${footer8_string:++ $((${#footer8_string} - ${#footer7_string}))}))s  %s/%s  %d%% %s" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string" "$footer12_string"
+    builtin printf "%s${_blscd_tput_reset} %s %s %s %s %s${footer8_string:+ %s ->} %-$((screen_dimension_cols - ${#screen_lines_footer_string} + ${#footer7_string} ${footer8_string:++ $((${#footer8_string} - ${#footer7_string}))}))s  %s/%s  %d%% %s" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string" "$footer12_string"
 
     # Set new position of the _blscd_cursor.
-    command tput -S < <(builtin printf '%s\n' "sgr0" "cup $((_blscd_cursor + 1)) $((screen_col_1_length + 1))")
+    #builtin printf "$_blscd_tput_reset"
+    #command tput cup "$((_blscd_cursor + 1))" "$((screen_col_1_length + 1))"
+    builtin printf "${_blscd_tput_reset}\033[$((_blscd_cursor + 2));$((screen_col_1_length + 2))H"
 }
 
 __blscd_list_file()
@@ -778,8 +835,8 @@ __blscd_on_exit()
 {
     command stty $_blscd_saved_stty
     builtin eval "$_blscd_saved_traps"
+    builtin printf "${_blscd_tput_clear}${_blscd_tput_ealt}${_blscd_tput_show}${_blscd_tput_am_on}"
     __blscd_declare_unset
-    command tput -S < <(builtin printf '%s\n' clear rmcup cnorm am)
 }
 
 __blscd_open_file()
@@ -806,7 +863,7 @@ __blscd_search()
 {
     __blscd_set_action_last
     _blscd_block=
-    command tput cup "99999" 0
+    builtin printf "$_blscd_tput_cup_99999_0"
     command stty $_blscd_saved_stty
     builtin read -e -p "/" -i "$_blscd_search_pattern" _blscd_search_pattern
     command stty -echo
@@ -858,18 +915,18 @@ __blscd_set_resize()
 __blscd_declare_set
 
 # Go to the alternate screen and change the terminal enviroment.
-command tput smcup
+builtin printf "$_blscd_tput_alt"
 command stty -echo
 
-#trap 'command tput rmcup' EXIT
+#trap 'printf "$_blscd_tput_ealt"' EXIT
 builtin trap '__blscd_set_resize 1' SIGWINCH
-builtin trap 'command tput clear' SIGINT
+builtin trap 'printf "$_blscd_tput_clear"' SIGINT
 
 builtin export LC_ALL=C.UTF-8
 
 while builtin :
 do
-    command tput -S < <(builtin printf '%s\n' civis rmam)
+    builtin printf "${_blscd_tput_hide}${_blscd_tput_am_off}"
     ((_blscd_redraw_number == 0)) && __blscd_build_array_initial
     [[ $_blscd_redraw == _blscd_redraw ]] &&
     {
@@ -894,7 +951,7 @@ do
             ;;
         l|$'\e[C')
             __blscd_open_file "$_blscd_screen_lines_current_string"
-            command tput smcup
+            builtin printf "$_blscd_tput_alt"
             __blscd_set_resize 1
             ;;
         $'\x06'|$'\e[6~') # Ctrl-F
@@ -979,7 +1036,7 @@ do
             __blscd_set_resize 1
             ;;
         /)
-            command tput -S < <(builtin printf '%s\n' cvvis am)
+            builtin printf "${_blscd_tput_show}${_blscd_tput_am_on}"
             __blscd_search
             __blscd_set_resize 1
             __blscd_move_col_2_line -9999999999

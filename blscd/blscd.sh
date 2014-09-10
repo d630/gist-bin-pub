@@ -106,12 +106,9 @@ __blscd_build_array_initial()
     _blscd_data[path /]=$(command find -L "/" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | command sort -t '|' -k 2bg)
     #_blscd_data[ls /]=$(command ls -AblQh --time-style=long-iso /)
     _blscd_data[mark /]=unmarked
-    __blscd_build_array_initial_do "$_blscd_dir_col_1_string"
 
-    while builtin read -r -d ''
-    do
-        _blscd_data[mark ${REPLY}]=unmarked
-    done < <(__blscd_list_file)
+    __blscd_build_array_initial_do "$_blscd_dir_col_1_string"
+    __blscd_build_array_mark_update
 }
 
 __blscd_build_array_mark_search()
@@ -126,9 +123,18 @@ __blscd_build_array_mark_search()
     __blscd_set_marking_number
 }
 
+__blscd_build_array_mark_update()
+{
+    while builtin read -r -d ''
+    do
+        _blscd_data[mark ${REPLY}]=unmarked
+    done < <(__blscd_list_file)
+}
+
 __blscd_build_array_update()
 {
     _blscd_data[path ${_blscd_dir_col_1_string}]=$(command find -L "$_blscd_dir_col_1_string" -mindepth 1 -maxdepth 1 -printf '|%f|\n' | command sort -t '|' -k 2bg)
+    __blscd_build_array_mark_update
     #_blscd_data[ls ${_blscd_dir_col_1_string}]=$(command ls -AblQh --time-style=long-iso "$_blscd_dir_col_1_string")
 }
 

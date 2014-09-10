@@ -336,7 +336,7 @@ __blscd_draw_screen()
 
     # Get dimension.
     builtin read -r screen_dimension_cols screen_dimension_lines \
-        <<<$(command tput cols ; command tput lines)
+        <<<$(command tput -S < <(builtin printf '%s\n' cols lines))
     screen_col_1_length=$(((screen_dimension_cols - 2) / 5))
     screen_col_2_length=$((screen_col_1_length * 2))
     screen_col_3_length=$((screen_col_1_length * 2))
@@ -367,8 +367,7 @@ __blscd_draw_screen()
             fi
             for ((i=$i ; i > 1 ; --i))
             do
-                command tput cup "$i" "$((screen_col_1_length + screen_col_2_length + 2))"
-                command tput el
+                command tput -S < <(builtin printf '%s\n' "cup ${i} $((screen_col_1_length + screen_col_2_length + 2))" el)
             done
         else
             ((_blscd_files_col_3_array_total < _blscd_screen_lines_body && \
@@ -520,8 +519,7 @@ __blscd_draw_screen()
         footer12_string=Mid
     fi
 
-    command tput cup "$((_blscd_screen_lines_body + 1))" 0
-    command tput el
+    command tput -S < <(builtin printf '%s\n' "cup $((_blscd_screen_lines_body + 1)) 0" el)
 
     builtin printf -v screen_lines_footer_string "%s %s %s %s %s %s %s${footer8_string:+ -> %s}  %s/%s  %d%% %s" \
             "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" \
@@ -530,10 +528,8 @@ __blscd_draw_screen()
 
     builtin printf "%s$(command tput sgr0) %s %s %s %s %s${footer8_string:+ %s ->} %-$((screen_dimension_cols - ${#screen_lines_footer_string} + ${#footer7_string} ${footer8_string:++ $((${#footer8_string} - ${#footer7_string}))}))s  %s/%s  %d%% %s" "$footer1_string" "$footer2_string" "$footer3_string" "$footer4_string" "$footer5_string" "$footer6_string" "$footer7_string" ${footer8_string:+"${footer8_string}"} "$footer9_string" "$footer10_string" "$footer11_string" "$footer12_string"
 
-    command tput sgr0
-
     # Set new position of the _blscd_cursor.
-    command tput cup "$((_blscd_cursor + 1))" "$((screen_col_1_length + 1))"
+    command tput -S < <(builtin printf '%s\n' "sgr0" "cup $((_blscd_cursor + 1)) $((screen_col_1_length + 1))")
 }
 
 __blscd_list_file()
@@ -873,8 +869,7 @@ builtin export LC_ALL=C.UTF-8
 
 while builtin :
 do
-    command tput civis
-    command tput rmam
+    command tput -S < <(builtin printf '%s\n' civis rmam)
     ((_blscd_redraw_number == 0)) && __blscd_build_array_initial
     [[ $_blscd_redraw == _blscd_redraw ]] &&
     {
@@ -984,8 +979,7 @@ do
             __blscd_set_resize 1
             ;;
         /)
-            command tput cvvis
-            command tput am
+            command tput -S < <(builtin printf '%s\n' cvvis am)
             __blscd_search
             __blscd_set_resize 1
             __blscd_move_col_2_line -9999999999

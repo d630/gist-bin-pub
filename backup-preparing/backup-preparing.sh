@@ -19,7 +19,7 @@ pkill -f backup-firefox-history-schleife.sh
 
 # mlr
 { printf -v horiz '%*s\n%s' "80" '' "mlr" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-mlr.sh
+#mlr.sh
 
 # Paketlisten && Repos
 { printf -v horiz '%*s\n%s' "80" '' "Packages&Repos" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -102,7 +102,7 @@ do
     rsync -var --delete "${tmp_dir}/" "${i}/"
     rsync -var ${HOME}/.mozilla/firefox/*.clean-template/ "${i}/"
 done
-shopt +s extglob
+shopt -u extglob
 
 # Delete Firexox places.sqlite
 #{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox places.sqlite" ; printf '%s\n' "${horiz// /-}" ; } 1>&2

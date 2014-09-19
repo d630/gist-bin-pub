@@ -4,5 +4,6 @@
 
 feedcacher.sh
 newsbeuter -r -l 3 -d "${X_XDG_LOG_HOME}/newsbeuter.log"
-printf '%*s\n' "$(tput cols)" '' | tr ' ' -
+newsbeuter -X
+{ printf -v horiz '%*s' "80" '' ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 urldiff -nv

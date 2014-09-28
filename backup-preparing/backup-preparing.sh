@@ -19,7 +19,7 @@ pkill -f backup-firefox-history-schleife.sh
 
 # mlr
 { printf -v horiz '%*s\n%s' "80" '' "mlr" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-#mlr.sh
+mlr.sh
 
 # Paketlisten && Repos
 { printf -v horiz '%*s\n%s' "80" '' "Packages&Repos" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -28,7 +28,7 @@ sudo apt-get autoclean
 sudo apt-get autoremove
 sudo dpkg --configure -a
 sudo apt-get install -f
-mr -j5 update
+#mr -j5 update
 #cd -- "${X_XDG_CODE_DIR}/vcs/org-mode" && make uncompiled
 sudo rm -r -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
 mkdir -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&

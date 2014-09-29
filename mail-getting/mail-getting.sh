@@ -20,7 +20,7 @@ if ! ping -c1 google.com 1>/dev/null 2>&1
 then
     if ! wget -O - google.com 1>/dev/null 2>&1
     then
-        exit 1
+        { echo "We are offline" 1>&2 ; exit 1 ; }
     fi
 fi
 

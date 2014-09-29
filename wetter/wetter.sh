@@ -3,13 +3,15 @@
 # Get infos from http://wetter.tagesschau.de
 
 declare -A wetter
-wetter[dt]=http://wetter.tagesschau.de/deutschland/wetterstationen/
+wetter[d]=http://wetter.tagesschau.de/deutschland/wetterstationen/
 wetter[w]=http://wetter.tagesschau.de/europawelt/
 
-if [[ ${1#-} == dt ]]
+declare arg1=${1:-d}
+
+if [[ ${arg1#-} == d ]]
 then
-    curl -s "${wetter[dt]}" | scrape -be 'table' | w3m -dump -T text/html | grep "${2:-$my_LOCATION2}"
-elif [[ ${1#-} == w ]]
+    curl -s "${wetter[d]}" | scrape -be 'table' | w3m -dump -T text/html | grep "${2:-$X_MY_LOCATION2}"
+elif [[ ${arg1#-} == w ]]
 then
     curl -s "${wetter[w]}" | scrape -be 'table' | w3m -dump -T text/html
 else

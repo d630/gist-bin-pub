@@ -2,24 +2,6 @@
 
 # obrc - build openbox configuration file (poor man's method)
 
-builtin declare \
-    i= \
-    REPLY=
-
-builtin declare -a "sections=(
-    applications
-    menu
-    resistance
-    placement
-    margins
-    focus
-    desktops
-    mouse
-    keyboard
-    dock
-    resize
-    theme)"
-
 case $1 in
     -c|--cat)
         command cat \
@@ -29,6 +11,23 @@ case $1 in
             > "${XDG_CONFIG_HOME}/openbox/rc.xml"
         ;;
     -s|--split)
+        builtin declare \
+            i= \
+            REPLY=
+        builtin declare -a "sections=(
+            applications
+            menu
+            resistance
+            placement
+            margins
+            focus
+            desktops
+            mouse
+            keyboard
+            dock
+            resize
+            theme)"
+
         #~ while builtin read -r
         #~ do
             #~ i=${REPLY#rc-}

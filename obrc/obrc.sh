@@ -3,8 +3,22 @@
 # obrc - build openbox configuration file (poor man's method)
 
 builtin declare \
-    ii= \
+    i= \
     REPLY=
+
+builtin declare -a "sections=(
+    applications
+    menu
+    resistance
+    placement
+    margins
+    focus
+    desktops
+    mouse
+    keyboard
+    dock
+    resize
+    theme)"
 
 case $1 in
     -c|--cat)
@@ -15,15 +29,20 @@ case $1 in
             > "${XDG_CONFIG_HOME}/openbox/rc.xml"
         ;;
     -s|--split)
-        while builtin read -r
+        #~ while builtin read -r
+        #~ do
+            #~ i=${REPLY#rc-}
+            #~ command sed -n "/<${i%*.xml}>/,/<\/${i%*.xml}>/ p" "${XDG_CONFIG_HOME}/openbox/rc.xml" \
+                #~ > "${XDG_CONFIG_HOME}/openbox/${REPLY}"
+        #~ done < <(command find "${XDG_CONFIG_HOME}/openbox/" \
+            #~ -name "rc-*.xml" \
+            #~ -type f \
+            #~ -printf '%P\n')
+        for i in "${sections[@]}"
         do
-            ii=${REPLY#rc-}
-            command sed -n "/<${ii%*.xml}>/,/<\/${ii%*.xml}>/ p" "${XDG_CONFIG_HOME}/openbox/rc.xml" \
-                > "${XDG_CONFIG_HOME}/openbox/${REPLY}"
-        done < <(command find "${XDG_CONFIG_HOME}/openbox/" \
-            -name "rc-*.xml" \
-            -type f \
-            -printf '%P\n')
+            command sed -n "/<${i}>/,/<\/${i}>/ p" "${XDG_CONFIG_HOME}/openbox/rc.xml" \
+                > "${XDG_CONFIG_HOME}/openbox/rc-${i}.xml"
+        done
         ;;
     *)
         { echo "Usage: obrc (-c|--cat|-s|--split)" 1>&2 ; exit 1 ; }

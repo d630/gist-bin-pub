@@ -2,4 +2,4 @@
 
 # List xwindows with dmenu and raise selection
 
-wmctrl -i -a "$(wmctrl -lGpx | menu.sh "dmenu2" ">" | awk '{print $1}')"
+wmctrl -i -a "$(wmctrl -lGpx | column -t | menu.sh "dmenu2" ">" | awk '{print $1}')"

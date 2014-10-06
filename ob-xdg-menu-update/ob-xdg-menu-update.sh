@@ -17,4 +17,4 @@ echo "</menu>
 
 </openbox_menu>" >> "${XDG_CACHE_HOME}/openbox/xdg-menu.xml"
 
-sed -i 's/id=\"/&\/xdg\//g' "${XDG_CACHE_HOME}/openbox/xdg-menu.xml"
+sed -i -e 's/id=\"/&\/xdg\//' -e 's/\/\/\//\//g' "${XDG_CACHE_HOME}/openbox/xdg-menu.xml"

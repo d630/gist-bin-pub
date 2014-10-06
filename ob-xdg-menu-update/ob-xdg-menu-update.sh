@@ -5,10 +5,7 @@
 mkdir -p "${XDG_CACHE_HOME}/openbox"
 
 echo "<?xml version='1.0' encoding='UTF-8'?>
-<openbox_menu xmlns='http://openbox.org/'
-        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-        xsi:schemaLocation='http://openbox.org/
-                file:///usr/share/openbox/menu.xsd'>
+<openbox_menu>
 
 <menu id='/xdg' label='xdg'>" \
     > "${XDG_CACHE_HOME}/openbox/xdg-menu.xml"

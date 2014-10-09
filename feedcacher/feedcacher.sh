@@ -2,7 +2,7 @@
 
 # Simple feed downloader based on urldiff (https://github.com/D630/urldiff)
 
-declare -r feedcacherdir=${XDG_DATA_HOME}/feedcacher
+declare -r feedcacherdir=${X_XDG_LIB_DIR}/feedcacher
 declare -r cachedir=${feedcacherdir}/cache
 declare -r urllist=${feedcacherdir}/urls.txt
 declare -r reportnew=${feedcacherdir}/report.txt

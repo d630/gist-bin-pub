@@ -12,4 +12,4 @@ find "$HOME" "${HOME}/etc" "${HOME}/share" \
         ! -name stow \
         ! -name var \
         ! -name .git \
-        ! -print
+        -print

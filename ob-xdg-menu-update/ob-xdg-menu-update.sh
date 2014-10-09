@@ -10,7 +10,7 @@ echo "<?xml version='1.0' encoding='UTF-8'?>
 <menu id='/xdg' label='xdg'>" \
     > "${XDG_CACHE_HOME}/openbox/xdg-menu.xml"
 
-xdg_menu.pl --format openbox3 --root-menu "${HOME}/var/src/arch-applications.menu" \
+xdg_menu.pl --format openbox3 --root-menu "${X_XDG_SOURCE_DIR}/arch-applications.menu" \
     >> "${XDG_CACHE_HOME}/openbox/xdg-menu.xml"
 
 echo "</menu>

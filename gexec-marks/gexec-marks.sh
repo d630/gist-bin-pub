@@ -2,10 +2,7 @@
 
 # Grun file bookmarks with dmenu (http://jeroenjanssens.com/2013/08/16/quickly-navigate-your-filesystem-from-the-command-line.html)
 
-declare MARKPATH=${HOME}/.marks \
-        mark=
-
-mark=$(menu.sh "dmenu2" ">" < <(find "$MARKPATH/" -type l -printf '%f\n' | sort))
+declare mark=$(menu.sh "dmenu2" ">" < <(find "$MARKPATH/" -type l -printf '%f\n' | sort))
 
 if [[ -d ${MARKPATH}/${mark} ]]
 then

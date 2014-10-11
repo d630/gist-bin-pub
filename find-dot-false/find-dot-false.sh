@@ -9,6 +9,7 @@ find "$HOME" "${HOME}/etc" "${HOME}/share" \
         ! -name share \
         ! -name etc \
         ! -name bin \
+        ! -name src \
         ! -name stow \
         ! -name var \
         ! -name .git \

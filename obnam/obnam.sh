@@ -16,14 +16,9 @@ sudo obnam backup --config=$obnam_conf \
 /usr/local/ \
 /usr/share/applications/ \
 /usr/share/desktop-directories/ \
-/usr/share/fonts/ \
 /usr/share/images/ \
 /usr/share/keyrings/ \
 /usr/share/menu/ \
-/usr/share/mime/ \
-/usr/share/mime-info/ \
-/usr/share/mimelnk/ \
-/usr/share/plymouth/ \
 /usr/share/sounds/ \
 /usr/share/themes/ \
 /usr/share/wallpapers/ \
@@ -35,7 +30,7 @@ sudo obnam backup --config=$obnam_conf \
 /var/log/ \
 /var/mail/ \
 /var/opt/ \
-/var/www/ \
+/var/www/
 
 sudo obnam force-lock --config=$obnam_conf
 

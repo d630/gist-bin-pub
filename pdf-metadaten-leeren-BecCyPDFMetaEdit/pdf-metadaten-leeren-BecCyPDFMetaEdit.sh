@@ -2,4 +2,4 @@
 
 # Run BeCyPDFMetaEdit.exe
 
-wine "${HOME}/.wine/drive_c/Program Files (x86)/BeCyPDFMetaEdit/BeCyPDFMetaEdit.exe" "./*.pdf" -d 2 -T "" -S "" -A "" -K "" -R "" -P "" -C "" -M "" -X 1 -q
+wine "${HOME}/.wine/drive_c/Program Files/BeCyPDFMetaEdit/BeCyPDFMetaEdit.exe" "./*.pdf" -d 2 -T "" -S "" -A "" -K "" -R "" -P "" -C "" -M "" -X 1 -q

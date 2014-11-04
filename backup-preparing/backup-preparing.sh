@@ -17,8 +17,8 @@ pkill -f backup-firefox-history-schleife.sh
 #{ printf -v horiz '%*s\n%s' "80" '' "MySql" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 
 # mlr
-{ printf -v horiz '%*s\n%s' "80" '' "mlr" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-mlr.sh
+#{ printf -v horiz '%*s\n%s' "80" '' "mlr" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#mlr.sh
 
 # Packages & Repos
 { printf -v horiz '%*s\n%s' "80" '' "Packages & Repos" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -27,7 +27,7 @@ sudo apt-get autoclean
 sudo apt-get autoremove
 sudo dpkg --configure -a
 sudo apt-get install -f
-mr -j5 update
+#mr -j5 update
 sudo rm -r -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
 mkdir -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
 cd -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
@@ -65,12 +65,12 @@ cd -- "/etc" &&
 }
 
 # Publikationen-Metadaten
-{ printf -v horiz '%*s\n%s' "80" '' "Publikationen-Metadaten" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-exiftool-publikationen-metadaten-erstellen.sh
+#{ printf -v horiz '%*s\n%s' "80" '' "Publikationen-Metadaten" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#exiftool-publikationen-metadaten-erstellen.sh
 
 # Taskwarrior
-{ printf -v horiz '%*s\n%s' "80" '' "Taskwarrior" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-task-makedirs.sh
+#{ printf -v horiz '%*s\n%s' "80" '' "Taskwarrior" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#task-makedirs.sh
 
 # rsync
 #{ printf -v horiz '%*s\n%s' "80" '' "rsync" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -90,16 +90,16 @@ sudo cp -- /var/log/passivedns-archive/*.gz "${X_XDG_LOG_HOME}/passivedns"
 backup-firefox-urls.sh
 
 # Delete Firefox Profiles
-{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox Profiles" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-shopt -s extglob
-declare tmp_dir=$(mktemp -d --tmpdir)
+#{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox Profiles" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#shopt -s extglob
+#declare tmp_dir=$(mktemp -d --tmpdir)
 
-for i in ${HOME}/.mozilla/firefox/*.!(clean-template|ini)
-do
-    rsync -var --delete "${tmp_dir}/" "${i}/"
-    rsync -var ${HOME}/.mozilla/firefox/*.clean-template/ "${i}/"
-done
-shopt -u extglob
+#for i in ${HOME}/.mozilla/firefox/*.!(clean-template|ini)
+#do
+#    rsync -var --delete "${tmp_dir}/" "${i}/"
+#    rsync -var ${HOME}/.mozilla/firefox/*.clean-template/ "${i}/"
+#done
+#shopt -u extglob
 
 # ProfileCleaner
 #{ printf -v horiz '%*s\n%s' "80" '' "ProfileCleaner" ; printf '%s\n' "${horiz// /-}" ; } 1>&2

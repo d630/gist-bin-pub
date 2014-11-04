@@ -2,7 +2,7 @@
 
 # Feed url to newsbeuter via dmenu
 
-declare cache=${XDG_DATA_HOME}/feedcacher/cache/ \
+declare cache=${X_XDG_LIB_DIR}/feedcacher/cache/ \
         tagfile=${HOME}/.newsbeuter/tags \
         feedfile=${HOME}/.newsbeuter/urls
 declare feed=$(find -H "$cache" -type f | menu.sh "dmenu2" "FEED") \

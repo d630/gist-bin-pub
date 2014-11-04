@@ -5,7 +5,7 @@
 if [[ $1 ]]
 then
     printf '%s\n' "FEEDCACHER"
-    printf '%s\n' "$1" >> "${XDG_DATA_HOME}/feedcacher/urls.txt" && tail -n2 "${XDG_DATA_HOME}/feedcacher/urls.txt"
+    printf '%s\n' "$1" >> "${X_XDG_LIB_DIR}/feedcacher/urls.txt" && tail -n2 "${X_XDG_LIB_DIR}/feedcacher/urls.txt"
 else
     { echo "No arguments." 1>&2 ; exit 1 ; }
 fi

@@ -7,7 +7,7 @@ find "${HOME}/stow/bin/gist-pub/" -mindepth 2 -maxdepth 2 -type d -name ".git" -
 cd -- "${HOME}/stow/bin/gist-pub" &&
 {
     git add -A .
-    git commit -a -m 'auto'
+    git commit -m "${1:-auto-update}"
     git push -u origin master
 }
 

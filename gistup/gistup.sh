@@ -17,6 +17,9 @@ then
             url=${url#git@gist.github.com:*}
             printf '%s\n' "https://gist.github.com/D630/${url%*.git}" "$desc" > "./${url%*.git}"
             find "$PWD" ! -path '*.git*' -name '*.*' -exec ln -f -s {} -t "${HOME}/bin" \;
+            git add -A .
+            git commit -m "add info file"
+            git push -u origin master
             gistup-post.sh "create: https://gist.github.com/D630/${url%*.git}"
         else
             { printf '%s\n' "${0}:Error:79: Could not parse a conf file." 1>&2 ; exit 79 ; }

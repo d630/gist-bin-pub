@@ -16,17 +16,20 @@ case $answer in
             ;;
 esac
 
-{ printf '%*s\n%s\n' "$(tput cols)" '' "VORBEREITUNGEN" | tr ' ' '-' ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "HBLOCk" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+hblock-run.sh
+
+{ printf -v horiz '%*s\n%s' "80" '' "VORBEREITUNGEN" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 backup-preparing.sh
 
-{ printf '%*s\n%s\n' "$(tput cols)" '' "BLEACHBIT" | tr ' ' '-' ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "BLEACHBIT" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 bleachbit.sh
 
-{ printf '%*s\n%s\n' "$(tput cols)" '' "OBNAM" | tr ' ' '-' ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "OBNAM" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 obnam.sh
 
-#{ printf '%*s\n%s\n' "$(tput cols)" '' "BUP" | tr ' ' '-' ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "BUP" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 #bup-weekly.sh
 
-{ printf '%*s\n%s\n' "$(tput cols)" '' "DONE."| tr ' ' '-' ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "DONE." ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 exit 0

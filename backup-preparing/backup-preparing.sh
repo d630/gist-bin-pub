@@ -18,7 +18,7 @@ pkill -f backup-firefox-history-schleife.sh
 
 # mlr
 #{ printf -v horiz '%*s\n%s' "80" '' "mlr" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-#mlr.sh
+mlr.sh
 
 # Packages & Repos
 { printf -v horiz '%*s\n%s' "80" '' "Packages & Repos" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -70,7 +70,7 @@ cd -- "/etc" &&
 
 # Taskwarrior
 #{ printf -v horiz '%*s\n%s' "80" '' "Taskwarrior" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-#task-makedirs.sh
+task-makedirs.sh
 
 # rsync
 #{ printf -v horiz '%*s\n%s' "80" '' "rsync" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -91,15 +91,14 @@ backup-firefox-urls.sh
 
 # Delete Firefox Profiles
 #{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox Profiles" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-#shopt -s extglob
-#declare tmp_dir=$(mktemp -d --tmpdir)
-
-#for i in ${HOME}/.mozilla/firefox/*.!(clean-template|ini)
-#do
-#    rsync -var --delete "${tmp_dir}/" "${i}/"
-#    rsync -var ${HOME}/.mozilla/firefox/*.clean-template/ "${i}/"
-#done
-#shopt -u extglob
+shopt -s extglob
+declare tmp_dir=$(mktemp -d --tmpdir)
+for i in ${HOME}/.mozilla/firefox/*.!(clean-template|ini)
+do
+    rsync -var --delete "${tmp_dir}/" "${i}/"
+    rsync -var ${HOME}/.mozilla/firefox/*.clean-template/ "${i}/"
+done
+shopt -u extglob
 
 # ProfileCleaner
 #{ printf -v horiz '%*s\n%s' "80" '' "ProfileCleaner" ; printf '%s\n' "${horiz// /-}" ; } 1>&2

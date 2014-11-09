@@ -3,7 +3,7 @@
 # Simple ad- and malware-blocking-list builder for dnsmasq
 # inspired by hostblock (http://gaenserich.github.com/hostsblock)
 
-set -e
+#set -e
 
 declare -x \
     _hblock_cachedir=${X_XDG_LIB_DIR:-${HOME}/var/lib}/hblock \

@@ -4,5 +4,11 @@
 
 declare xsels=${X_XDG_LIB_DIR}/clipbored/clips
 
-printf -v xsels '%s' "$(tac "$xsels" | sed '/^$/d' | menu.sh "dmenu2" ">")"
+if tty -s
+then
+    printf -v xsels '%s' "$(tac "$xsels" | sed '/^$/d' | menu.sh "fzf" ">")"
+else
+    printf -v xsels '%s' "$(tac "$xsels" | sed '/^$/d' | menu.sh "dmenu2" ">")"
+fi
+
 printf "$xsels" | xsel -ib

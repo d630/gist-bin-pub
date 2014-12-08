@@ -4,7 +4,12 @@
 
 __result()
 {
-    result=$(xsel -o | menu.sh "dmenu2" "RESULT" | xargs echo | bc 2>&1)
+    if tty -s
+    then
+        result=$(xsel -o | menu.sh "slmenu" "RESULT" | xargs echo | bc 2>&1)
+    else
+        result=$(xsel -o | menu.sh "dmenu2" "RESULT" | xargs echo | bc 2>&1)
+    fi
     printf '%s\n' "$result" | tee >(xsel -i)
 }
 

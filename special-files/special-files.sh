@@ -4,17 +4,11 @@
 
 declare file=
 
-read -r file < <(menu.sh "dmenu2" ">" < <(sort -g "${XDG_CONFIG_HOME}/special_files.txt"))
-
-if [[ -f $file ]]
+if tty -s
 then
-    if tty -s
-    then
-        exec "$tty_EDITOR" "$file"
-    else
-        (exec "$EDITOR" "$file" &)
-    fi
+    read -r file < <(menu.sh "fzf" ">" < <(sort -g "${XDG_CONFIG_HOME}/special_files.txt"))
+    exec "$X_TTY_EDITOR" "$file"
 else
-    { printf '%s\n' "${0}:Error: '$file' is not a regular file." 1>&2 ; exit 1 ; }
+    read -r file < <(menu.sh "dmenu2" ">" < <(sort -g "${XDG_CONFIG_HOME}/special_files.txt"))
+    (exec geany "$file" &)
 fi
-

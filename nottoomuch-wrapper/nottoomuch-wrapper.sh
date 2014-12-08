@@ -4,7 +4,12 @@
 
 declare string=
 
-__search() { string=$(menu.sh "dmenu2" ">" <<< "") ; }
+if tty -s
+then
+    __search() { string=$(menu.sh "slmenu" ">" <<< "") ; }
+else
+    __search() { string=$(menu.sh "dmenu2" ">" <<< "") ; }
+fi
 
 __search
 while [[ $string ]]

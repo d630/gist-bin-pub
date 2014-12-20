@@ -6,8 +6,25 @@ declare \
     desc=$1 \
     url=
 
-if [[ ! -d ./.git ]]
+github-add-rsa.sh
+
+if [[ -d ./.git ]]
 then
+    desc="$(basename "$PWD"): ${desc:-auto-update}"
+    git add -A .
+    git commit -m "$desc"
+    git push -u origin master
+    (($? == 0)) || exit $?
+    if cd -- "${HOME}/stow/bin/gist-pub"
+    then
+        git add -f "$OLDPWD"
+        git commit -m "$desc"
+        git push -u origin master
+    else
+        { printf '%s\n' "${0}:Error:80: Could not cd into gist-pub." 1>&2 ; exit 80 ; }
+    fi
+else
+    printf '%s\n' "${0}:Error:79: Not a git repository (or any of the parent directories): .git" 1>&2
     if [[ $desc ]]
     then
         gistup --no-open --public --remote origin -m "$desc"
@@ -17,19 +34,21 @@ then
             url=${url#git@gist.github.com:*}
             printf '%s\n' "https://gist.github.com/D630/${url%*.git}" "$desc" > "./${url%*.git}"
             find "$PWD" ! -path '*.git*' -name '*.*' -exec ln -f -s {} -t "${HOME}/bin" \;
-            git add -A .
+            git add -f "./${url%*.git}"
             git commit -m "add info file"
             git push -u origin master
-            gistup-post.sh "create: https://gist.github.com/D630/${url%*.git}"
+            if cd -- "${HOME}/stow/bin/gist-pub"
+            then
+                git add -f "$OLDPWD"
+                git commit -m "create: https://gist.github.com/D630/${url%*.git}"
+                git push -u origin master
+            else
+                { printf '%s\n' "${0}:Error:80: Could not cd into gist-pub." 1>&2 ; exit 80 ; }
+            fi
         else
-            { printf '%s\n' "${0}:Error:79: Could not parse a conf file." 1>&2 ; exit 79 ; }
+            { printf '%s\n' "${0}:Error:81: Could not parse a conf file." 1>&2 ; exit 81 ; }
         fi
     else
-        { printf '%s\n' "${0}:Error:80: Not a git repository (or any of the parent directories): .git" 1>&2 ; exit 80 ; }
+        { printf '%s\n' "${0}:Error:82: Could not create a git repository: a description is missing" 1>&2 ; exit 82 ; }
     fi
-else
-    git add -A .
-    git commit -m "${desc:-auto-update}"
-    git push -u origin master
-    gistup-post.sh "${desc:-auto-update}"
 fi

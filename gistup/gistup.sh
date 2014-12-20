@@ -13,6 +13,7 @@ then
     git add -A .
     git commit -m "${desc:-auto-update}"
     git push -u origin master
+    (($? != 0)) && exit $?
     if cd -- "${HOME}/stow/bin/gist-pub"
     then
         git add -f "$OLDPWD"

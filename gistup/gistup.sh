@@ -10,14 +10,15 @@ github-add-rsa.sh
 
 if [[ -d ./.git ]]
 then
+    desc="$(basename "$PWD"): ${desc:-auto-update}"
     git add -A .
-    git commit -m "${desc:-auto-update}"
+    git commit -m "$desc"
     git push -u origin master
     (($? == 0)) || exit $?
     if cd -- "${HOME}/stow/bin/gist-pub"
     then
         git add -f "$OLDPWD"
-        git commit -m "${desc:-auto-update}"
+        git commit -m "$desc"
         git push -u origin master
     else
         { printf '%s\n' "${0}:Error:80: Could not cd into gist-pub." 1>&2 ; exit 80 ; }

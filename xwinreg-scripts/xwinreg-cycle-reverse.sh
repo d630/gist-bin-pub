@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-xwinreg cycle -w -r all -d reverse
+xwinreg cycle -w -r any -d rev

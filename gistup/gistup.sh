@@ -15,6 +15,8 @@ github-add-rsa.sh
 [[ $dirname == $gpp ]] || { printf '%s\n' "${0}:Error:83: '${basename}' is not a subdir of '${gpp}'" 1>&2 ; exit 83 ; }
 [[ -x $(type -p gistup) ]] || { printf '%s\n' "${0}:Error:84: command not found: 'gistup'" 1>&2 ; exit 84 ; }
 
+(find "$pwd" ! -path '*.git*' -name '*.*' -exec ln -vf -s {} -t "${HOME}/bin" \;)
+
 if [[ -d ./.git ]]
 then
     desc="${basename}: ${desc:-update}"
@@ -39,7 +41,6 @@ else
             read -r _ _ url < <(grep -m 1 -e '^[[:space:]]url = git@gist.github.com:.*.git$' "./.git/config")
             url=${url#git@gist.github.com:*}
             printf '%s\n' "https://gist.github.com/D630/${url%*.git}" "$desc" > "./${url%*.git}"
-            (find "$pwd" ! -path '*.git*' -name '*.*' -exec ln -vf -s {} -t "${HOME}/bin" \;)
             git add "./${url%*.git}" && \
             git commit -m "${basename}: add info file" && \
             git push -u origin master

@@ -6,9 +6,10 @@
 { printf -v horiz '%*s\n%s' "80" '' "Ini" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 clipbored -k
 pkill clipbored
-pkill -f clipbored-schleife.sh
-pkill -f mail-schleife.sh
-pkill -f backup-firefox-history-schleife.sh
+while read -r
+do
+    pkill -P $REPLY 1>/dev/null 2>&1
+done < <(pgrep -f event-loop.sh)
 
 # Connection
 #{ printf -v horiz '%*s\n%s' "80" '' "Connection" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
@@ -17,7 +18,7 @@ pkill -f backup-firefox-history-schleife.sh
 #{ printf -v horiz '%*s\n%s' "80" '' "MySql" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 
 # mlr
-#{ printf -v horiz '%*s\n%s' "80" '' "mlr" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "mlr" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 mlr.sh
 
 # Packages & Repos
@@ -30,8 +31,7 @@ sudo apt-get install -f
 #mr -j5 update
 sudo rm -r -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
 mkdir -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
-cd -- "${X_XDG_BACKUPS_DIR}/paketlisten" &&
-{
+cd -- "${X_XDG_BACKUPS_DIR}/paketlisten" && {
     COLUMNS=200 dpkg-query -l > "packages_list.list"
     dpkg --get-selections | awk '!/deinstall|purge|hold/ {print $1}' > "packages.list"
     apt-mark showauto > "package-states-auto"
@@ -58,8 +58,7 @@ find "/var/lib/dpkg/info/" -daystart \( -name \*.list -a -mtime -7 \) | sed 's/.
 
 # etckeeper
 { printf -v horiz '%*s\n%s' "80" '' "etckeeper" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-cd -- "/etc" &&
-{
+cd -- "/etc" && {
     sudo git add -A . 1>/dev/null 2>&1
     sudo git commit -a -m "$(date): backup preparing"
 }
@@ -69,7 +68,7 @@ cd -- "/etc" &&
 #exiftool-publikationen-metadaten-erstellen.sh
 
 # Taskwarrior
-#{ printf -v horiz '%*s\n%s' "80" '' "Taskwarrior" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "Taskwarrior" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 task-makedirs.sh
 
 # rsync
@@ -81,16 +80,16 @@ task-makedirs.sh
 #{ printf -v horiz '%*s\n%s' "80" '' "pdnsd" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 
 # passivedns
-{ printf -v horiz '%*s\n%s' "80" '' "passivedns" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-passivedns-archiv.sh
-sudo cp -- /var/log/passivedns-archive/*.gz "${X_XDG_LOG_HOME}/passivedns"
+#{ printf -v horiz '%*s\n%s' "80" '' "passivedns" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+#passivedns-archiv.sh
+#sudo cp -- /var/log/passivedns-archive/*.gz "${X_XDG_LOG_HOME}/passivedns"
 
 # firefox-urls
 { printf -v horiz '%*s\n%s' "80" '' "firefox-urls" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 backup-firefox-urls.sh
 
 # Delete Firefox Profiles
-#{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox Profiles" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
+{ printf -v horiz '%*s\n%s' "80" '' "Delete Firefox Profiles" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
 shopt -s extglob
 declare tmp_dir=$(mktemp -d --tmpdir)
 for i in ${HOME}/.mozilla/firefox/*.!(clean-template|ini)
@@ -105,7 +104,7 @@ shopt -u extglob
 
 # Delete pm-powersave.log
 { printf -v horiz '%*s\n%s' "80" '' "Delete powersave.log'" ; printf '%s\n' "${horiz// /-}" ; } 1>&2
-sudo rm -r -- "/var/log/pm-powersave.log"
+sudo rm -r -- "/var/log/pm-powersave.log" 2>/dev/null
 
 # ccleaner
 { printf -v horiz '%*s\n%s' "80" '' "ccleaner" ; printf '%s\n' "${horiz// /-}" ; } 1>&2

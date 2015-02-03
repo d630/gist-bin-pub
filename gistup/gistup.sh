@@ -23,7 +23,7 @@ then
     git push -u origin master
     if (($? == 0)) && cd -- "$gpp"
     then
-        git add "./${basename}" && \
+        git add "./${basename}/"* && \
         git commit -m "$desc" && \
         git push -u origin master
     else
@@ -45,7 +45,7 @@ else
             git push -u origin master
             if (($? == 0)) && cd -- "$gpp"
             then
-                git add "./${basename}" && \
+                git add "./${basename}"/* && \
                 git commit -m "${basename}: init" && \
                 git push -u origin master
             else

@@ -34,13 +34,13 @@ else
             url=${url#git@gist.github.com:*}
             printf '%s\n' "https://gist.github.com/D630/${url%*.git}" "$desc" > "./${url%*.git}"
             find "$PWD" ! -path '*.git*' -name '*.*' -exec ln -f -s {} -t "${HOME}/bin" \;
-            git add -f "./${url%*.git}"
+            git add -f "${url%*.git}"
             git commit -m "add info file"
             git push -u origin master
             if cd -- "${HOME}/stow/bin/gist-pub"
             then
                 git add -f "${OLDPWD##*/}"
-                git commit -m "add https://gist.github.com/D630/${url%*.git}"
+                git commit -m "add ${OLDPWD##*/}"
                 git push -u origin master
             else
                 { printf '%s\n' "${0}:Error:80: Could not cd into gist-pub." 1>&2 ; exit 80 ; }

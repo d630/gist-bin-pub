@@ -10,14 +10,14 @@ github-add-rsa.sh
 
 if [[ -d ./.git ]]
 then
-    desc="$(basename "$PWD"): ${desc:-auto-update}"
+    desc="${PWD##*/}: ${desc:-auto-update}"
     git add -A .
     git commit -m "$desc"
     git push -u origin master
     (($? == 0)) || exit $?
     if cd -- "${HOME}/stow/bin/gist-pub"
     then
-        git add -f "$OLDPWD"
+        git add -f "${OLDPWD##*/}"
         git commit -m "$desc"
         git push -u origin master
     else
@@ -39,7 +39,7 @@ else
             git push -u origin master
             if cd -- "${HOME}/stow/bin/gist-pub"
             then
-                git add -f "$OLDPWD"
+                git add -f "${OLDPWD##*/}"
                 git commit -m "create: https://gist.github.com/D630/${url%*.git}"
                 git push -u origin master
             else

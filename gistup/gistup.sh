@@ -23,7 +23,7 @@ then
     git push -u origin master
     if (($? == 0)) && cd -- "$gpp"
     then
-        git add -f "./${basename}" && \
+        git add "./${basename}" && \
         git commit -m "$desc" && \
         git push -u origin master
     else
@@ -40,12 +40,12 @@ else
             url=${url#git@gist.github.com:*}
             printf '%s\n' "https://gist.github.com/D630/${url%*.git}" "$desc" > "./${url%*.git}"
             (find "$pwd" ! -path '*.git*' -name '*.*' -exec ln -vf -s {} -t "${HOME}/bin" \;)
-            git add -f "./${url%*.git}" && \
+            git add "./${url%*.git}" && \
             git commit -m "${basename}: add info file" && \
             git push -u origin master
             if (($? == 0)) && cd -- "$gpp"
             then
-                git add -f "./${basename}" && \
+                git add "./${basename}" && \
                 git commit -m "${basename}: init" && \
                 git push -u origin master
             else

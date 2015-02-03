@@ -12,3 +12,5 @@ cd -- "${X_XDG_BACKUPS_DIR}/paketlisten" && {
     find /etc/apt/sources.list* -type f -name '*.list' -exec bash -c 'echo -e "\n## $1 " ; grep "^[[:space:]]*[^#[:space:]]" ${1}' _ {} \; > "sources.list.save"
     sudo cp -- "/etc/apt/trusted.gpg" "trusted-keys.gpg"
 }
+
+apt-cache policy > "${X_XDG_BACKUPS_DIR}/apt-quellen.txt"

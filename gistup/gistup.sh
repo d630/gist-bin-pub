@@ -3,25 +3,31 @@
 # My gistup wrapper
 
 declare \
+    basename=${PWD##*/} \
     desc=$1 \
+    dirname=${PWD%/*} \
+    gpp=${HOME}/stow/bin/gist-pub \
+    pwd=$PWD \
     url=
 
 github-add-rsa.sh
 
+[[ $dirname == $gpp ]] || { printf '%s\n' "${0}:Error:83: '${basename}' is not a subdir of '${gpp}'" 1>&2 ; exit 83 ; }
+[[ -x $(type -p gistup) ]] || { printf '%s\n' "${0}:Error:84: command not found: 'gistup'" 1>&2 ; exit 84 ; }
+
 if [[ -d ./.git ]]
 then
-    desc="${PWD##*/}: ${desc:-auto-update}"
-    git add -A .
-    git commit -m "$desc"
+    desc="${basename}: ${desc:-update}"
+    git add -A . && \
+    git commit -m "$desc" && \
     git push -u origin master
-    (($? == 0)) || exit $?
-    if cd -- "${HOME}/stow/bin/gist-pub"
+    if (($? == 0)) && cd -- "$gpp"
     then
-        git add -f "${OLDPWD##*/}"
-        git commit -m "$desc"
+        git add -f "./${basename}" && \
+        git commit -m "$desc" && \
         git push -u origin master
     else
-        { printf '%s\n' "${0}:Error:80: Could not cd into gist-pub." 1>&2 ; exit 80 ; }
+        { printf '%s\n' "${0}:Error:80: Could not cd into '${gpp}'" 1>&2 ; exit 80 ; }
     fi
 else
     printf '%s\n' "${0}:Error:79: Not a git repository (or any of the parent directories): .git" 1>&2
@@ -33,20 +39,20 @@ else
             read -r _ _ url < <(grep -m 1 -e '^[[:space:]]url = git@gist.github.com:.*.git$' "./.git/config")
             url=${url#git@gist.github.com:*}
             printf '%s\n' "https://gist.github.com/D630/${url%*.git}" "$desc" > "./${url%*.git}"
-            find "$PWD" ! -path '*.git*' -name '*.*' -exec ln -f -s {} -t "${HOME}/bin" \;
-            git add -f "${url%*.git}"
-            git commit -m "add info file"
+            (find "$pwd" ! -path '*.git*' -name '*.*' -exec ln -vf -s {} -t "${HOME}/bin" \;)
+            git add -f "./${url%*.git}" && \
+            git commit -m "${basename}: add info file" && \
             git push -u origin master
-            if cd -- "${HOME}/stow/bin/gist-pub"
+            if (($? == 0)) && cd -- "$gpp"
             then
-                git add -f "${OLDPWD##*/}"
-                git commit -m "add ${OLDPWD##*/}"
+                git add -f "./${basename}" && \
+                git commit -m "${basename}: init" && \
                 git push -u origin master
             else
-                { printf '%s\n' "${0}:Error:80: Could not cd into gist-pub." 1>&2 ; exit 80 ; }
+                { printf '%s\n' "${0}:Error:80: Could not cd into '${gpp}'" 1>&2 ; exit 80 ; }
             fi
         else
-            { printf '%s\n' "${0}:Error:81: Could not parse a conf file." 1>&2 ; exit 81 ; }
+            { printf '%s\n' "${0}:Error:81: Could not parse a conf file" 1>&2 ; exit 81 ; }
         fi
     else
         { printf '%s\n' "${0}:Error:82: Could not create a git repository: a description is missing" 1>&2 ; exit 82 ; }

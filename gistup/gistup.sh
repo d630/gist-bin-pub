@@ -40,7 +40,7 @@ else
             if cd -- "${HOME}/stow/bin/gist-pub"
             then
                 git add -f "${OLDPWD##*/}"
-                git commit -m "create: https://gist.github.com/D630/${url%*.git}"
+                git commit -m "add https://gist.github.com/D630/${url%*.git}"
                 git push -u origin master
             else
                 { printf '%s\n' "${0}:Error:80: Could not cd into gist-pub." 1>&2 ; exit 80 ; }

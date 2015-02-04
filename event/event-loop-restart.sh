@@ -2,7 +2,7 @@
 
 # Main loop for event.sh
 
-source event-loop-stop.sh
+. event-loop-stop.sh
 
 cp -bf -- "${X_XDG_LOG_HOME}/event.log" "${X_XDG_LOG_HOME}/event.log" 2>/dev/null
 > "${X_XDG_LOG_HOME}/event.log"

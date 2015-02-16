@@ -10,32 +10,32 @@ case $menu in
             __menu_cmd()
             {
                 dmenu -b -f -i \
-                      -l "10" \
-                      -p "${menu_prompt:->}" \
-                      -nb "#2C2C2C" \
-                      -nf "#DCDCCC" \
-                      -sb "#DCDCCC" \
-                      -sf "#2C2C2C" \
-                      -uc "#2C2C2C" \
-                      -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*" \
-                     -name "dmenu" \
-                     -class "dmenu"
+                    -l "10" \
+                    -p "${menu_prompt:->}" \
+                    -nb "#001e27" \
+                    -nf "#708284" \
+                    -sb "#708284" \
+                    -sf "#2C2C2C" \
+                    -uc "#2C2C2C" \
+                    -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*" \
+                    -name "dmenu" \
+                    -class "dmenu"
             }
             ;;
     dmenu2)
             __menu_cmd()
             {
                 dmenu2 -b -f -i \
-                       -l "10" \
-                       -p "${menu_prompt:->}" \
-                       -nb "#2C2C2C" \
-                       -nf "#DCDCCC" \
-                       -sb "#DCDCCC" \
-                       -sf "#2C2C2C" \
-                       -uc "#2C2C2C" \
-                       -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*" \
-                       -name "dmenu2" \
-                       -class "dmenu2"
+                    -l "10" \
+                    -p "${menu_prompt:->}" \
+                    -nb "#001e27" \
+                    -nf "#708284" \
+                    -sb "#708284" \
+                    -sf "#2C2C2C" \
+                    -uc "#2C2C2C" \
+                    -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*" \
+                    -name "dmenu2" \
+                    -class "dmenu2"
             }
             ;;
     dmenu2-save)
@@ -43,29 +43,29 @@ case $menu in
             __menu_cmd()
             {
                 dmenu2 -b -f \
-                       -mask \
-                       -p "$menu_prompt" \
-                       -nb "#2C2C2C" \
-                       -nf "#DCDCCC" \
-                       -sb "#2C2C2C" \
-                       -sf "#8C5353" \
-                       -uc "#2C2C2C" \
-                       -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*"
+                    -mask \
+                    -p "$menu_prompt" \
+                    -nb "#001e27" \
+                    -nf "#708284" \
+                    -sb "#708284" \
+                    -sf "#2C2C2C" \
+                    -uc "#2C2C2C" \
+                    -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*"
             }
             ;;
     slmenu)
             __menu_cmd()
             {
                 slmenu -b -f -i \
-                       -p "${menu_prompt:->}" \
-                       -nb "#2C2C2C" \
-                       -nf "#DCDCCC" \
-                       -sb "#DCDCCC" \
-                       -sf "#2C2C2C" \
-                       -uc "#2C2C2C" \
-                       -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*" \
-                       -name "slmenu" \
-                       -class "slmenu"
+                    -p "${menu_prompt:->}" \
+                    -nb "#001e27" \
+                    -nf "#708284" \
+                    -sb "#708284" \
+                    -sf "#2C2C2C" \
+                    -uc "#2C2C2C" \
+                    -fn "-xos4-terminus-medium-r-normal-*-18-*-*-*-*-*-iso10646-*" \
+                    -name "slmenu" \
+                    -class "slmenu"
             }
             ;;
     selecta)

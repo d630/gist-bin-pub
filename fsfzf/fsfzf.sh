@@ -79,7 +79,8 @@ __fsfzf_browse()
                                         "${pwd}/${child_name}"
                                     ;;
                             *)
-                                    elinks "${pwd}/${child_name}"
+                                    LESSOPEN='"| /usr/bin/lesspipe %s"' \
+                                    less -R "${pwd}/${child_name}"
                         esac
                     fi
         esac

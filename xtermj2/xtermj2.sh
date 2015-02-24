@@ -10,15 +10,15 @@ do
     [[ $(xprop -id "${id//:/}" WM_CLASS) =~ xtermj2 ]] && xid=${id//:/} && break
 done < <(xlsclients -l | fgrep -x -e '  Command:  xterm -b 4 -name xtermj2' -B 4 | grep -e '^Window')
 
-if [[ ! $xid ]]
+if [[ $xid ]]
 then
-    xterm -b 4 -name xtermj2
-else
-    if ! xprop -root _NET_CLIENT_LIST | grep -q "$xid"
+    if xprop -root _NET_CLIENT_LIST | grep -q "$xid"
     then
+        xdotool windowunmap "$xid"
+    else
         xdotool windowmap "$xid"
         wmctrl -i -a "$xid"
-    else
-        xdotool windowunmap "$xid"
     fi
+else
+    exec xterm -b 4 -name xtermj2
 fi

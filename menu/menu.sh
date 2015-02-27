@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # wrapper script to select menu driven programms
 
-menu=$1
-menu_prompt=$2
+menu="$1"
+menu_prompt="$2"
 
-case $menu in
+case "$menu" in
     dmenu)
             __menu_cmd()
             {
@@ -39,7 +39,7 @@ case $menu in
             }
             ;;
     dmenu2-save)
-            [[ ! $menu_prompt ]] && exit 1
+            [ -n "$menu_prompt" ]] || exit 1
             __menu_cmd()
             {
                 dmenu2 -b -f \
@@ -79,7 +79,6 @@ case $menu in
             ;;
     fzf-print-query)
             __menu_cmd() { fzf -x -i +s --prompt="${menu_prompt:->} " --print-query ; }
-            ;;
 esac
 
 __menu_cmd

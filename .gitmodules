@@ -178,3 +178,6 @@
 [submodule "X/X"]
 	path = X/X
 	url = https://gist.github.com/b2a165c53005858207ba
+[submodule "xombrero/xombrero"]
+	path = xombrero/xombrero
+	url = https://gist.github.com/0fd81e3aa31786622f2a

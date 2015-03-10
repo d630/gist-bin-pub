@@ -160,3 +160,6 @@
 [submodule "urimark/urimark"]
 	path = urimark/urimark
 	url = https://gist.github.com/2d8fd751ec63d1d18489
+[submodule "urldiff/urldiff"]
+	path = urldiff/urldiff
+	url = https://gist.github.com/6a07da35c05e74f5136a

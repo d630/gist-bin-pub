@@ -73,3 +73,6 @@
 [submodule "man/man"]
 	path = man/man
 	url = https://gist.github.com/7ae2d18eb10b7c17023e
+[submodule "mediathek3/mediathek3"]
+	path = mediathek3/mediathek3
+	url = https://gist.github.com/69accfdbe0b26a35a7e6

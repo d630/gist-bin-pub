@@ -61,3 +61,6 @@
 [submodule "hblock/hblock"]
 	path = hblock/hblock
 	url = https://gist.github.com/2c8c6c666af6330d75de
+[submodule "inotify/inotify"]
+	path = inotify/inotify
+	url = https://gist.github.com/2998c6e8ea17285baeb9

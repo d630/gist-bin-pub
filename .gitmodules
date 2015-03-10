@@ -67,3 +67,6 @@
 [submodule "kuno/kuno"]
 	path = kuno/kuno
 	url = https://gist.github.com/f246e7417d1e9ba9e53c
+[submodule "mail/mail"]
+	path = mail/mail
+	url = https://gist.github.com/cb9cbb8fc617bf45bf49

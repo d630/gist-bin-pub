@@ -58,3 +58,6 @@
 [submodule "get/get"]
 	path = get/get
 	url = https://gist.github.com/b2a4edc8edc4b59eb74b
+[submodule "hblock/hblock"]
+	path = hblock/hblock
+	url = https://gist.github.com/2c8c6c666af6330d75de

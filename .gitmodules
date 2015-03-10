@@ -148,3 +148,6 @@
 [submodule "sxiv/sxiv"]
 	path = sxiv/sxiv
 	url = https://gist.github.com/7a3ac192fc8207934b98
+[submodule "system/system"]
+	path = system/system
+	url = https://gist.github.com/86bc4adc113acf32e764

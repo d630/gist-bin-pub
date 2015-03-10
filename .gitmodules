@@ -64,3 +64,6 @@
 [submodule "inotify/inotify"]
 	path = inotify/inotify
 	url = https://gist.github.com/2998c6e8ea17285baeb9
+[submodule "kuno/kuno"]
+	path = kuno/kuno
+	url = https://gist.github.com/f246e7417d1e9ba9e53c

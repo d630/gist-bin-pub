@@ -196,3 +196,6 @@
 [submodule "gistup/gistup"]
 	path = gistup/gistup
 	url = https://gist.github.com/21951041cdf1c5ff47ca
+[submodule "stow/stow"]
+	path = stow/stow
+	url = https://gist.github.com/8cfbecee731537554a9f

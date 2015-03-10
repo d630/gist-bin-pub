@@ -88,3 +88,6 @@
 [submodule "mozilla/mozilla"]
 	path = mozilla/mozilla
 	url = https://gist.github.com/77c39406045d042d23fa
+[submodule "mr/mr"]
+	path = mr/mr
+	url = https://gist.github.com/fe1c5b592969b2deb101

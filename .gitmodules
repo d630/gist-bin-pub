@@ -112,3 +112,6 @@
 [submodule "pdfxviewer/pdfxviewer"]
 	path = pdfxviewer/pdfxviewer
 	url = https://gist.github.com/4f97704539655bbb38e6
+[submodule "pidgin/pidgin"]
+	path = pidgin/pidgin
+	url = https://gist.github.com/4856e862dad5420ae0cd

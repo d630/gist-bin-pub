@@ -133,3 +133,6 @@
 [submodule "skel/skel"]
 	path = skel/skel
 	url = https://gist.github.com/b6312135d47324f9b744
+[submodule "skype/skype"]
+	path = skype/skype
+	url = https://gist.github.com/8317b96d97a72810f32d

@@ -55,3 +55,6 @@
 [submodule "find/find"]
 	path = find/find
 	url = https://gist.github.com/9e516207ab76fdffb3c5
+[submodule "get/get"]
+	path = get/get
+	url = https://gist.github.com/b2a4edc8edc4b59eb74b

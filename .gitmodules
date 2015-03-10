@@ -172,3 +172,6 @@
 [submodule "webradio/webradio"]
 	path = webradio/webradio
 	url = https://gist.github.com/ad61acf11765b995f2a7
+[submodule "wecker/wecker"]
+	path = wecker/wecker
+	url = https://gist.github.com/9c4c18b4ebd12134ba7b

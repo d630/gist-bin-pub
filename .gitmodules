@@ -79,3 +79,6 @@
 [submodule "menu/menu"]
 	path = menu/menu
 	url = https://gist.github.com/b4bf40af748975d9d462
+[submodule "misc/misc"]
+	path = misc/misc
+	url = https://gist.github.com/3b3caa56910df66a130f

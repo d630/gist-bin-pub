@@ -25,3 +25,6 @@
 [submodule "cleaning/cleaning"]
 	path = cleaning/cleaning
 	url = https://gist.github.com/93595dcdf9c3482b1ffe
+[submodule "clipbored/clipbored"]
+	path = clipbored/clipbored
+	url = https://gist.github.com/d2589dd73d1d79ff89d3

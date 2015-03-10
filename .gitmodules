@@ -157,3 +157,6 @@
 [submodule "taskwarrior/taskwarrior"]
 	path = taskwarrior/taskwarrior
 	url = https://gist.github.com/8466da55079943cbf88c
+[submodule "urimark/urimark"]
+	path = urimark/urimark
+	url = https://gist.github.com/2d8fd751ec63d1d18489

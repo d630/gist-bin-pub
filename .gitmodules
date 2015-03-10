@@ -103,3 +103,6 @@
 [submodule "openbox/openbox"]
 	path = openbox/openbox
 	url = https://gist.github.com/242f5c51592c7ba06947
+[submodule "passivedns/passivedns"]
+	path = passivedns/passivedns
+	url = https://gist.github.com/86a4ee06173ea03fa5d4

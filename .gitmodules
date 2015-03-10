@@ -1,0 +1,3 @@
+[submodule "amarok/amarok"]
+	path = amarok/amarok
+	url = https://gist.github.com/941bd57530074585052f

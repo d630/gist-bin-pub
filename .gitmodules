@@ -85,3 +85,6 @@
 [submodule "mlr/mlr"]
 	path = mlr/mlr
 	url = https://gist.github.com/7c98ecc06c8988faf589
+[submodule "mozilla/mozilla"]
+	path = mozilla/mozilla
+	url = https://gist.github.com/77c39406045d042d23fa

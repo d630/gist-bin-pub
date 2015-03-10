@@ -28,3 +28,6 @@
 [submodule "clipbored/clipbored"]
 	path = clipbored/clipbored
 	url = https://gist.github.com/d2589dd73d1d79ff89d3
+[submodule "date/date"]
+	path = date/date
+	url = https://gist.github.com/1983e2a78a916557d724

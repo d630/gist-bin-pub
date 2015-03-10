@@ -136,3 +136,6 @@
 [submodule "skype/skype"]
 	path = skype/skype
 	url = https://gist.github.com/8317b96d97a72810f32d
+[submodule "st/st"]
+	path = st/st
+	url = https://gist.github.com/01aeb21b7deed572e2f9

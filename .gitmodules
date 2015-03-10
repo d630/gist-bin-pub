@@ -154,3 +154,6 @@
 [submodule "taskum/taskum"]
 	path = taskum/taskum
 	url = https://gist.github.com/195b52e9229fc2011798
+[submodule "taskwarrior/taskwarrior"]
+	path = taskwarrior/taskwarrior
+	url = https://gist.github.com/8466da55079943cbf88c

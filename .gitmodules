@@ -181,3 +181,6 @@
 [submodule "xombrero/xombrero"]
 	path = xombrero/xombrero
 	url = https://gist.github.com/0fd81e3aa31786622f2a
+[submodule "xwinreg/xwinreg"]
+	path = xwinreg/xwinreg
+	url = https://gist.github.com/e95bb8e0380ff64e0274

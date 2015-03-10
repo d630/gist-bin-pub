@@ -106,3 +106,6 @@
 [submodule "passivedns/passivedns"]
 	path = passivedns/passivedns
 	url = https://gist.github.com/86a4ee06173ea03fa5d4
+[submodule "pdf/pdf"]
+	path = pdf/pdf
+	url = https://gist.github.com/922cd3a911b2325d12bc

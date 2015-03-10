@@ -151,3 +151,6 @@
 [submodule "system/system"]
 	path = system/system
 	url = https://gist.github.com/86bc4adc113acf32e764
+[submodule "taskum/taskum"]
+	path = taskum/taskum
+	url = https://gist.github.com/195b52e9229fc2011798

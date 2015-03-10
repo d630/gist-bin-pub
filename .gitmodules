@@ -184,3 +184,6 @@
 [submodule "xwinreg/xwinreg"]
 	path = xwinreg/xwinreg
 	url = https://gist.github.com/e95bb8e0380ff64e0274
+[submodule "z/z"]
+	path = z/z
+	url = https://gist.github.com/335f68fd188caa449bdb

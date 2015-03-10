@@ -52,3 +52,6 @@
 [submodule "files-user/files-user"]
 	path = files-user/files-user
 	url = https://gist.github.com/56eb7959701d922a9c59
+[submodule "find/find"]
+	path = find/find
+	url = https://gist.github.com/9e516207ab76fdffb3c5

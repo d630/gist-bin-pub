@@ -76,3 +76,6 @@
 [submodule "mediathek3/mediathek3"]
 	path = mediathek3/mediathek3
 	url = https://gist.github.com/69accfdbe0b26a35a7e6
+[submodule "menu/menu"]
+	path = menu/menu
+	url = https://gist.github.com/b4bf40af748975d9d462

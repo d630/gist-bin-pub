@@ -190,3 +190,6 @@
 [submodule "zathura/zathura"]
 	path = zathura/zathura
 	url = https://gist.github.com/c47cd517d9f854727750
+[submodule "zettelkasten/zettelkasten"]
+	path = zettelkasten/zettelkasten
+	url = https://gist.github.com/ee9e21bf735a07edc7ef

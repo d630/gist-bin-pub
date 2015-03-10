@@ -187,3 +187,6 @@
 [submodule "z/z"]
 	path = z/z
 	url = https://gist.github.com/335f68fd188caa449bdb
+[submodule "zathura/zathura"]
+	path = zathura/zathura
+	url = https://gist.github.com/c47cd517d9f854727750

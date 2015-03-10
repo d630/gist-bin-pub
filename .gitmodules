@@ -100,3 +100,6 @@
 [submodule "obnam/obnam"]
 	path = obnam/obnam
 	url = https://gist.github.com/6eede17af38c2f3c2fce
+[submodule "openbox/openbox"]
+	path = openbox/openbox
+	url = https://gist.github.com/242f5c51592c7ba06947

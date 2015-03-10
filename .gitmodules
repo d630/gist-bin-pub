@@ -43,3 +43,6 @@
 [submodule "fbox/fbox"]
 	path = fbox/fbox
 	url = https://gist.github.com/8bea4004702918a07bc4
+[submodule "feedcacher/feedcacher"]
+	path = feedcacher/feedcacher
+	url = https://gist.github.com/9325b5a55764cc2d1bf0

@@ -145,3 +145,6 @@
 [submodule "sudo/sudo"]
 	path = sudo/sudo
 	url = https://gist.github.com/c5845c81802eebedfc29
+[submodule "sxiv/sxiv"]
+	path = sxiv/sxiv
+	url = https://gist.github.com/7a3ac192fc8207934b98

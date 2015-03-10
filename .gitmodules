@@ -19,3 +19,6 @@
 [submodule "calculation/calculation"]
 	path = calculation/calculation
 	url = https://gist.github.com/9a809e218b55ca124016
+[submodule "chromium/chromium"]
+	path = chromium/chromium
+	url = https://gist.github.com/59b1d7d8bf31cf92be00

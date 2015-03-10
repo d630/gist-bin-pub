@@ -28,6 +28,18 @@
 [submodule "clipbored/clipbored"]
 	path = clipbored/clipbored
 	url = https://gist.github.com/d2589dd73d1d79ff89d3
-[submodule "date/date"]
-	path = date/date
-	url = https://gist.github.com/1983e2a78a916557d724
+[submodule "dates/dates"]
+	path = dates/dates
+	url = https://gist.github.com/6dbd58fd9b315ab6d866
+[submodule "detox/detox"]
+	path = detox/detox
+	url = https://gist.github.com/e31cdbad9096d34d5087
+[submodule "dpkg/dpkg"]
+	path = dpkg/dpkg
+	url = https://gist.github.com/aacbde6148c0a423505d
+[submodule "exec/exec"]
+	path = exec/exec
+	url = https://gist.github.com/3334c11f2c993d273cdd
+[submodule "fbox/fbox"]
+	path = fbox/fbox
+	url = https://gist.github.com/8bea4004702918a07bc4

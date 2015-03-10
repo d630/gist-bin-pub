@@ -142,3 +142,6 @@
 [submodule "stjerm/stjerm"]
 	path = stjerm/stjerm
 	url = https://gist.github.com/d64389df3aa1e628d97c
+[submodule "sudo/sudo"]
+	path = sudo/sudo
+	url = https://gist.github.com/c5845c81802eebedfc29

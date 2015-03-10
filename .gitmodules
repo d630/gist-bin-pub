@@ -193,3 +193,6 @@
 [submodule "zettelkasten/zettelkasten"]
 	path = zettelkasten/zettelkasten
 	url = https://gist.github.com/ee9e21bf735a07edc7ef
+[submodule "gistup/gistup"]
+	path = gistup/gistup
+	url = https://gist.github.com/21951041cdf1c5ff47ca

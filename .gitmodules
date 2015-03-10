@@ -121,3 +121,6 @@
 [submodule "proxychains/proxychains"]
 	path = proxychains/proxychains
 	url = https://gist.github.com/7053da63b1048267cf32
+[submodule "remind/remind"]
+	path = remind/remind
+	url = https://gist.github.com/006bfef923fa5da79b49

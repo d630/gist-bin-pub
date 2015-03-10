@@ -163,3 +163,6 @@
 [submodule "urldiff/urldiff"]
 	path = urldiff/urldiff
 	url = https://gist.github.com/6a07da35c05e74f5136a
+[submodule "urlview/urlview"]
+	path = urlview/urlview
+	url = https://gist.github.com/e3b98e1773834b7badaf

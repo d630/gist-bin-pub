@@ -46,3 +46,6 @@
 [submodule "feedcacher/feedcacher"]
 	path = feedcacher/feedcacher
 	url = https://gist.github.com/9325b5a55764cc2d1bf0
+[submodule "feh/feh"]
+	path = feh/feh
+	url = https://gist.github.com/ac107dba70d4e5b62c7e

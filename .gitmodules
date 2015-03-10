@@ -91,3 +91,6 @@
 [submodule "mr/mr"]
 	path = mr/mr
 	url = https://gist.github.com/fe1c5b592969b2deb101
+[submodule "newsbeuter/newsbeuter"]
+	path = newsbeuter/newsbeuter
+	url = https://gist.github.com/febd887e1854664f8056

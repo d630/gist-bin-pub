@@ -169,3 +169,6 @@
 [submodule "vlc/vlc"]
 	path = vlc/vlc
 	url = https://gist.github.com/50dfc1645ed2529ef21a
+[submodule "webradio/webradio"]
+	path = webradio/webradio
+	url = https://gist.github.com/ad61acf11765b995f2a7

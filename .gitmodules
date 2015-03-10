@@ -82,3 +82,6 @@
 [submodule "misc/misc"]
 	path = misc/misc
 	url = https://gist.github.com/3b3caa56910df66a130f
+[submodule "mlr/mlr"]
+	path = mlr/mlr
+	url = https://gist.github.com/7c98ecc06c8988faf589

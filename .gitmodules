@@ -109,3 +109,6 @@
 [submodule "pdf/pdf"]
 	path = pdf/pdf
 	url = https://gist.github.com/922cd3a911b2325d12bc
+[submodule "pdfxviewer/pdfxviewer"]
+	path = pdfxviewer/pdfxviewer
+	url = https://gist.github.com/4f97704539655bbb38e6

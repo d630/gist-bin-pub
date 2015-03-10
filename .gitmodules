@@ -1,3 +1,6 @@
 [submodule "amarok/amarok"]
 	path = amarok/amarok
 	url = https://gist.github.com/941bd57530074585052f
+[submodule "archiv/archiv"]
+	path = archiv/archiv
+	url = https://gist.github.com/d8e0d3abca8d195b3033

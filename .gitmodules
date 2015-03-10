@@ -7,3 +7,6 @@
 [submodule "backup/backup"]
 	path = backup/backup
 	url = https://gist.github.com/87742dc4d99cdb2588ea
+[submodule "bash/bash"]
+	path = bash/bash
+	url = https://gist.github.com/95e44d9cbb0755d8a0f1

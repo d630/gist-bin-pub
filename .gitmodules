@@ -94,3 +94,6 @@
 [submodule "newsbeuter/newsbeuter"]
 	path = newsbeuter/newsbeuter
 	url = https://gist.github.com/febd887e1854664f8056
+[submodule "nottoomuch/nottoomuch"]
+	path = nottoomuch/nottoomuch
+	url = https://gist.github.com/04f299679c729e9aa30c

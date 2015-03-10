@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# standby emulation
-
-clipbored -k
-pkill clipbored
-sudo rtcwake -m mem -t $(date -d year +%s)

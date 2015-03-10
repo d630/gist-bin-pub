@@ -112,6 +112,9 @@
 [submodule "pdfxviewer/pdfxviewer"]
 	path = pdfxviewer/pdfxviewer
 	url = https://gist.github.com/4f97704539655bbb38e6
+[submodule "print/print"]
+	path = print/print
+	url = https://gist.github.com/0149042a9606075c52c8
 [submodule "pidgin/pidgin"]
 	path = pidgin/pidgin
-	url = https://gist.github.com/4856e862dad5420ae0cd
+	url = https://gist.github.com/5e7ebe29a3bcce4edde7

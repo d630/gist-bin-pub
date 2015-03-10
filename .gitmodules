@@ -166,3 +166,6 @@
 [submodule "urlview/urlview"]
 	path = urlview/urlview
 	url = https://gist.github.com/e3b98e1773834b7badaf
+[submodule "vlc/vlc"]
+	path = vlc/vlc
+	url = https://gist.github.com/50dfc1645ed2529ef21a

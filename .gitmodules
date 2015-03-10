@@ -118,3 +118,6 @@
 [submodule "pidgin/pidgin"]
 	path = pidgin/pidgin
 	url = https://gist.github.com/5e7ebe29a3bcce4edde7
+[submodule "proxychains/proxychains"]
+	path = proxychains/proxychains
+	url = https://gist.github.com/7053da63b1048267cf32

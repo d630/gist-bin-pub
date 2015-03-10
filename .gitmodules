@@ -49,3 +49,6 @@
 [submodule "feh/feh"]
 	path = feh/feh
 	url = https://gist.github.com/ac107dba70d4e5b62c7e
+[submodule "files-user/files-user"]
+	path = files-user/files-user
+	url = https://gist.github.com/56eb7959701d922a9c59

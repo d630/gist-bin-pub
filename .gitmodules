@@ -10,3 +10,6 @@
 [submodule "bash/bash"]
 	path = bash/bash
 	url = https://gist.github.com/95e44d9cbb0755d8a0f1
+[submodule "bleachbit/bleachbit"]
+	path = bleachbit/bleachbit
+	url = https://gist.github.com/0bc5da8af3c7c7e576c9

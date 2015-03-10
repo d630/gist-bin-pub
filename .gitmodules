@@ -22,3 +22,6 @@
 [submodule "chromium/chromium"]
 	path = chromium/chromium
 	url = https://gist.github.com/59b1d7d8bf31cf92be00
+[submodule "cleaning/cleaning"]
+	path = cleaning/cleaning
+	url = https://gist.github.com/93595dcdf9c3482b1ffe

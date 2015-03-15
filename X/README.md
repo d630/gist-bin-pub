@@ -1,5 +1,6 @@
 * [export-x-info.sh](https://gist.github.com/b2a165c53005858207ba#file-export-x-info-sh): Export the dbus session address on startup so it can be used by cron
 * [get-xids.sh](https://gist.github.com/b2a165c53005858207ba#file-get-xids-sh): Fastest way to get x window ids?
+* [keyboard-layout-switch.sh](https://gist.github.com/b2a165c53005858207ba#file-keyboard-layout-switch-sh): Switch keyboard layout and take the necessary actions
 * [raise-xwin.sh](https://gist.github.com/b2a165c53005858207ba#file-raise-xwin-sh): List xwindows with dmenu and raise selection
 * [rename-current-desktop.sh](https://gist.github.com/b2a165c53005858207ba#file-rename-current-desktop-sh): rename current desktop; manipulate _NET_DESKTOP_NAMES
 * [startx.sh](https://gist.github.com/b2a165c53005858207ba#file-startx-sh): My mini wrapper for startx

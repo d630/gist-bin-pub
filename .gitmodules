@@ -199,3 +199,6 @@
 [submodule "stow/stow"]
 	path = stow/stow
 	url = https://gist.github.com/8cfbecee731537554a9f
+[submodule "clipbuffer/clipbuffer"]
+	path = clipbuffer/clipbuffer
+	url = https://gist.github.com/2b0c208bcfa110d0a63d

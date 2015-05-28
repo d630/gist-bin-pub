@@ -145,6 +145,7 @@ Unless otherwise stated, these files are in the public domain:
 * [task2remind.sh](https://gist.github.com/006bfef923fa5da79b49#file-task2remind-sh): Taskwarrior > ical > Remind
 * [taskwarrior-add.sh](https://gist.github.com/8466da55079943cbf88c#file-taskwarrior-add-sh): Interactively add a task to Taskwarrior via read in a terminal + dmenu
 * [texec.sh](https://gist.github.com/3334c11f2c993d273cdd#file-texec-sh): Run or raise for cli and tui apps (wmctrl and xwinreg)
+* [toggle-options.sh](https://gist.github.com/95e44d9cbb0755d8a0f1#file-toggle-options-sh): Toggle bash options via fzf
 * [uniconify-all-xwins.sh](https://gist.github.com/b2a165c53005858207ba#file-uniconify-all-xwins-sh): unhide all windows on current desktop, and the active region of xwinreg
 * [urladd.sh](https://gist.github.com/6a07da35c05e74f5136a#file-urladd-sh): Add url to use it with urlwatch and urldiff
 * [urlview2.sh](https://gist.github.com/e3b98e1773834b7badaf#file-urlview2-sh): Use choose to simulate urlview

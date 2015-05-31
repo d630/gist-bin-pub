@@ -202,3 +202,6 @@
 [submodule "clipbuffer/clipbuffer"]
 	path = clipbuffer/clipbuffer
 	url = https://gist.github.com/2b0c208bcfa110d0a63d
+[submodule "youtoube-dl wrapper no1 (audio)/youtoube-dl wrapper no1 (audio)"]
+	path = youtoube-dl wrapper no1 (audio)/youtoube-dl wrapper no1 (audio)
+	url = https://gist.github.com/c0381ef6ec33a55f81c2

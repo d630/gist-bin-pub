@@ -203,3 +203,6 @@
 	path = clipbuffer/clipbuffer
 	url = https://gist.github.com/2b0c208bcfa110d0a63d
 
+[submodule "youtoube-dl/youtoube-dl"]
+	path = youtoube-dl/youtoube-dl
+	url = https://gist.github.com/33f83c69a04d57ca33e9

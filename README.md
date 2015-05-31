@@ -181,8 +181,7 @@ Unless otherwise stated, these files are in the public domain:
 * [xwinreg-master-west.sh](https://gist.github.com/e95bb8e0380ff64e0274#file-xwinreg-master-west-sh): xwinreg-master-west.sh
 * [xwinreg-maximize-all.sh](https://gist.github.com/e95bb8e0380ff64e0274#file-xwinreg-maximize-all-sh): xwinreg-maximize-all.sh
 * [xwinreg-unhide-active-region.sh](https://gist.github.com/e95bb8e0380ff64e0274#file-xwinreg-unhide-active-region-sh): xwinreg-unhide-active-region.sh
-* [youtube-dl-get-audio.sh](https://gist.github.com/33f83c69a04d57ca33e9#file-youtube-dl-get-audio-sh): youtoube-dl wrapper no1 (audio)
-* [youtube-dl-get-audio.sh](https://gist.github.com/33f83c69a04d57ca33e9#file-youtube-dl-get-audio-sh): youtoube-dl wrapper no1 (audio)
+* [youtube-dl-get-audio.sh](https://gist.github.com/4fde35ff0e99065a806e#file-youtube-dl-get-audio-sh): youtoube-dl wrapper no1 (audio)
 * [z-fm.sh](https://gist.github.com/335f68fd188caa449bdb#file-z-fm-sh): Run Z output with your file manager (dmenu2 & spacefm ; fzf & ranger)
 * [zathura.sh](https://gist.github.com/c47cd517d9f854727750#file-zathura-sh): Zathura wrapper
 * [zettelkasten.sh](https://gist.github.com/ee9e21bf735a07edc7ef#file-zettelkasten-sh): Zettelkasten wrapper

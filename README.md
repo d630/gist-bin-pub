@@ -140,7 +140,9 @@ Unless otherwise stated, these files are in the public domain:
 * [stoppuhr.sh](https://gist.github.com/6dbd58fd9b315ab6d866#file-stoppuhr-sh): Stoppuhr
 * [stow.sh](https://gist.github.com/8cfbecee731537554a9f#file-stow-sh): stow wrapper
 * [sttj1.sh](https://gist.github.com/01aeb21b7deed572e2f9#file-sttj1-sh): Use st like kuake and yeahconsole terminal
+* [sttj1](https://gist.github.com/01aeb21b7deed572e2f9#file-sttj1): runscript
 * [sttj2.sh](https://gist.github.com/01aeb21b7deed572e2f9#file-sttj2-sh): Use st like kuake and yeahconsole terminal
+* [sttj2](https://gist.github.com/01aeb21b7deed572e2f9#file-sttj2): runscript
 * [switch-to-desktop.sh](https://gist.github.com/b2a165c53005858207ba#file-switch-to-desktop-sh): select desktop with a menu and then switch with wmctrl to it
 * [sxiv-browser.sh](https://gist.github.com/7a3ac192fc8207934b98#file-sxiv-browser-sh): sxiv browser
 * [task-cv.sh](https://gist.github.com/8466da55079943cbf88c#file-task-cv-sh): Source or print structured all defaults of the configuration settings (Taskwarrrior v2.3.0)

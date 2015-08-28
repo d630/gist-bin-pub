@@ -156,6 +156,7 @@ Unless otherwise stated, these files are in the public domain:
 * [webradio.sh](https://gist.github.com/ad61acf11765b995f2a7#file-webradio-sh): Simple wradio with cvlc and dmenu/slmenu
 * [wecker-gui.sh](https://gist.github.com/9c4c18b4ebd12134ba7b#file-wecker-gui-sh): dmenu-wrapper für Radiowecker
 * [wecker.sh](https://gist.github.com/9c4c18b4ebd12134ba7b#file-wecker-sh): Simple Radiowecker
+* [wew.sh](https://gist.github.com/b2a165c53005858207ba#file-wew-sh): Spy xwindows via wew
 * [xclass.sh](https://gist.github.com/b2a165c53005858207ba#file-xclass-sh): Interactively get xclass info about a xwindow
 * [xombrero-open-url-run.sh](https://gist.github.com/0fd81e3aa31786622f2a#file-xombrero-open-url-run-sh): Wrapper
 * [xombrero-open-url-tab-run.sh](https://gist.github.com/0fd81e3aa31786622f2a#file-xombrero-open-url-tab-run-sh): Wrapper

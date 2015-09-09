@@ -208,3 +208,6 @@
 [submodule "blscd/blscd"]
 	path = blscd/blscd
 	url = https://gist.github.com/175be3b9d7e2d1a174fa
+[submodule "mutt/mutt"]
+	path = mutt/mutt
+	url = https://gist.github.com/f5b09c8b51f555d17b6c

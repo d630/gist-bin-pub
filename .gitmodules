@@ -205,3 +205,6 @@
 [submodule "youtube-dl/youtube-dl"]
 	path = youtube-dl/youtube-dl
 	url = https://gist.github.com/4fde35ff0e99065a806e
+[submodule "blscd/blscd"]
+	path = blscd/blscd
+	url = https://gist.github.com/175be3b9d7e2d1a174fa

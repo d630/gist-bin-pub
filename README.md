@@ -20,7 +20,6 @@ Unless otherwise stated, these files are in the public domain:
 * [backup-programs.sh](https://gist.github.com/87742dc4d99cdb2588ea#file-backup-programs-sh): List all programs
 * [backup-squid-urls.sh](https://gist.github.com/87742dc4d99cdb2588ea#file-backup-squid-urls-sh): Backup all uris from squid3 log
 * [bleachbit.sh](https://gist.github.com/0bc5da8af3c7c7e576c9#file-bleachbit-sh): Bleachbit wrapper
-* [blscd.sh](https://gist.github.com/9ca1bfda9f91562f8bea#file-blscd-sh): Wrapper
 * [bup-daily.sh](https://gist.github.com/5211cd201a0d298ea732#file-bup-daily-sh): Daily home backup with bup
 * [bup-weekly.sh](https://gist.github.com/5211cd201a0d298ea732#file-bup-weekly-sh): Weekly home backup with bup
 * [calc.sh](https://gist.github.com/9a809e218b55ca124016#file-calc-sh): Simple calculator with bc and dmenu

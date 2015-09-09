@@ -91,6 +91,8 @@ Unless otherwise stated, these files are in the public domain:
 * [mlr.sh](https://gist.github.com/7c98ecc06c8988faf589#file-mlr-sh): Update personal non-public repos
 * [mr-update.sh](https://gist.github.com/fe1c5b592969b2deb101#file-mr-update-sh): mr update
 * [multibootiso.sh](https://gist.github.com/3b3caa56910df66a130f#file-multibootiso-sh): Create a disk image for a usb stick which combines all *.iso files
+* [mutt-posteo.sh](https://gist.github.com/f5b09c8b51f555d17b6c#file-mutt-posteo-sh): Wrapper
+* [mutt-spool.sh](https://gist.github.com/f5b09c8b51f555d17b6c#file-mutt-spool-sh): Wrapper
 * [mutt-uri-filter.sh](https://gist.github.com/195b52e9229fc2011798#file-mutt-uri-filter-sh): Add a bookmark to taskwarrior-um in Mutt
 * [newsbeuter2um.sh](https://gist.github.com/2d8fd751ec63d1d18489#file-newsbeuter2um-sh): Add a bookmark to urimark in Newsbeuter
 * [nottoomuch-wrapper.sh](https://gist.github.com/04f299679c729e9aa30c#file-nottoomuch-wrapper-sh): dmenu-wrapper for nottoomuch-addresses
